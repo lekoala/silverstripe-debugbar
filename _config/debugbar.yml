@@ -1,0 +1,14 @@
+---
+Name: debugbar
+---
+DebugBar:
+  enable_storage:true
+Injector:
+  RequestProcessor:
+    class: RequestProcessor
+    properties:
+      filters:
+        - '%$DebugBarRequestFilter'
+Controller:
+  extensions:
+    - 'DebugBarControllerExtension'
