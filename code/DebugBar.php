@@ -8,7 +8,7 @@ class DebugBar extends Object
     /**
      * @var DebugBar\StandardDebugBar
      */
-    protected static $debugbar;
+    protected static $debugbar = null;
 
     /**
      * Get the Debug Bar instance
@@ -18,13 +18,17 @@ class DebugBar extends Object
      */
     public static function getDebugBar()
     {
-        if (self::$debugbar) {
+        if (self::$debugbar !== null) {
             return self::$debugbar;
         }
 
         if (!Director::isDev() || !class_exists('DebugBar\\StandardDebugBar')) {
+            self::$debugbar = false; // No need to check again
             return;
         }
+
+        // Add a custom logger that logs everything under the Messages tab
+        SS_Log::add_writer(new DebugBarLogWriter(), SS_Log::DEBUG, '<=');
 
         self::$debugbar = $debugbar       = new DebugBar\StandardDebugBar();
 

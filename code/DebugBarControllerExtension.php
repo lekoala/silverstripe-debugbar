@@ -77,6 +77,7 @@ class DebugBarControllerExtension extends Extension
     public function RenderDebugBar()
     {
         $debugbar = DebugBar::getDebugBar();
+
         if (!$debugbar) {
             return;
         }
