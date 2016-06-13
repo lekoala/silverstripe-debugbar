@@ -25,7 +25,7 @@ class DebugBarRequestFilter implements \RequestFilter
             }
             if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
                 $timeData = $debugbar['time'];
-                $timeData->addMeasure("framework-boot", $_SERVER['REQUEST_TIME_FLOAT'], microtime(true));
+                $timeData->addMeasure("framework boot", $_SERVER['REQUEST_TIME_FLOAT'], microtime(true));
             }
             $timeData->startMeasure("pre-request", "pre request");
         });

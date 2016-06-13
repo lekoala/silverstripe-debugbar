@@ -105,6 +105,9 @@ class DebugBarControllerExtension extends Extension
             Requirements::javascript($jsFile);
         }
 
-        return $renderer->render($initialize);
+        $script = $renderer->render($initialize);
+        $script = str_replace("<script type=\"text/javascript\">\n", "", $script);
+        $script = str_replace("\n</script>\n", "", $script);
+        Requirements::customScript($script, "PhpDebugBar");
     }
 }
