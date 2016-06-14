@@ -1,5 +1,7 @@
 ---
 Name: debugbar
+Only:
+  environment: 'dev'
 ---
 DebugBar:
   enable_storage:true
