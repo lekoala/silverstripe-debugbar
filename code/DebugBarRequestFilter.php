@@ -25,7 +25,8 @@ class DebugBarRequestFilter implements \RequestFilter
             }
             if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
                 $timeData = $debugbar['time'];
-                $timeData->addMeasure("framework boot", $_SERVER['REQUEST_TIME_FLOAT'], microtime(true));
+                $timeData->addMeasure("framework boot",
+                    $_SERVER['REQUEST_TIME_FLOAT'], microtime(true));
             }
             $timeData->startMeasure("pre-request", "pre request");
         });
@@ -44,7 +45,8 @@ class DebugBarRequestFilter implements \RequestFilter
     {
         DebugBar::withDebugBar(function($debugbar) {
             // No need to inject data since the bar is not rendered in the cms
-            if(Controller::has_curr() && Controller::curr() instanceof LeftAndMain) {
+            $uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null;
+            if ($uri && strpos($uri, '/admin/') === 0) {
                 return;
             }
             if (Director::is_ajax() && !headers_sent()) {
