@@ -28,6 +28,17 @@ Or add:
 
 to require-dev in your composer.json file
 
+NOTE: somehow, the Only environment flag in the yml config will prevent
+the controller extension to be initialized properly. Meanwhile, feel free
+to add this in mysite/_config.php to make sure the controller has the proper
+extension.
+
+    if (Director::isDev()) {
+        if (!Controller::has_extension('DebugBarControllerExtension')) {
+            Controller::add_extension('DebugBarControllerExtension');
+        }
+    }
+
 Compatibility
 ==================
 Tested with 3.3+

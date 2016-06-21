@@ -4,7 +4,7 @@ Only:
   environment: 'dev'
 ---
 DebugBar:
-  enable_storage:true
+  enable_storage: true
 Controller:
   extensions:
     - 'DebugBarControllerExtension'
