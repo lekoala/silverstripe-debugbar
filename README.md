@@ -7,11 +7,18 @@ This module will:
 - Enable a custom log writer that will log all messages under the messages tab
 - Log framework execution based on available hooks
 - Log database calls (if you use PDO)
-- Display current environment
+- Show all debug and debug_request infos from SilverStripe in a tab
 
 Include the DebugBar in your template simply by calling $RenderDebugBar
 
 Please note that jQuery is excluded from vendors and you are expected to include your own jQuery.
+
+Options
+==================
+
+enable_storage: Store all previous request in the temp folder (enabled by default)
+
+auto_debug: automatically collect debug and debug_request data (enabled by default) 
 
 Installation
 ==================
