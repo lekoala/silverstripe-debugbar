@@ -66,6 +66,8 @@ class DebugBar extends Object
             $debugbar->setStorage(new DebugBar\Storage\FileStorage(TEMP_FOLDER.'/debugbar'));
         }
 
+        ob_start(); // We buffer everything until we have called an action
+
         return $debugbar;
     }
 

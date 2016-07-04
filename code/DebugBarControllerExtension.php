@@ -5,6 +5,7 @@
  */
 class DebugBarControllerExtension extends Extension
 {
+
     public function onBeforeInit()
     {
         $class = get_class($this->owner);
@@ -49,7 +50,29 @@ class DebugBarControllerExtension extends Extension
             if ($timeData->hasStartedMeasure("handle")) {
                 $timeData->stopMeasure("handle");
             }
-            $timeData->startMeasure("action", "$class action:$action");
+            $timeData->startMeasure("action", "$class action $action");
+        });
+    }
+
+    public function afterCallActionHandler($request, $action)
+    {
+        $buffer = ob_get_clean();
+        if (!empty($buffer)) {
+            unset($_REQUEST['debug_request']); // Disable further messages that we can't intercept
+            DebugBarSilverStripeCollector::setDebugBar($buffer);
+        }
+        
+        $class = get_class($this->owner);
+        DebugBar::withDebugBar(function($debugbar) use($class, $action) {
+            /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
+            $timeData = $debugbar['time'];
+            if (!$timeData) {
+                return;
+            }
+            if ($timeData->hasStartedMeasure("action")) {
+                $timeData->stopMeasure("action");
+            }
+            $timeData->startMeasure("after_action", "$class after action $action");
         });
     }
 
