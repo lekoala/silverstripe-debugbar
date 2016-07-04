@@ -10,6 +10,7 @@ Only:
 ---
 DebugBar:
   enable_storage: true
+  auto_debug: true
 Director:
   rules:
     '__debugbar': 'DebugBarController'

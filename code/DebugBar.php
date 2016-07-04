@@ -68,6 +68,12 @@ class DebugBar extends Object
 
         ob_start(); // We buffer everything until we have called an action
 
+        // Since we buffer everything, why not enable all dev options ?
+        if(self::config()->auto_debug) {
+            $_REQUEST['debug'] = true;
+            $_REQUEST['debug_request'] = true;
+        }
+
         return $debugbar;
     }
 
