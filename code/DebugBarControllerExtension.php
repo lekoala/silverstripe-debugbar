@@ -5,27 +5,6 @@
  */
 class DebugBarControllerExtension extends Extension
 {
-    private static $allowed_actions = array(
-        '_debugbar'
-    );
-
-    public function _debugbar()
-    {
-        if (DebugBar::config()->enable_storage) {
-            die();
-        }
-        $debugbar = DebugBar::getDebugBar();
-        if (!$debugbar) {
-            return;
-        }
-        if (!DebugBar::IsDebugBarRequest()) {
-            return;
-        }
-        $openHandler = new DebugBar\OpenHandler($debugbar);
-        $openHandler->handle();
-        exit();
-    }
-
     public function onBeforeInit()
     {
         $class = get_class($this->owner);
@@ -96,7 +75,7 @@ class DebugBarControllerExtension extends Extension
         $renderer->setEnableJqueryNoConflict(false);
 
         if (DebugBar::config()->enable_storage) {
-            $renderer->setOpenHandlerUrl('/home/_debugbar');
+            $renderer->setOpenHandlerUrl('__debugbar');
         }
 
         foreach ($renderer->getAssets('css') as $cssFile) {

@@ -1,16 +1,20 @@
 ---
 Name: debugbar
+Before:
+  - 'mysite/*'
+After:
+  - 'framework/*'
+  - 'cms/*'
 Only:
   environment: 'dev'
 ---
 DebugBar:
   enable_storage: true
-Controller:
-  extensions:
-    - 'DebugBarControllerExtension'
+Director:
+  rules:
+    '__debugbar': 'DebugBarController'
 Injector:
   RequestProcessor:
-    class: RequestProcessor
     properties:
       filters:
         - '%$DebugBarRequestFilter'

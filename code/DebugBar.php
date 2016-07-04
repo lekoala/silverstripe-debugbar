@@ -22,15 +22,15 @@ class DebugBar extends Object
             return self::$debugbar;
         }
 
-        if (!Director::isDev()
-            || !class_exists('DebugBar\\StandardDebugBar')
-            || Director::is_cli() // Don't run in CLI mode
-            || !isset($_REQUEST['url'])
-            || strpos($_REQUEST['url'], '/dev/build') === 0 // Don't run on dev build
+        if (!Director::isDev() || !class_exists('DebugBar\\StandardDebugBar') || Director::is_cli() // Don't run in CLI mode
+            || strpos(self::getRequestUrl(), '/dev/build') === 0 // Don't run on dev build
         ) {
             self::$debugbar = false; // No need to check again
             return;
         }
+
+        // Add the controller extension programmaticaly because it might not be added properly through yml
+        Controller::add_extension('DebugBarControllerExtension');
 
         // Add a custom logger that logs everything under the Messages tab
         SS_Log::add_writer(new DebugBarLogWriter(), SS_Log::DEBUG, '<=');
@@ -76,10 +76,26 @@ class DebugBar extends Object
      */
     public static function IsDebugBarRequest()
     {
-        if (!empty($_SERVER['REQUEST_URI'])) {
-            return strpos($_SERVER['REQUEST_URI'], '/home/_debugbar') === 0;
+        if ($url = self::getRequestUrl()) {
+            return strpos($url, '/__debugbar') === 0;
         }
         return true;
+    }
+
+    /**
+     * Get request url
+     * 
+     * @return string
+     */
+    public static function getRequestUrl()
+    {
+        if (isset($_REQUEST['url'])) {
+            return $_REQUEST['url'];
+        }
+        if (isset($_SERVER['REQUEST_URI'])) {
+            return $_SERVER['REQUEST_URI'];
+        }
+        return '';
     }
 
     /**
