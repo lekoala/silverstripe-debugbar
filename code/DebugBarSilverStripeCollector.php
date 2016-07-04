@@ -37,9 +37,9 @@ class DebugBarSilverStripeCollector extends DebugBar\DataCollector\DataCollector
         $name = $this->getName();
         return array(
             "$name" => array(
-                "icon" => "tags",
+                "icon" => "list-alt",
                 "widget" => "PhpDebugBar.Widgets.ListWidget",
-                "map" => "silverstripe.debug",
+                "map" => "$name.debug",
                 "default" => "[]"
             ),
             "$name:badge" => array(
