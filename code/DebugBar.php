@@ -25,7 +25,8 @@ class DebugBar extends Object
         if (!Director::isDev()
             || !class_exists('DebugBar\\StandardDebugBar')
             || Director::is_cli() // Don't run in CLI mode
-            || strpos($_REQUEST['url'], 'dev/build') === 0 // Don't run on dev build
+            || !isset($_REQUEST['url'])
+            || strpos($_REQUEST['url'], '/dev/build') === 0 // Don't run on dev build
         ) {
             self::$debugbar = false; // No need to check again
             return;
