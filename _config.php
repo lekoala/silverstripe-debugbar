@@ -18,7 +18,7 @@ if (!function_exists('d')) {
 // Add a simple log helper that provides a default priority
 if (!function_exists('l')) {
 
-    function l($msg, $priority = 7, $extras = null)
+    function l($message, $priority = 7, $extras = null)
     {
         SS_Log::log($message, $priority, $extras);
     }
