@@ -10,6 +10,10 @@ class DebugBarControllerExtension extends Extension
     {
         $class = get_class($this->owner);
         DebugBar::withDebugBar(function($debugbar) use ($class) {
+            // Add config collector
+            $debugbar->addCollector(new DebugBar\DataCollector\ConfigCollector(SiteConfig::current_site_config()->toMap()),
+                'SiteConfig');
+
             /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugbar['time'];
             if (!$timeData) {
@@ -26,6 +30,7 @@ class DebugBarControllerExtension extends Extension
     {
         $class = get_class($this->owner);
         DebugBar::withDebugBar(function($debugbar) use ($class) {
+
             /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugbar['time'];
             if (!$timeData) {
@@ -48,7 +53,7 @@ class DebugBarControllerExtension extends Extension
     public function beforeCallActionHandler($request, $action)
     {
         // This could be called twice
-        if($this->owner->beforeCallActionHandlerCalled) {
+        if ($this->owner->beforeCallActionHandlerCalled) {
             return;
         }
 

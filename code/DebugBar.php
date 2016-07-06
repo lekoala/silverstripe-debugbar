@@ -55,10 +55,6 @@ class DebugBar extends Object
             $debugbar->addCollector(new DebugBar\DataCollector\PDO\PDOCollector($traceablePdo));
         }
 
-        // Add config collector
-        $debugbar->addCollector(new DebugBar\DataCollector\ConfigCollector(SiteConfig::current_site_config()->toMap()),
-            'SiteConfig');
-
         // Add some SilverStripe specific infos
         $debugbar->addCollector(new DebugBarSilverStripeCollector());
 
