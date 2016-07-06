@@ -36,14 +36,20 @@ class DebugBarLogWriter extends Zend_Log_Writer_Abstract
         $level = $event['priorityName'];
 
         // Gather info
-        $errstr     = $event['message']['errstr'];
-        $errfile    = $event['message']['errfile'];
-        $errline    = $event['message']['errline'];
-        $errcontext = $event['message']['errcontext'];
-        $relfile    = Director::makeRelative($errfile);
+        if (isset($event['message']['errstr'])) {
+            $str     = $event['message']['errstr'];
+            $file    = $event['message']['errfile'];
+            $line    = $event['message']['errline'];
+        } else {
+            $str     = $event['message']['function'];
+            $file    = $event['message']['file'];
+            $line    = isset($event['message']['line']) ? $event['message']['line'] : 0;
+        }
+
+        $relfile = Director::makeRelative($file);
 
         // Save message
-        $message = "$level - {$errstr} ({$relfile}:{$errline})";
+        $message = "$level - {$str} ({$relfile}:{$line})";
 
         // Escape \ for proper js display
         $message = str_replace('\\', '\\\\', $message);
