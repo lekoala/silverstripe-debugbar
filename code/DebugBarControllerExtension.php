@@ -38,8 +38,20 @@ class DebugBarControllerExtension extends Extension
         });
     }
 
+    /**
+     * Due to a bug, this could be called twice before 4.0,
+     * see https://github.com/silverstripe/silverstripe-framework/pull/5173
+     *
+     * @param SS_HTTPRequest $request
+     * @param string $action
+     */
     public function beforeCallActionHandler($request, $action)
     {
+        // If we don't have an action, getViewer will be called immediatly
+        if (!$this->owner->hasMethod($action)) {
+            self::clearBuffer();
+        }
+
         $class = get_class($this->owner);
         DebugBar::withDebugBar(function($debugbar) use($class, $action) {
             /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
@@ -54,14 +66,18 @@ class DebugBarControllerExtension extends Extension
         });
     }
 
-    public function afterCallActionHandler($request, $action)
+    /**
+     * Due to a bug, this is not always called before 4.0,
+     * see https://github.com/silverstripe/silverstripe-framework/pull/5173
+     *
+     * @param SS_HTTPRequest $request
+     * @param string $action
+     * @param mixed $result (only in v4.0)
+     */
+    public function afterCallActionHandler($request, $action, $result)
     {
-        $buffer = ob_get_clean();
-        if (!empty($buffer)) {
-            unset($_REQUEST['debug_request']); // Disable further messages that we can't intercept
-            DebugBarSilverStripeCollector::setDebugBar($buffer);
-        }
-        
+        self::clearBuffer();
+
         $class = get_class($this->owner);
         DebugBar::withDebugBar(function($debugbar) use($class, $action) {
             /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
@@ -72,8 +88,18 @@ class DebugBarControllerExtension extends Extension
             if ($timeData->hasStartedMeasure("action")) {
                 $timeData->stopMeasure("action");
             }
-            $timeData->startMeasure("after_action", "$class after action $action");
+            $timeData->startMeasure("after_action",
+                "$class after action $action");
         });
+    }
+
+    protected static function clearBuffer()
+    {
+        $buffer = ob_get_clean();
+        if (!empty($buffer)) {
+            unset($_REQUEST['debug_request']); // Disable further messages that we can't intercept
+            DebugBarSilverStripeCollector::setDebugBar($buffer);
+        }
     }
 
     public function RenderDebugBar()
