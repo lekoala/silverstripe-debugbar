@@ -43,8 +43,11 @@ class DebugBarLogWriter extends Zend_Log_Writer_Abstract
         $relfile    = Director::makeRelative($errfile);
 
         // Save message
-        $message = "{$errstr} ({$relfile}:{$errline})";
+        $message = "$level - {$errstr} ({$relfile}:{$errline})";
 
-        $messagesCollector->addMessage($level." - ".$message, false);
+        // Escape \ for proper js display
+        $message = str_replace('\\', '\\\\', $message);
+
+        $messagesCollector->addMessage($message, false);
     }
 }
