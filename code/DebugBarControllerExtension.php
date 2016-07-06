@@ -47,6 +47,11 @@ class DebugBarControllerExtension extends Extension
      */
     public function beforeCallActionHandler($request, $action)
     {
+        // This could be called twice
+        if($this->owner->beforeCallActionHandlerCalled) {
+            return;
+        }
+
         // If we don't have an action, getViewer will be called immediatly
         if (!$this->owner->hasMethod($action)) {
             self::clearBuffer();
@@ -64,6 +69,8 @@ class DebugBarControllerExtension extends Extension
             }
             $timeData->startMeasure("action", "$class action $action");
         });
+
+        $this->owner->beforeCallActionHandlerCalled = true;
     }
 
     /**
