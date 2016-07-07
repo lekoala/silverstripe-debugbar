@@ -17,7 +17,7 @@ class DebugBarRequestFilter implements \RequestFilter
     public function preRequest(SS_HTTPRequest $request, Session $session,
                                DataModel $model)
     {
-        DebugBar::withDebugBar(function($debugbar) {
+        DebugBar::withDebugBar(function(DebugBar\DebugBar $debugbar) {
             /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugbar['time'];
             if (!$timeData) {
@@ -43,7 +43,7 @@ class DebugBarRequestFilter implements \RequestFilter
     public function postRequest(SS_HTTPRequest $request,
                                 SS_HTTPResponse $response, DataModel $model)
     {
-        DebugBar::withDebugBar(function($debugbar) {
+        DebugBar::withDebugBar(function(DebugBar\DebugBar $debugbar) {
             // No need to inject data since the bar is not rendered in the cms
             $uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null;
             if ($uri && strpos($uri, '/admin/') === 0) {

@@ -32,7 +32,7 @@ class DebugBarControllerExtension extends Extension
     public function onAfterInit()
     {
         $class = get_class($this->owner);
-        DebugBar::withDebugBar(function($debugbar) use ($class) {
+        DebugBar::withDebugBar(function(DebugBar\DebugBar $debugbar) use ($class) {
 
             /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugbar['time'];
@@ -66,7 +66,7 @@ class DebugBarControllerExtension extends Extension
         }
 
         $class = get_class($this->owner);
-        DebugBar::withDebugBar(function($debugbar) use($class, $action) {
+        DebugBar::withDebugBar(function(DebugBar\DebugBar $debugbar) use($class, $action) {
             /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugbar['time'];
             if (!$timeData) {
@@ -94,7 +94,7 @@ class DebugBarControllerExtension extends Extension
         self::clearBuffer();
 
         $class = get_class($this->owner);
-        DebugBar::withDebugBar(function($debugbar) use($class, $action) {
+        DebugBar::withDebugBar(function(DebugBar\DebugBar $debugbar) use($class, $action) {
             /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugbar['time'];
             if (!$timeData) {
