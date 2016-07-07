@@ -9,10 +9,13 @@ class DebugBarControllerExtension extends Extension
     public function onBeforeInit()
     {
         $class = get_class($this->owner);
-        DebugBar::withDebugBar(function($debugbar) use ($class) {
+
+        DebugBar::withDebugBar(function(DebugBar\DebugBar $debugbar) use ($class) {
             // Add config collector
-            $debugbar->addCollector(new DebugBar\DataCollector\ConfigCollector(SiteConfig::current_site_config()->toMap()),
-                'SiteConfig');
+            if (!$debugbar->hasCollector('config')) {
+                $debugbar->addCollector(new DebugBar\DataCollector\ConfigCollector(SiteConfig::current_site_config()->toMap()),
+                    'SiteConfig');
+            }
 
             /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugbar['time'];
