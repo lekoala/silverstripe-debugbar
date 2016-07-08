@@ -11,12 +11,6 @@ class DebugBarControllerExtension extends Extension
         $class = get_class($this->owner);
 
         DebugBar::withDebugBar(function(DebugBar\DebugBar $debugbar) use ($class) {
-            // Add config collector
-            if (!$debugbar->hasCollector('config')) {
-                $debugbar->addCollector(new DebugBar\DataCollector\ConfigCollector(SiteConfig::current_site_config()->toMap()),
-                    'SiteConfig');
-            }
-
             /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugbar['time'];
             if (!$timeData) {
@@ -61,7 +55,13 @@ class DebugBarControllerExtension extends Extension
         }
 
         // If we don't have an action, getViewer will be called immediatly
-        if (!$this->owner->hasMethod($action)) {
+        // If we have custom routes, request action is different than action
+        $allParams = $request->allParams();
+        $requestAction = null;
+        if(!empty($allParams['Action'])) {
+              $requestAction = $allParams['Action'];
+        }
+        if (!$this->owner->hasMethod($action) || ($requestAction && $requestAction != $action)) {
             self::clearBuffer();
         }
 
@@ -113,7 +113,7 @@ class DebugBarControllerExtension extends Extension
         $buffer = ob_get_clean();
         if (!empty($buffer)) {
             unset($_REQUEST['debug_request']); // Disable further messages that we can't intercept
-            DebugBarSilverStripeCollector::setDebugBar($buffer);
+            DebugBarSilverStripeCollector::setDebugData($buffer);
         }
     }
 
