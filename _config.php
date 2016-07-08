@@ -6,12 +6,15 @@ if (!defined('DEBUGBAR_DIR')) {
 // Add a simple utility that leverages Symfony VarDumper and cleans buffer to avoid debug messages
 if (!function_exists('d')) {
 
-    function d($var)
+    function d()
     {
         ob_clean();
         $caller = Debug::caller();
         echo '<pre>'.$caller['file'].':'.$caller['line'].'</pre>';
-        dump($var);
+        $args   = func_get_args();
+        foreach ($args as $arg) {
+            dump($arg);
+        }
         exit();
     }
 }
