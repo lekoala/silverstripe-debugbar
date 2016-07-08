@@ -13,8 +13,54 @@ class DebugBarSilverStripeCollector extends DebugBar\DataCollector\DataCollector
             'config' => self::getConfigData(),
             'locale' => i18n::get_locale(),
             'version' => LeftAndMain::create()->CMSVersion(),
+            'cookies' => self::getCookieData(),
+            'parameters' => self::getRequestParameters(),
+            'requirements' => self::getRequirementsData(),
+            'user' => Member::currentUserID() ? Member::currentUser()->Title : 'Not logged in',
         );
         return $data;
+    }
+
+    public static function getRequirementsData()
+    {
+        ob_start();
+        Requirements::debug();
+        $requirements = ob_get_clean();
+
+        $matches = null;
+
+        preg_match_all("/<li>(.*?)<\/li>/s", $requirements, $matches);
+
+        if (!empty($matches[1])) {
+            return $matches[1];
+        }
+        return array();
+    }
+
+    public static function getRequestParameters()
+    {
+        if (!Controller::has_curr()) {
+            return array();
+        }
+        $ctrl    = Controller::curr();
+        $request = $ctrl->getRequest();
+
+        $p = array();
+        foreach ($request->getVars() as $k => $v) {
+            $p["GET - $k"] = $v;
+        }
+        foreach ($request->postVars() as $k => $v) {
+            $p["POST - $k"] = $v;
+        }
+        foreach ($request->params() as $k => $v) {
+            $p["ROUTE - $k"] = $v;
+        }
+        return $p;
+    }
+
+    public static function getCookieData()
+    {
+        return Cookie::get_all();
     }
 
     public static function getSessionData()
@@ -27,7 +73,7 @@ class DebugBarSilverStripeCollector extends DebugBar\DataCollector\DataCollector
             if (strpos($k, 'gf_') === 0) {
                 continue;
             }
-            if($k === 'PHPDEBUGBAR_STACK_DATA') {
+            if ($k === 'PHPDEBUGBAR_STACK_DATA') {
                 continue;
             }
             $filtered[$k] = $v;
@@ -48,8 +94,10 @@ class DebugBarSilverStripeCollector extends DebugBar\DataCollector\DataCollector
     public static function setDebugData($data)
     {
         $matches = null;
-        $data    = preg_match_all("/<p class=\"message warning\">\n(.*?)<\/p>/s",
-            $data, $matches);
+
+        preg_match_all("/<p class=\"message warning\">\n(.*?)<\/p>/s", $data,
+            $matches);
+
         if (!empty($matches[1])) {
             self::$debug = $matches[1];
         }
@@ -64,18 +112,24 @@ class DebugBarSilverStripeCollector extends DebugBar\DataCollector\DataCollector
     {
         $name = $this->getName();
         return array(
-            "version" => [
+            'user' => array(
+                'icon' => 'user',
+                'tooltip' => 'Current member',
+                "map" => "$name.user",
+                "default" => "",
+            ),
+            "version" => array(
                 "icon" => "bullseye",
                 "tooltip" => "Version",
                 "map" => "$name.version",
                 "default" => ""
-            ],
-            "locale" => [
+            ),
+            "locale" => array(
                 "icon" => "flag",
                 "tooltip" => "Current locale",
                 "map" => "$name.locale",
                 "default" => "",
-            ],
+            ),
             "debug" => array(
                 "icon" => "list-alt",
                 "widget" => "PhpDebugBar.Widgets.ListWidget",
@@ -92,10 +146,28 @@ class DebugBarSilverStripeCollector extends DebugBar\DataCollector\DataCollector
                 "map" => "$name.session",
                 "default" => "{}"
             ),
+            "cookies" => array(
+                "icon" => "asterisk",
+                "widget" => "PhpDebugBar.Widgets.VariableListWidget",
+                "map" => "$name.cookies",
+                "default" => "{}"
+            ),
+            "parameters" => array(
+                "icon" => "arrow-right",
+                "widget" => "PhpDebugBar.Widgets.VariableListWidget",
+                "map" => "$name.parameters",
+                "default" => "{}"
+            ),
             "config" => array(
                 "icon" => "gear",
                 "widget" => "PhpDebugBar.Widgets.VariableListWidget",
                 "map" => "$name.config",
+                "default" => "{}"
+            ),
+            "requirements" => array(
+                "icon" => "file-o ",
+                "widget" => "PhpDebugBar.Widgets.ListWidget",
+                "map" => "$name.requirements",
                 "default" => "{}"
             ),
         );

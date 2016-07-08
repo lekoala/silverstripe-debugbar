@@ -35,7 +35,12 @@ class DebugBar extends Object
         // Add a custom logger that logs everything under the Messages tab
         SS_Log::add_writer(new DebugBarLogWriter(), SS_Log::DEBUG, '<=');
 
-        self::$debugbar = $debugbar       = new DebugBar\StandardDebugBar();
+        self::$debugbar = $debugbar       = new DebugBar\DebugBar();
+
+        $debugbar->addCollector(new DebugBar\DataCollector\PhpInfoCollector());
+        $debugbar->addCollector(new DebugBar\DataCollector\MessagesCollector());
+        $debugbar->addCollector(new DebugBar\DataCollector\TimeDataCollector());
+        $debugbar->addCollector(new DebugBar\DataCollector\MemoryCollector());
 
         if (!DB::get_conn()) {
             global $databaseConfig;
@@ -63,10 +68,9 @@ class DebugBar extends Object
         }
 
         ob_start(); // We buffer everything until we have called an action
-
         // Since we buffer everything, why not enable all dev options ?
-        if(self::config()->auto_debug) {
-            $_REQUEST['debug'] = true;
+        if (self::config()->auto_debug) {
+            $_REQUEST['debug']         = true;
             $_REQUEST['debug_request'] = true;
         }
 
