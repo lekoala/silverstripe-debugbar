@@ -8,6 +8,10 @@ This module will:
 - Log framework execution based on available hooks
 - Log database calls (if you use PDO)
 - Show all debug and debug_request infos from SilverStripe in a tab
+- Show all requirements
+- Show the current site config
+- Show request data based on SilverStripe classes (request parameters, session, cookies)
+- Show current locale, framework/cms version, current member
 
 Include the DebugBar in your template simply by calling $RenderDebugBar
 
