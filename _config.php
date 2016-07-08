@@ -9,7 +9,8 @@ if (!function_exists('d')) {
     function d($var)
     {
         ob_clean();
-        echo '<pre>'.__FILE__.':'.__LINE__.'</pre>';
+        $caller = Debug::caller();
+        echo '<pre>'.$caller['file'].':'.$caller['line'].'</pre>';
         dump($var);
         exit();
     }
