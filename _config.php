@@ -8,7 +8,7 @@ if (!function_exists('d')) {
 
     function d()
     {
-        ob_clean();
+        if (ob_get_contents()) ob_end_clean();
         $caller = Debug::caller();
         echo '<pre>'.$caller['file'].':'.$caller['line'].'</pre>';
         $args   = func_get_args();
