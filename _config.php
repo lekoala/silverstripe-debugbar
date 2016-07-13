@@ -10,10 +10,15 @@ if (!function_exists('d')) {
     {
         if (ob_get_contents()) ob_end_clean();
         $caller = Debug::caller();
-        echo '<pre>'.$caller['file'].':'.$caller['line'].'</pre>';
+        echo '<pre>'.$caller['file'].':'.$caller['line'].'</pre>' . "\n";
         $args   = func_get_args();
+        $isAjax = Director::is_ajax();
         foreach ($args as $arg) {
-            dump($arg);
+            if ($isAjax) {
+                print_r($arg);
+            } else {
+                dump($arg);
+            }
         }
         exit();
     }
