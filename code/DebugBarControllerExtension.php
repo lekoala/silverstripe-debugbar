@@ -110,6 +110,9 @@ class DebugBarControllerExtension extends Extension
 
     protected static function clearBuffer()
     {
+        if(!DebugBar::$bufferingEnabled) {
+            return;
+        }
         $buffer = ob_get_clean();
         if (!empty($buffer)) {
             unset($_REQUEST['debug_request']); // Disable further messages that we can't intercept

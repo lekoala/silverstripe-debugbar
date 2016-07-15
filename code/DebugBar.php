@@ -11,6 +11,12 @@ class DebugBar extends Object
     protected static $debugbar = null;
 
     /**
+     *
+     * @var bool
+     */
+    public static $bufferingEnabled = false;
+
+    /**
      * Get the Debug Bar instance
      *
      * @global array $databaseConfig
@@ -68,11 +74,15 @@ class DebugBar extends Object
             $debugbar->setStorage(new DebugBar\Storage\FileStorage(TEMP_FOLDER.'/debugbar'));
         }
 
-        ob_start(); // We buffer everything until we have called an action
         // Since we buffer everything, why not enable all dev options ?
         if (self::config()->auto_debug) {
             $_REQUEST['debug']         = true;
             $_REQUEST['debug_request'] = true;
+        }
+
+        if (isset($_REQUEST['debug']) || isset($_REQUEST['debug_request'])) {
+            self::$bufferingEnabled;
+            ob_start(); // We buffer everything until we have called an action
         }
 
         return $debugbar;
