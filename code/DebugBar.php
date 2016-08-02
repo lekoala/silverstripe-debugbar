@@ -82,7 +82,7 @@ class DebugBar extends Object
         }
 
         if (isset($_REQUEST['debug']) || isset($_REQUEST['debug_request'])) {
-            self::$bufferingEnabled;
+            self::$bufferingEnabled = true;
             ob_start(); // We buffer everything until we have called an action
         }
 
