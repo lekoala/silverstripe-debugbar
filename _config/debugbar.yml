@@ -11,6 +11,7 @@ Only:
 DebugBar:
   enable_storage: true
   auto_debug: false
+  ajax: false
 Director:
   rules:
     '__debugbar': 'DebugBarController'

@@ -28,8 +28,9 @@ class DebugBar extends Object
             return self::$debugbar;
         }
 
-        if (!Director::isDev() || !class_exists('DebugBar\\StandardDebugBar') || Director::is_cli() // Don't run in CLI mode
-            || strpos(self::getRequestUrl(), '/dev/build') === 0 // Don't run on dev build
+        if (!Director::isDev() || !class_exists('DebugBar\\StandardDebugBar') // Is not installed
+            || Director::is_cli() // Don't run in CLI mode
+            || strpos(self::getRequestUrl(), '/dev/') === 0 // Don't run on dev tools
             || strpos(self::getRequestUrl(), '/admin/') === 0 // Don't run in admin
         ) {
             self::$debugbar = false; // No need to check again

@@ -44,14 +44,19 @@ class DebugBarRequestFilter implements \RequestFilter
                                 SS_HTTPResponse $response, DataModel $model)
     {
         DebugBar::withDebugBar(function(DebugBar\DebugBar $debugbar) {
+            if (!Director::is_ajax()) {
+                return;
+            }
+            if (headers_sent()) {
+                return;
+            }
             // No need to inject data since the bar is not rendered in the cms
             $uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null;
             if ($uri && strpos($uri, '/admin/') === 0) {
                 return;
             }
-            if (Director::is_ajax() && !headers_sent()) {
+            if (DebugBar::config()->ajax) {
                 $debugbar->sendDataInHeaders();
-                return;
             }
         });
     }
