@@ -6,7 +6,7 @@ This module will:
 
 - Enable a custom log writer that will log all messages under the messages tab
 - Log framework execution based on available hooks
-- Log database calls (if you use PDO)
+- Log database calls
 - Show all debug and debug_request infos from SilverStripe in a tab
 - Show all requirements
 - Show the current site config
@@ -50,11 +50,6 @@ The "d" function helps you to quickly debug code. It will use the Symfony VarDum
 The "l" function helps you to log messages (and since they will appear in the Messages tab, it is very useful).
 
     l("My message")
-
-Todos
-==================
-
-- Make the database tab work with other drivers
 
 Compatibility
 ==================
