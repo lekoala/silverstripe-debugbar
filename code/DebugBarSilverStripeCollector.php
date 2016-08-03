@@ -60,6 +60,10 @@ class DebugBarSilverStripeCollector extends DebugBar\DataCollector\DataCollector
 
     public static function getCookieData()
     {
+        // On 3.1, Cookie::get_all does not exist
+        if(!method_exists('Cookie', 'get_all')) {
+            return $_COOKIE;
+        }
         return Cookie::get_all();
     }
 

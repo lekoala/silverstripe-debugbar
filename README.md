@@ -17,13 +17,6 @@ Include the DebugBar in your template simply by calling $RenderDebugBar
 
 Please note that jQuery is excluded from vendors and you are expected to include your own jQuery.
 
-Options
-==================
-
-enable_storage: Store all previous request in the temp folder (enabled by default)
-
-auto_debug: automatically collect debug and debug_request data (enabled by default) 
-
 Installation
 ==================
 
@@ -39,6 +32,25 @@ Or add:
 
 to require-dev in your composer.json file
 
+Options
+==================
+
+- enable_storage: Store all previous request in the temp folder (enabled by default)
+- auto_debug: automatically collect debug and debug_request data (disabled by default) 
+- ajax: automatically inject data in ajax requests (disabled by default, 
+since this makes the chrome request inspector very slow due to the large amount of header data)
+
+Helpers
+==================
+
+The "d" function helps you to quickly debug code. It will use the Symfony VarDumper to display the data.
+
+    d($myvar,$myothervar)
+
+The "l" function helps you to log messages (and since they will appear in the Messages tab, it is very useful).
+
+    l("My message")
+
 Todos
 ==================
 
@@ -46,7 +58,7 @@ Todos
 
 Compatibility
 ==================
-Tested with 3.3+
+Tested with 3.1+
 
 Maintainer
 ==================

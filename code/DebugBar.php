@@ -50,22 +50,25 @@ class DebugBar extends Object
         $debugbar->addCollector(new DebugBar\DataCollector\TimeDataCollector());
         $debugbar->addCollector(new DebugBar\DataCollector\MemoryCollector());
 
-        if (!DB::get_conn()) {
-            global $databaseConfig;
-            if ($databaseConfig) {
-                DB::connect($databaseConfig);
+        // On 3.1, PDO does not exist
+        if (method_exists('DB', 'get_conn')) {
+            if (!DB::get_conn()) {
+                global $databaseConfig;
+                if ($databaseConfig) {
+                    DB::connect($databaseConfig);
+                }
             }
-        }
 
-        // If we use PDO, we can log the queries
-        $connector = DB::get_connector();
-        if ($connector instanceof PDOConnector) {
-            $refObject    = new ReflectionObject($connector);
-            $refProperty  = $refObject->getProperty('pdoConnection');
-            $refProperty->setAccessible(true);
-            $traceablePdo = new DebugBar\DataCollector\PDO\TraceablePDO($refProperty->getValue($connector));
-            $refProperty->setValue($connector, $traceablePdo);
-            $debugbar->addCollector(new DebugBar\DataCollector\PDO\PDOCollector($traceablePdo));
+            // If we use PDO, we can log the queries
+            $connector = DB::get_connector();
+            if ($connector instanceof PDOConnector) {
+                $refObject    = new ReflectionObject($connector);
+                $refProperty  = $refObject->getProperty('pdoConnection');
+                $refProperty->setAccessible(true);
+                $traceablePdo = new DebugBar\DataCollector\PDO\TraceablePDO($refProperty->getValue($connector));
+                $refProperty->setValue($connector, $traceablePdo);
+                $debugbar->addCollector(new DebugBar\DataCollector\PDO\PDOCollector($traceablePdo));
+            }
         }
 
         // Add some SilverStripe specific infos
@@ -87,6 +90,31 @@ class DebugBar extends Object
         }
 
         return $debugbar;
+    }
+
+    /**
+     * Determine why DebugBar is disabled
+     * 
+     * @return string
+     */
+    public static function WhyDisabled()
+    {
+        if (!Director::isDev()) {
+            return 'Not in dev mode';
+        }
+        if (!class_exists('DebugBar\\StandardDebugBar')) {
+            return 'DebugBar is not installed';
+        }
+        if (Director::is_cli()) {
+            return 'In CLI mode';
+        }
+        if (strpos(self::getRequestUrl(), '/dev/') === 0) {
+            return 'Dev tools';
+        }
+        if (strpos(self::getRequestUrl(), '/admin/') === 0) {
+            return 'In admin';
+        }
+        return "I don't know why";
     }
 
     /**

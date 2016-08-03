@@ -8,13 +8,19 @@ if (!function_exists('d')) {
 
     function d()
     {
+        // Clean buffer that may be in the way
         if (ob_get_contents()) ob_end_clean();
+
+        // Display caller info
         $caller = Debug::caller();
-        echo '<pre>'.$caller['file'].':'.$caller['line'].'</pre>' . "\n";
+        echo '<pre>'.$caller['file'].':'.$caller['line'].'</pre>'."\n";
+
+        // Display data in a friendly manner
         $args   = func_get_args();
         $isAjax = Director::is_ajax();
         foreach ($args as $arg) {
-            if ($isAjax) {
+            // For ajax requests, a good old print_r is much better
+            if ($isAjax || !function_exists('dump')) {
                 print_r($arg);
             } else {
                 dump($arg);
