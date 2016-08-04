@@ -145,8 +145,33 @@ class DebugBarDatabaseProxy extends SS_Database
         $endtime   = microtime(true);
         $endmemory = memory_get_usage(true);
 
+
+        $rawsql = $sql;
+
+        $select = null;
+
+        // Sometimes, ugly spaces are there
+        $sql = preg_replace('/[[:blank:]]+/', ' ', trim($sql));
+
+        $shortsql = $sql;
+
+        // Sometimes, the select statement can be very long and unreadable
+        $matches = null;
+        preg_match_all('/SELECT(.+?) FROM/is', $sql, $matches);
+        $select  = empty($matches[1]) ? null : trim($matches[1][0]);
+        if (strlen($select) > 100) {
+            $shortsql = str_replace($select, '"ClickToShowFields"', $sql);
+        } else {
+            $select = null;
+        }
+
         $this->queries[] = [
+            'raw_query' => $rawsql,
+            'short_query' => $shortsql,
+            'select' => $select,
             'query' => $sql,
+            'start_time' => $starttime,
+            'end_time' => $endtime,
             'duration' => $endtime - $starttime,
             'memory' => $endmemory - $startmemory
         ];

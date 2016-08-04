@@ -83,15 +83,17 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
             $total_mem += $stmt['memory'];
 
             $stmts[] = array(
-                'sql' => $stmt['query'],
+                'sql' => $stmt['short_query'],
+                'params' => $stmt['select'] ? explode(',',$stmt['select']) : null,
                 'duration' => $stmt['duration'],
                 'duration_str' => $this->getDataFormatter()->formatDuration($stmt['duration']),
                 'memory' => $stmt['memory'],
                 'memory_str' => $this->getDataFormatter()->formatBytes($stmt['memory']),
             );
+
             if ($timeCollector !== null) {
-                $timeCollector->addMeasure($stmt->getSql(),
-                    $stmt->getStartTime(), $stmt->getEndTime());
+                $timeCollector->addMeasure($stmt['short_query'],
+                    $stmt['start_time'], $stmt['end_time']);
             }
         }
 
