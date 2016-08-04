@@ -61,7 +61,7 @@ class DebugBar extends Object
 
             // If we use PDO, we can log the queries
             $connector = DB::get_connector();
-            if ($connector instanceof PDOConnector) {
+            if (!self::config()->force_proxy && $connector instanceof PDOConnector) {
                 // Use a little bit of magic to replace the pdo instance
                 $refObject    = new ReflectionObject($connector);
                 $refProperty  = $refObject->getProperty('pdoConnection');
@@ -71,8 +71,8 @@ class DebugBar extends Object
 
                 $debugbar->addCollector(new DebugBar\DataCollector\PDO\PDOCollector($traceablePdo));
             } else {
-                DB::set_conn(new DebugBarDatabaseProxy(DB::get_conn()));
-                $debugbar->addCollector(new DebugBarDatabaseCollector);
+                DB::set_conn($db = new DebugBarDatabaseNewProxy(DB::get_conn()));
+                $debugbar->addCollector(new DebugBarDatabaseCollector($db));
             }
         } else {
             if (!DB::getConn()) {
@@ -81,8 +81,8 @@ class DebugBar extends Object
                     DB::connect($databaseConfig);
                 }
             }
-            DB::setConn(new DebugBarDatabaseProxy(DB::getConn()));
-            $debugbar->addCollector(new DebugBarDatabaseCollector);
+            DB::setConn($db = new DebugBarDatabaseProxy(DB::getConn()));
+            $debugbar->addCollector(new DebugBarDatabaseCollector($db));
         }
 
         // Add some SilverStripe specific infos

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * A proxy database to log queries (compatible with 3.1)
+ * A proxy database to log queries (compatible with 3.2+)
  *
  * @author Koala
  */
-class DebugBarDatabaseProxy extends SS_Database
+class DebugBarDatabaseNewProxy extends SS_Database
 {
     /** @var MySQLDatabase */
     protected $realConn;
@@ -21,8 +21,11 @@ class DebugBarDatabaseProxy extends SS_Database
      */
     public function __construct($realConn)
     {
-        $this->realConn = $realConn;
-        $this->queries  = [];
+        $this->realConn      = $realConn;
+        $this->connector     = $this->connector ? : $realConn->getConnector();
+        $this->schemaManager = $this->schemaManager ? : $realConn->getSchemaManager();
+        $this->queryBuilder  = $this->queryBuilder ? : $realConn->getQueryBuilder();
+        $this->queries       = [];
     }
 
     /**
@@ -123,6 +126,12 @@ class DebugBarDatabaseProxy extends SS_Database
         $starttime   = microtime(true);
         $startmemory = memory_get_usage(true);
 
+        $parameters = array();
+        if (is_array($sql)) {
+            $parameters = $sql[1];
+            $sql        = $sql[0];
+        }
+
         if (isset($_REQUEST['showqueries']) && Director::isDev()) {
             $starttime = microtime(true);
             $result    = $callback($sql);
@@ -130,9 +139,9 @@ class DebugBarDatabaseProxy extends SS_Database
             Debug::message("\n$sql\n{$endtime}s\n", false);
             $handle    = $result;
         } else {
+            /* @var $handle PDOQuery */
             $handle = $callback($sql);
         }
-
         $endtime   = microtime(true);
         $endmemory = memory_get_usage(true);
 
@@ -140,6 +149,19 @@ class DebugBarDatabaseProxy extends SS_Database
         $rawsql = $sql;
 
         $select = null;
+
+
+        // Prepared query are not so readable
+        if (!empty($parameters)) {
+            foreach ($parameters as $param) {
+                $pos = strpos($sql, '?');
+                if ($pos !== false) {
+                    $param = '"' . $param . '"';
+                    $sql = substr_replace($sql, $param, $pos, 1);
+                }
+            }
+        }
+
 
         // Sometimes, ugly spaces are there
         $sql = preg_replace('/[[:blank:]]+/', ' ', trim($sql));
@@ -226,7 +248,7 @@ class DebugBarDatabaseProxy extends SS_Database
         // Benchmark query
         $connector = $this->connector;
         return $this->benchmarkQuery(
-                $sql,
+                array($sql, $parameters),
                 function($sql) use($connector, $parameters, $errorLevel) {
                 return $connector->preparedQuery($sql, $parameters, $errorLevel);
             }
@@ -267,7 +289,8 @@ class DebugBarDatabaseProxy extends SS_Database
     }
 
     public function comparisonClause($field, $value, $exact = false,
-                                     $negate = false, $caseSensitive = false)
+                                     $negate = false, $caseSensitive = false,
+                                     $parameterised = false)
     {
         return call_user_func_array([$this->realConn, __FUNCTION__],
             func_get_args());
@@ -310,7 +333,7 @@ class DebugBarDatabaseProxy extends SS_Database
             func_get_args());
     }
 
-    protected function fieldList($table)
+    public function fieldList($table)
     {
         return call_user_func_array([$this->realConn, __FUNCTION__],
             func_get_args());
@@ -370,13 +393,13 @@ class DebugBarDatabaseProxy extends SS_Database
             func_get_args());
     }
 
-    protected function tableList()
+    public function tableList()
     {
         return call_user_func_array([$this->realConn, __FUNCTION__],
             func_get_args());
     }
 
-    public function transactionEnd()
+    public function transactionEnd($chain = false)
     {
         return call_user_func_array([$this->realConn, __FUNCTION__],
             func_get_args());
@@ -409,17 +432,20 @@ class DebugBarDatabaseProxy extends SS_Database
 
     public function getDatabaseServer()
     {
-        return "mysql";
+        return call_user_func_array([$this->realConn, __FUNCTION__],
+            func_get_args());
     }
 
     public function now()
     {
-        return 'NOW()';
+        return call_user_func_array([$this->realConn, __FUNCTION__],
+            func_get_args());
     }
 
     public function random()
     {
-        return 'RAND()';
+        return call_user_func_array([$this->realConn, __FUNCTION__],
+            func_get_args());
     }
 
     public function searchEngine($classesToSearch, $keywords, $start,
@@ -428,131 +454,13 @@ class DebugBarDatabaseProxy extends SS_Database
                                  $alternativeFileFilter = "",
                                  $invertedMatch = false)
     {
-        if (!class_exists('SiteTree'))
-                throw new Exception('MySQLDatabase->searchEngine() requires "SiteTree" class');
-        if (!class_exists('File'))
-                throw new Exception('MySQLDatabase->searchEngine() requires "File" class');
-
-        $keywords           = $this->escapeString($keywords);
-        $htmlEntityKeywords = htmlentities($keywords, ENT_NOQUOTES, 'UTF-8');
-
-        $extraFilters = array('SiteTree' => '', 'File' => '');
-
-        if ($booleanSearch) $boolean = "IN BOOLEAN MODE";
-
-        if ($extraFilter) {
-            $extraFilters['SiteTree'] = " AND $extraFilter";
-
-            if ($alternativeFileFilter)
-                    $extraFilters['File'] = " AND $alternativeFileFilter";
-            else $extraFilters['File'] = $extraFilters['SiteTree'];
-        }
-
-        // Always ensure that only pages with ShowInSearch = 1 can be searched
-        $extraFilters['SiteTree'] .= " AND ShowInSearch <> 0";
-
-        // File.ShowInSearch was added later, keep the database driver backwards compatible
-        // by checking for its existence first
-        $fields = $this->fieldList('File');
-        if (array_key_exists('ShowInSearch', $fields))
-                $extraFilters['File'] .= " AND ShowInSearch <> 0";
-
-        $limit = $start.", ".(int) $pageLength;
-
-        $notMatch = $invertedMatch ? "NOT " : "";
-        if ($keywords) {
-            $match['SiteTree'] = "
-				MATCH (Title, MenuTitle, Content, MetaDescription) AGAINST ('$keywords' $boolean)
-				+ MATCH (Title, MenuTitle, Content, MetaDescription) AGAINST ('$htmlEntityKeywords' $boolean)
-			";
-            $match['File']     = "MATCH (Filename, Title, Content) AGAINST ('$keywords' $boolean) AND ClassName = 'File'";
-
-            // We make the relevance search by converting a boolean mode search into a normal one
-            $relevanceKeywords           = str_replace(array('*', '+', '-'), '',
-                $keywords);
-            $htmlEntityRelevanceKeywords = str_replace(array('*', '+', '-'), '',
-                $htmlEntityKeywords);
-            $relevance['SiteTree']       = "MATCH (Title, MenuTitle, Content, MetaDescription) "
-                ."AGAINST ('$relevanceKeywords') "
-                ."+ MATCH (Title, MenuTitle, Content, MetaDescription) AGAINST ('$htmlEntityRelevanceKeywords')";
-            $relevance['File']           = "MATCH (Filename, Title, Content) AGAINST ('$relevanceKeywords')";
-        } else {
-            $relevance['SiteTree'] = $relevance['File']     = 1;
-            $match['SiteTree']     = $match['File']         = "1 = 1";
-        }
-
-        // Generate initial DataLists and base table names
-        $lists       = array();
-        $baseClasses = array('SiteTree' => '', 'File' => '');
-        foreach ($classesToSearch as $class) {
-            $lists[$class]       = DataList::create($class)->where($notMatch.$match[$class].$extraFilters[$class],
-                "");
-            $baseClasses[$class] = '"'.$class.'"';
-        }
-
-        $charset = Config::inst()->get('MySQLDatabase', 'charset');
-
-        // Make column selection lists
-        $select = array(
-            'SiteTree' => array(
-                "ClassName", "$baseClasses[SiteTree].\"ID\"", "ParentID",
-                "Title", "MenuTitle", "URLSegment", "Content",
-                "LastEdited", "Created",
-                "Filename" => "_{$charset}''", "Name" => "_{$charset}''",
-                "Relevance" => $relevance['SiteTree'], "CanViewType"
-            ),
-            'File' => array(
-                "ClassName", "$baseClasses[File].\"ID\"", "ParentID",
-                "Title", "MenuTitle" => "_{$charset}''", "URLSegment" => "_{$charset}''",
-                "Content",
-                "LastEdited", "Created",
-                "Filename", "Name",
-                "Relevance" => $relevance['File'], "CanViewType" => "NULL"
-            ),
-        );
-
-        // Process and combine queries
-        $querySQLs       = array();
-        $queryParameters = array();
-        $totalCount      = 0;
-        foreach ($lists as $class => $list) {
-            $query = $list->dataQuery()->query();
-
-            // There's no need to do all that joining
-            $query->setFrom(array(str_replace(array('"', '`'), '',
-                    $baseClasses[$class]) => $baseClasses[$class]));
-            $query->setSelect($select[$class]);
-            $query->setOrderBy(array());
-
-            $querySQLs[]     = $query->sql($parameters);
-            $queryParameters = array_merge($queryParameters, $parameters);
-
-            $totalCount += $query->unlimitedRowCount();
-        }
-        $fullQuery = implode(" UNION ", $querySQLs)." ORDER BY $sortBy LIMIT $limit";
-
-        // Get records
-        $records = $this->preparedQuery($fullQuery, $queryParameters);
-
-        $objects = array();
-
-        foreach ($records as $record) {
-            $objects[] = new $record['ClassName']($record);
-        }
-
-        $list = new PaginatedList(new ArrayList($objects));
-        $list->setPageStart($start);
-        $list->setPageLength($pageLength);
-        $list->setTotalItems($totalCount);
-
-        // The list has already been limited by the query above
-        $list->setLimitItems(false);
-
-        return $list;
+        return call_user_func_array([$this->realConn, __FUNCTION__],
+            func_get_args());
     }
 
     public function supportsCollations()
     {
-        return true;
+        return call_user_func_array([$this->realConn, __FUNCTION__],
+            func_get_args());
     }
 }

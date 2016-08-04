@@ -13,12 +13,15 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
     protected $timeCollector;
     protected $renderSqlWithParams = false;
     protected $sqlQuotationChar    = '<>';
+    protected $db;
 
     /**
      * @param TimeDataCollector $timeCollector
      */
-    public function __construct(TimeDataCollector $timeCollector = null)
+    public function __construct(SS_Database $db,
+                                TimeDataCollector $timeCollector = null)
     {
+        $this->db            = $db;
         $this->timeCollector = $timeCollector;
     }
 
@@ -78,18 +81,26 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
         $total_duration = 0;
         $total_mem      = 0;
 
-        foreach (DB::getConn()->getQueries() as $stmt) {
+        $failed = 0;
+
+        foreach ($this->db->getQueries() as $stmt) {
             $total_duration += $stmt['duration'];
             $total_mem += $stmt['memory'];
 
             $stmts[] = array(
                 'sql' => $stmt['short_query'],
-                'params' => $stmt['select'] ? explode(',',$stmt['select']) : null,
+                'row_count' => $stmt['rows'],
+                'params' => $stmt['select'] ? explode(',', $stmt['select']) : null,
                 'duration' => $stmt['duration'],
                 'duration_str' => $this->getDataFormatter()->formatDuration($stmt['duration']),
                 'memory' => $stmt['memory'],
                 'memory_str' => $this->getDataFormatter()->formatBytes($stmt['memory']),
+                'is_success' => $stmt['success'],
             );
+
+            if (!$stmt['success']) {
+                $failed++;
+            }
 
             if ($timeCollector !== null) {
                 $timeCollector->addMeasure($stmt['short_query'],
@@ -99,6 +110,7 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
 
         return array(
             'nb_statements' => count($stmts),
+            'nb_failed_statements' => $failed,
             'statements' => $stmts,
             'accumulated_duration' => $total_duration,
             'accumulated_duration_str' => $this->getDataFormatter()->formatDuration($total_duration),

@@ -39,6 +39,7 @@ Options
 - auto_debug: automatically collect debug and debug_request data (disabled by default) 
 - ajax: automatically inject data in ajax requests (disabled by default, 
 since this makes the chrome request inspector very slow due to the large amount of header data)
+- force_proxy: always use the database proxy instead of built in PDO collector (enabled by default)
 
 Helpers
 ==================

@@ -12,6 +12,7 @@ DebugBar:
   enable_storage: true
   auto_debug: false
   ajax: false
+  force_proxy: true
 Director:
   rules:
     '__debugbar': 'DebugBarController'
