@@ -17,6 +17,10 @@ Include the DebugBar in your template simply by calling $RenderDebugBar
 
 Please note that jQuery is excluded from vendors and you are expected to include your own jQuery.
 
+You can force the DebugBar to be disabled by defining
+
+    define('DEBUGBAR_DISABLE',true);
+
 Installation
 ==================
 
@@ -40,6 +44,7 @@ Options
 - ajax: automatically inject data in ajax requests (disabled by default, 
 since this makes the chrome request inspector very slow due to the large amount of header data)
 - force_proxy: always use the database proxy instead of built in PDO collector (enabled by default)
+- check_local_ip: do not display the DebugBar is not using a local ip (enabled by default)
 
 Helpers
 ==================

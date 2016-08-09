@@ -13,6 +13,7 @@ DebugBar:
   auto_debug: false
   ajax: false
   force_proxy: true
+  check_local_ip: true
 Director:
   rules:
     '__debugbar': 'DebugBarController'

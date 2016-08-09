@@ -28,10 +28,8 @@ class DebugBar extends Object
             return self::$debugbar;
         }
 
-        if (!Director::isDev() || !class_exists('DebugBar\\StandardDebugBar') // Is not installed
-            || Director::is_cli() // Don't run in CLI mode
-            || strpos(self::getRequestUrl(), '/dev/') === 0 // Don't run on dev tools
-            || strpos(self::getRequestUrl(), '/admin/') === 0 // Don't run in admin
+        if (!Director::isDev() || self::IsDisabled() || self::VendorNotInstalled()
+            || self::NotLocalIp() || Director::is_cli() || self::IsDevUrl() || self::IsAdminUrl()
         ) {
             self::$debugbar = false; // No need to check again
             return;
@@ -116,19 +114,59 @@ class DebugBar extends Object
         if (!Director::isDev()) {
             return 'Not in dev mode';
         }
-        if (!class_exists('DebugBar\\StandardDebugBar')) {
-            return 'DebugBar is not installed';
+        if (self::IsDisabled()) {
+            return 'Disabled by a constant';
+        }
+        if (self::VendorNotInstalled()) {
+            return 'DebugBar is not installed in vendors';
+        }
+        if (self::NotLocalIp()) {
+            return 'Not a local ip';
         }
         if (Director::is_cli()) {
             return 'In CLI mode';
         }
-        if (strpos(self::getRequestUrl(), '/dev/') === 0) {
+        if (self::IsDevUrl()) {
             return 'Dev tools';
         }
-        if (strpos(self::getRequestUrl(), '/admin/') === 0) {
+        if (self::IsAdminUrl()) {
             return 'In admin';
         }
         return "I don't know why";
+    }
+
+    public static function VendorNotInstalled()
+    {
+        return !class_exists('DebugBar\\StandardDebugBar');
+    }
+
+    public static function NotLocalIp()
+    {
+        if (!self::config()->check_local_ip) {
+            return false;
+        }
+        if (isset($_SERVER['REMOTE_ADDR'])) {
+            return $_SERVER['REMOTE_ADDR'] != '127.0.0.1';
+        }
+        return false;
+    }
+
+    public static function IsDisabled()
+    {
+        if (defined('DEBUGBAR_DISABLE')) {
+            return DEBUGBAR_DISABLE;
+        }
+        return false;
+    }
+
+    public static function IsDevUrl()
+    {
+        return strpos(self::getRequestUrl(), '/dev/') === 0;
+    }
+
+    public static function IsAdminUrl()
+    {
+        return strpos(self::getRequestUrl(), '/admin/') === 0;
     }
 
     /**
