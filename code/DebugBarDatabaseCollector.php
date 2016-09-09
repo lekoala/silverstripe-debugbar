@@ -108,8 +108,8 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
                 'memory' => $stmt['memory'],
                 'memory_str' => $this->getDataFormatter()->formatBytes($stmt['memory']),
                 'is_success' => $stmt['success'],
-                'connection' => $stmt['database'],
-                'stmt_id' => $stmt['stmt_id'],
+                'database' => $stmt['database'],
+                'source' => $stmt['source'],
             );
 
             if (!$stmt['success']) {

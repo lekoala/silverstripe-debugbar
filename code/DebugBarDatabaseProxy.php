@@ -169,8 +169,8 @@ class DebugBarDatabaseProxy extends SS_Database
             'memory' => $endmemory - $startmemory,
             'rows' => $handle ? $handle->numRecords() : null,
             'success' => $handle ? true : false,
-            'connection' => $this->currentDatabase(),
-            'stmt_id' => $this->findSource ? $this->findSource() : null
+            'database' => $this->currentDatabase(),
+            'source' => $this->findSource ? $this->findSource() : null
         ];
         return $handle;
     }

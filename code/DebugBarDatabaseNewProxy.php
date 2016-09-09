@@ -192,7 +192,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
             'rows' => $handle ? $handle->numRecords() : null,
             'success' => $handle ? true : false,
             'database' => $this->getSelectedDatabase(),
-            'stmt_id' => $this->findSource ? $this->findSource() : null
+            'source' => $this->findSource ? $this->findSource() : null
         ];
         return $handle;
     }
