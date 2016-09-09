@@ -69,6 +69,17 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
     }
 
     /**
+     * Explode comma separated elements not within parenthesis or quotes
+     *
+     * @param string $str
+     * @return array
+     */
+    protected static function explode_fields($str)
+    {
+        return preg_split("/(?![^(]*\)),/", $str);
+    }
+
+    /**
      * Collects data
      *
      * @param TimeDataCollector $timeCollector
@@ -90,7 +101,8 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
             $stmts[] = array(
                 'sql' => $stmt['short_query'],
                 'row_count' => $stmt['rows'],
-                'params' => $stmt['select'] ? explode(',', $stmt['select']) : null,
+                'params' => $stmt['select'] ? self::explode_fields($stmt['select'])
+                        : null,
                 'duration' => $stmt['duration'],
                 'duration_str' => $this->getDataFormatter()->formatDuration($stmt['duration']),
                 'memory' => $stmt['memory'],
