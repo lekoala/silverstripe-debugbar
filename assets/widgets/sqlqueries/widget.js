@@ -47,6 +47,9 @@
                     if (typeof (stmt.source) != 'undefined' && stmt.source) {
                         $('<span title="Source" />').addClass(csscls('source')).text(stmt.source).appendTo(li);
                     }
+                    if (typeof (stmt.stmt_id) != 'undefined' && stmt.stmt_id) {
+                        $('<span title="Prepared statement ID" />').addClass(csscls('stmt-id')).text(stmt.stmt_id).appendTo(li);
+                    }
                     if (stmt.database) {
                         $('<span title="Database" />').addClass(csscls('database')).text(stmt.database).appendTo(li);
                         li.addClass(csscls('database' + stmt.database));

@@ -47,6 +47,16 @@ since this makes the chrome request inspector very slow due to the large amount 
 - check_local_ip: do not display the DebugBar is not using a local ip (enabled by default)
 - find_source: trace which file generate the query  (enabled by default)
 
+Optimize your queries
+==================
+
+The Database tab will show you all queries made by the current request. If you have any
+duplicated queries, you will be able to filter them and see them easily to optimize and cache
+the data when possible.
+
+To help you in this task, it is recommended to leave the find_source option on. This
+will help you to identify what triggers the query and where to setup the cache appropriately.
+
 Helpers
 ==================
 

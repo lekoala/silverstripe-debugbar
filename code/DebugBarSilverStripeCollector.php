@@ -61,7 +61,7 @@ class DebugBarSilverStripeCollector extends DebugBar\DataCollector\DataCollector
     public static function getCookieData()
     {
         // On 3.1, Cookie::get_all does not exist
-        if(!method_exists('Cookie', 'get_all')) {
+        if (!method_exists('Cookie', 'get_all')) {
             return $_COOKIE;
         }
         return Cookie::get_all();
@@ -115,7 +115,8 @@ class DebugBarSilverStripeCollector extends DebugBar\DataCollector\DataCollector
     public function getWidgets()
     {
         $name = $this->getName();
-        return array(
+
+        $widgets = array(
             'user' => array(
                 'icon' => 'user',
                 'tooltip' => 'Current member',
@@ -133,16 +134,6 @@ class DebugBarSilverStripeCollector extends DebugBar\DataCollector\DataCollector
                 "tooltip" => "Current locale",
                 "map" => "$name.locale",
                 "default" => "",
-            ),
-            "debug" => array(
-                "icon" => "list-alt",
-                "widget" => "PhpDebugBar.Widgets.ListWidget",
-                "map" => "$name.debug",
-                "default" => "[]"
-            ),
-            "debug:badge" => array(
-                "map" => "$name.debugcount",
-                "default" => "null"
             ),
             "session" => array(
                 "icon" => "archive",
@@ -175,5 +166,21 @@ class DebugBarSilverStripeCollector extends DebugBar\DataCollector\DataCollector
                 "default" => "{}"
             ),
         );
+
+
+        if (!empty(self::$debug)) {
+            $widgets["debug"]       = array(
+                "icon" => "list-alt",
+                "widget" => "PhpDebugBar.Widgets.ListWidget",
+                "map" => "$name.debug",
+                "default" => "[]"
+            );
+            $widgets["debug:badge"] = array(
+                "map" => "$name.debugcount",
+                "default" => "null"
+            );
+        }
+
+        return $widgets;
     }
 }
