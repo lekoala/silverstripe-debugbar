@@ -9,6 +9,7 @@ class DebugBarDatabaseProxy extends SS_Database
 {
     /** @var MySQLDatabase */
     protected $realConn;
+    protected $findSource;
 
     /** @var array */
     protected $queries;
@@ -21,8 +22,9 @@ class DebugBarDatabaseProxy extends SS_Database
      */
     public function __construct($realConn)
     {
-        $this->realConn = $realConn;
-        $this->queries  = [];
+        $this->realConn   = $realConn;
+        $this->queries    = [];
+        $this->findSource = DebugBar::config()->find_source;
     }
 
     /**
@@ -167,8 +169,83 @@ class DebugBarDatabaseProxy extends SS_Database
             'memory' => $endmemory - $startmemory,
             'rows' => $handle ? $handle->numRecords() : null,
             'success' => $handle ? true : false,
+            'connection' => $this->currentDatabase(),
+            'stmt_id' => $this->findSource ? $this->findSource() : null
         ];
         return $handle;
+    }
+
+    protected function findSource()
+    {
+        $traces = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS | DEBUG_BACKTRACE_PROVIDE_OBJECT);
+
+        // Not relevant to determine source
+        $internalClasses = array('DB', 'SQLExpression', 'DataList', 'DataObject',
+            'DataQuery', 'SQLSelect', 'SS_Map', 'SS_ListDecorator', 'Object');
+
+        $viewerClasses = array('SSViewer_DataPresenter', 'SSViewer_Scope', 'SSViewer',
+            'ViewableData');
+
+        $sources = array();
+        foreach ($traces as $trace) {
+            $class    = isset($trace['class']) ? $trace['class'] : null;
+            $line     = isset($trace['line']) ? $trace['line'] : null;
+            $function = isset($trace['function']) ? $trace['function'] : null;
+            $type     = isset($trace['type']) ? $trace['type'] : '::';
+
+            /* @var $object SSViewer */
+            $object = isset($trace['object']) ? $trace['object'] : null;
+
+            if (!$class) {
+                continue;
+            }
+            if (strpos($class, 'DebugBar') === 0) {
+                continue;
+            }
+            if (in_array($class, $internalClasses)) {
+                continue;
+            }
+            if (in_array($class, $viewerClasses)) {
+                if ($function == 'includeGeneratedTemplate') {
+                    $templates = $object->templates();
+
+                    if (isset($templates['main'])) {
+                        $template = basename($templates['main']);
+                    } else {
+                        $keys     = array_keys($templates);
+                        $key      = reset($keys);
+                        $template = $key.':'.basename($templates[$key]);
+                    }
+                    $sources[] = $template;
+                }
+                continue;
+            }
+
+            $name = $class;
+            if ($function) {
+                $name .= $type.$function;
+            }
+            if ($line) {
+                $name .= ':'.$line;
+            }
+
+            $sources[] = $name;
+
+            if (count($sources) > 3) {
+                break;
+            }
+
+
+            // We reached a Controller, exit loop
+            if ($object && $object instanceof Controller) {
+                break;
+            }
+        }
+
+        if (empty($sources)) {
+            return 'Undefined source';
+        }
+        return implode(' > ', $sources);
     }
 
     /**
