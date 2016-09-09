@@ -57,7 +57,6 @@ class DebugBar extends Object
                 }
             }
 
-            // If we use PDO, we can log the queries
             $connector = DB::get_connector();
             if (!self::config()->force_proxy && $connector instanceof PDOConnector) {
                 // Use a little bit of magic to replace the pdo instance

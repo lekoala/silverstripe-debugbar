@@ -11,8 +11,6 @@ use DebugBar\DataCollector\TimeDataCollector;
 class DebugBarDatabaseCollector extends DataCollector implements Renderable, AssetProvider
 {
     protected $timeCollector;
-    protected $renderSqlWithParams = false;
-    protected $sqlQuotationChar    = '<>';
     protected $db;
 
     /**
@@ -26,43 +24,10 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
     }
 
     /**
-     * Renders the SQL of traced statements with params embeded
-     *
-     * @param boolean $enabled
-     */
-    public function setRenderSqlWithParams($enabled = true,
-                                           $quotationChar = '<>')
-    {
-        $this->renderSqlWithParams = $enabled;
-        $this->sqlQuotationChar    = $quotationChar;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isSqlRenderedWithParams()
-    {
-        return $this->renderSqlWithParams;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSqlQuotationChar()
-    {
-        return $this->sqlQuotationChar;
-    }
-
-    /**
      * @return array
      */
     public function collect()
     {
-        $data = array(
-            'nb_statements' => 0,
-            'statements' => array()
-        );
-
         $data = $this->collectData($this->timeCollector);
 
         return $data;
