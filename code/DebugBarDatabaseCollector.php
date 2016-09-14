@@ -59,9 +59,26 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
 
         $failed = 0;
 
-        foreach ($this->db->getQueries() as $stmt) {
+        $i = 0;
+        $queries = $this->db->getQueries();
+        $limit = DebugBar::config()->query_limit;
+
+        foreach ($queries as $stmt) {
+            $i++;
+
             $total_duration += $stmt['duration'];
             $total_mem += $stmt['memory'];
+
+            if (!$stmt['success']) {
+                $failed++;
+            }
+
+            if($limit && $i > $limit) {
+                $stmts[] = array(
+                    'sql' => "Only the first $limit queries are shown"
+                );
+                break;
+            }
 
             $stmts[] = array(
                 'sql' => $stmt['short_query'],
@@ -77,10 +94,6 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
                 'source' => $stmt['source'],
             );
 
-            if (!$stmt['success']) {
-                $failed++;
-            }
-
             if ($timeCollector !== null) {
                 $timeCollector->addMeasure($stmt['short_query'],
                     $stmt['start_time'], $stmt['end_time']);
@@ -88,7 +101,7 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
         }
 
         return array(
-            'nb_statements' => count($stmts),
+            'nb_statements' => count($queries),
             'nb_failed_statements' => $failed,
             'statements' => $stmts,
             'accumulated_duration' => $total_duration,

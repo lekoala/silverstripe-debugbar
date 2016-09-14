@@ -16,6 +16,7 @@ DebugBar:
   check_local_ip: true
   find_source: true
   enabled_in_admin: true
+  query_limit: 200
 Director:
   rules:
     '__debugbar': 'DebugBarController'

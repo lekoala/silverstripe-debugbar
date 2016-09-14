@@ -47,6 +47,7 @@ since this makes the chrome request inspector very slow due to the large amount 
 - check_local_ip: do not display the DebugBar is not using a local ip (enabled by default)
 - find_source: trace which file generate the query  (enabled by default)
 - enabled_in_admin: enable DebugBar in the admin (enabled by default)
+- query_limit: the number of queries to log (limited to 200 by default for performance reasons)
 
 Optimize your queries
 ==================
