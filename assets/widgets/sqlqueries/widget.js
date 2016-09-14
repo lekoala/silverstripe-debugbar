@@ -114,18 +114,6 @@
                 }
                 if (duplicate) {
                     t.append(", " + duplicate + " of which were duplicated");
-
-                    // Filter queries
-                    self.$toolbar.show();
-                    $('<a />')
-                            .addClass(csscls('filter'))
-                            .addClass(csscls('excluded'))
-                            .text('only duplicated queries')
-                            .attr('rel', '_duplicated')
-                            .on('click', function () {
-                                self.onFilterClick(this, 'sql-duplicate', true);
-                            })
-                            .appendTo(self.$toolbar);
                 }
                 if (data.accumulated_duration_str) {
                     this.$status.append($('<span title="Accumulated duration" />').addClass(csscls('duration')).text(data.accumulated_duration_str));
@@ -136,6 +124,8 @@
 
                 // We have multiple database or duplicates, show filters
                 if (filters.length > 1 || duplicate) {
+                    self.$toolbar.empty();
+                    
                     if (filters.length > 1) {
                         $.each(filters, function (index, value) {
                             $('<a />')
@@ -149,6 +139,18 @@
                         });
                     } else {
                         filters = [];
+                    }
+
+                    if (duplicate) {
+                        $('<a />')
+                                .addClass(csscls('filter'))
+                                .addClass(csscls('excluded'))
+                                .text('only duplicated queries')
+                                .attr('rel', '_duplicated')
+                                .on('click', function () {
+                                    self.onFilterClick(this, 'sql-duplicate', true);
+                                })
+                                .appendTo(self.$toolbar);
                     }
                     self.$toolbar.show();
                     self.$list.$el.css("margin-bottom", "24px");
