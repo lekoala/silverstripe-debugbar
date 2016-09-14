@@ -16,22 +16,28 @@ class DebugBarControllerExtension extends Extension
             if (!$timeData) {
                 return;
             }
-            if ($timeData->hasStartedMeasure('pre-request')) {
-                $timeData->stopMeasure("pre-request");
+            if ($timeData->hasStartedMeasure('pre_request')) {
+                $timeData->stopMeasure("pre_request");
             }
-            $timeData->startMeasure("init", "$class initialization");
+            $timeData->startMeasure("init", "$class init");
         });
     }
 
     public function onAfterInit()
     {
+        DebugBar::includeRequirements();
+
         $class = get_class($this->owner);
+
         DebugBar::withDebugBar(function(DebugBar\DebugBar $debugbar) use ($class) {
 
             /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugbar['time'];
             if (!$timeData) {
                 return;
+            }
+            if ($timeData->hasStartedMeasure("cms_init")) {
+                $timeData->stopMeasure("cms_init");
             }
             if ($timeData->hasStartedMeasure("init")) {
                 $timeData->stopMeasure("init");
@@ -56,12 +62,13 @@ class DebugBarControllerExtension extends Extension
 
         // If we don't have an action, getViewer will be called immediatly
         // If we have custom routes, request action is different than action
-        $allParams = $request->allParams();
+        $allParams     = $request->allParams();
         $requestAction = null;
-        if(!empty($allParams['Action'])) {
-              $requestAction = $allParams['Action'];
+        if (!empty($allParams['Action'])) {
+            $requestAction = $allParams['Action'];
         }
-        if (!$this->owner->hasMethod($action) || ($requestAction && $requestAction != $action)) {
+        if (!$this->owner->hasMethod($action) || ($requestAction && $requestAction
+            != $action)) {
             self::clearBuffer();
         }
 
@@ -110,7 +117,7 @@ class DebugBarControllerExtension extends Extension
 
     protected static function clearBuffer()
     {
-        if(!DebugBar::$bufferingEnabled) {
+        if (!DebugBar::$bufferingEnabled) {
             return;
         }
         $buffer = ob_get_clean();
@@ -118,43 +125,5 @@ class DebugBarControllerExtension extends Extension
             unset($_REQUEST['debug_request']); // Disable further messages that we can't intercept
             DebugBarSilverStripeCollector::setDebugData($buffer);
         }
-    }
-
-    public function RenderDebugBar()
-    {
-        $debugbar = DebugBar::getDebugBar();
-
-        if (!$debugbar) {
-            return;
-        }
-
-        $initialize = true;
-        if (Director::is_ajax()) {
-            $initialize = false;
-        }
-
-        $renderer = $debugbar->getJavascriptRenderer();
-
-        $renderer->setBasePath(DEBUGBAR_DIR.'/assets');
-        $renderer->setBaseUrl(basename(DEBUGBAR_DIR).'/assets');
-
-        $renderer->disableVendor('jquery');
-        $renderer->setEnableJqueryNoConflict(false);
-
-        if (DebugBar::config()->enable_storage) {
-            $renderer->setOpenHandlerUrl('__debugbar');
-        }
-
-        foreach ($renderer->getAssets('css') as $cssFile) {
-            Requirements::css($cssFile);
-        }
-        foreach ($renderer->getAssets('js') as $jsFile) {
-            Requirements::javascript($jsFile);
-        }
-
-        $script = $renderer->render($initialize);
-        $script = str_replace("<script type=\"text/javascript\">\n", "", $script);
-        $script = str_replace("\n</script>\n", "", $script);
-        Requirements::customScript($script, "PhpDebugBar");
     }
 }

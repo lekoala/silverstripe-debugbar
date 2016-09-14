@@ -13,7 +13,7 @@ This module will:
 - Show request data based on SilverStripe classes (request parameters, session, cookies)
 - Show current locale, framework/cms version, current member
 
-Include the DebugBar in your template simply by calling $RenderDebugBar
+The DebugBar is automatically injected into any html response through the request filter.
 
 Please note that jQuery is excluded from vendors and you are expected to include your own jQuery.
 
@@ -46,6 +46,7 @@ since this makes the chrome request inspector very slow due to the large amount 
 - force_proxy: always use the database proxy instead of built in PDO collector (enabled by default)
 - check_local_ip: do not display the DebugBar is not using a local ip (enabled by default)
 - find_source: trace which file generate the query  (enabled by default)
+- enabled_in_admin: enable DebugBar in the admin (enabled by default)
 
 Optimize your queries
 ==================
