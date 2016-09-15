@@ -117,14 +117,16 @@ class DebugBarSilverStripeCollector extends DebugBar\DataCollector\DataCollector
         $name = $this->getName();
 
         $userIcon = 'user';
+        $userText = 'Current member';
         if (Session::get('Masquerade.Old.loggedInAs')) {
             $userIcon = 'user-secret';
+            $userText = 'Masquerading as member';
         }
 
         $widgets = array(
             'user' => array(
                 'icon' => $userIcon,
-                'tooltip' => 'Current member',
+                'tooltip' => $userText,
                 "map" => "$name.user",
                 "default" => "",
             ),
