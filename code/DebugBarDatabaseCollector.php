@@ -59,9 +59,9 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
 
         $failed = 0;
 
-        $i = 0;
+        $i       = 0;
         $queries = $this->db->getQueries();
-        $limit = DebugBar::config()->query_limit;
+        $limit   = DebugBar::config()->query_limit;
 
         foreach ($queries as $stmt) {
             $i++;
@@ -73,7 +73,7 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
                 $failed++;
             }
 
-            if($limit && $i > $limit) {
+            if ($limit && $i > $limit) {
                 $stmts[] = array(
                     'sql' => "Only the first $limit queries are shown"
                 );
@@ -144,8 +144,10 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
     public function getAssets()
     {
         return array(
-            'css' => 'widgets/sqlqueries/widget.css',
-            'js' => 'widgets/sqlqueries/widget.js'
+            'base_path' => '/'.DEBUGBAR_DIR.'/javascript',
+            'base_url' => DEBUGBAR_DIR.'/javascript',
+            'css' => 'sqlqueries/widget.css',
+            'js' => 'sqlqueries/widget.js'
         );
     }
 }

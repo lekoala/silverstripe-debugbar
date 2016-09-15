@@ -1,6 +1,11 @@
 <?php
 
-class DebugBarSilverStripeCollector extends DebugBar\DataCollector\DataCollector implements DebugBar\DataCollector\Renderable
+use DebugBar\DataCollector\AssetProvider;
+use DebugBar\DataCollector\DataCollector;
+use DebugBar\DataCollector\Renderable;
+
+class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
+    AssetProvider
 {
     protected static $debug = array();
 
@@ -150,7 +155,7 @@ class DebugBarSilverStripeCollector extends DebugBar\DataCollector\DataCollector
             ),
             "cookies" => array(
                 "icon" => "asterisk",
-                "widget" => "PhpDebugBar.Widgets.VariableListWidget",
+                "widget" => "PhpDebugBar.Widgets.TableWidget",
                 "map" => "$name.cookies",
                 "default" => "{}"
             ),
@@ -189,5 +194,18 @@ class DebugBarSilverStripeCollector extends DebugBar\DataCollector\DataCollector
         }
 
         return $widgets;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAssets()
+    {
+        return array(
+            'base_path' => '/'.DEBUGBAR_DIR.'/javascript',
+            'base_url' => DEBUGBAR_DIR.'/javascript',
+            'css' => [],
+            'js' => 'widgets.js',
+        );
     }
 }

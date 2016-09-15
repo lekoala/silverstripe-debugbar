@@ -119,8 +119,9 @@ class DebugBar extends Object
 
         $renderer = $debugbar->getJavascriptRenderer();
 
+        // We don't need the true path since we are going to use Requirements API that appends the BASE_PATH
         $renderer->setBasePath(DEBUGBAR_DIR.'/assets');
-        $renderer->setBaseUrl(basename(DEBUGBAR_DIR).'/assets');
+        $renderer->setBaseUrl(DEBUGBAR_DIR.'/assets');
 
         $renderer->disableVendor('jquery');
         $renderer->setEnableJqueryNoConflict(false);
@@ -130,10 +131,11 @@ class DebugBar extends Object
         }
 
         foreach ($renderer->getAssets('css') as $cssFile) {
-            Requirements::css($cssFile);
+            Requirements::css(ltrim($cssFile,'/'));
         }
+
         foreach ($renderer->getAssets('js') as $jsFile) {
-            Requirements::javascript($jsFile);
+            Requirements::javascript(ltrim($jsFile,'/'));
         }
 
         self::$renderer = $renderer;
@@ -144,7 +146,7 @@ class DebugBar extends Object
         if (!self::$renderer) {
             return;
         }
-        
+
         $initialize = true;
         if (Director::is_ajax()) {
             $initialize = false;
