@@ -155,7 +155,7 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
             ),
             "cookies" => array(
                 "icon" => "asterisk",
-                "widget" => "PhpDebugBar.Widgets.TableWidget",
+                "widget" => "PhpDebugBar.Widgets.VariableListWidget",
                 "map" => "$name.cookies",
                 "default" => "{}"
             ),
