@@ -63,10 +63,10 @@ class DebugBarRequestFilter implements \RequestFilter
             }
             // Always enable in admin because everything is mostly loaded through ajax
             if (DebugBar::config()->ajax || DebugBar::IsAdminUrl()) {
-                $headers = json_decode(rawurldecode($debugbar->getDataAsHeaders()));
+                $headers = $debugbar->getDataAsHeaders();;
 
                 // Prevent throwing js errors in case header size is too large
-                if (!empty($headers['error'])) {
+                if (is_array($headers)) {
                     $debugbar->sendDataInHeaders();
                 }
             }
