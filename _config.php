@@ -9,6 +9,7 @@ if (!function_exists('d')) {
     /**
      * Helpful debugging helper. Pass as many arguments as you need.
      * Keep the call on one line to be able to output arguments names
+     * Without arguments, it will display all object instances in the backtrace
      * 
      * @return void
      */
@@ -17,11 +18,19 @@ if (!function_exists('d')) {
         // Clean buffer that may be in the way
         if (ob_get_contents()) ob_end_clean();
 
-        $bt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+        $bt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS | DEBUG_BACKTRACE_PROVIDE_OBJECT);
+
+        // Where is d called is the first element of the backtrace
+        $line = $bt[0]['line'];
+        $file = $bt[0]['file'];
 
         // Caller
-        $line = $bt[1]['line'];
-        $file = $bt[1]['file'];
+        $caller_function = isset($bt[1]['function']) ? $bt[1]['function'] : null;
+        $caller_class    = isset($bt[1]['class']) ? $bt[1]['class'] : null;
+        $caller          = $caller_function;
+        if ($caller_class) {
+            $caller = $caller_class.'::'.$caller_function;
+        }
 
         // Probably best to avoid using this in live websites...
         if (Director::isLive()) {
@@ -30,9 +39,9 @@ if (!function_exists('d')) {
         }
 
         // Arguments passed to the function are stored in matches
-        $src          = file($bt[0]["file"]);
-        $calling_line = $src[$bt[0]['line'] - 1];
-        preg_match("/d\((.+)\)/", $calling_line, $matches);
+        $src      = file($file);
+        $src_line = $src[$line - 1];
+        preg_match("/d\((.+)\)/", $src_line, $matches);
 
         // Find all arguments, ignore variables within parenthesis
         $arguments_name = [];
@@ -42,22 +51,43 @@ if (!function_exists('d')) {
         }
 
         $isAjax = Director::is_ajax();
-        $print  = function($v) use($isAjax) {
+        $print  = function() use($isAjax) {
+            $args = func_get_args();
             if (!$isAjax) {
-                $v = '<pre>'.$v.'</pre>';
+                echo '<pre>';
             }
-            if (is_string($v)) {
-                echo $v."\n";
-            } else {
-                echo print_r($v, true)."\n";
+            foreach ($args as $arg) {
+                if (!$arg) {
+                    continue;
+                }
+                if (is_string($arg)) {
+                    echo $arg;
+                } else {
+                    print_r($arg);
+                }
+                echo "\n";
+            }
+            if (!$isAjax) {
+                echo '</pre>';
             }
         };
 
         // Display caller info
-        $print("$file:$line\n");
+        $print("$file:$line", $caller);
 
         // Display data in a friendly manner
         $args = func_get_args();
+        if (empty($args)) {
+            $arguments_name = [];
+            foreach ($bt as $trace) {
+                if (!empty($trace['object'])) {
+                    $line = isset($trace['line']) ? $trace['line'] : 0;
+                    $function = isset($trace['function']) ? $trace['function'] : 'unknown function';
+                    $arguments_name[] = $function . ':' . $line;
+                    $args[]           = $trace['object'];
+                }
+            }
+        }
 
         $i = 0;
         foreach ($args as $arg) {

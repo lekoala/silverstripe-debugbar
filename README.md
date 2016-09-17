@@ -63,6 +63,9 @@ Helpers
 ==================
 
 The "d" function helps you to quickly debug code. It will use the Symfony VarDumper to display the data.
+In a ajax context, it will simply display the data is a simpler fashion.
+Called without argument, it will display all objects in the debug backtrace.
+It will display the variable name before its content to make it easy to identify data amongst multiple values
 
     d($myvar,$myothervar)
 
