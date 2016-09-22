@@ -51,7 +51,9 @@ if (!function_exists('d')) {
         }
 
         $isAjax = Director::is_ajax();
-        $print  = function() use($isAjax) {
+
+        // Display data nicely according to context
+        $print = function() use($isAjax) {
             $args = func_get_args();
             if (!$isAjax) {
                 echo '<pre>';
@@ -73,7 +75,7 @@ if (!function_exists('d')) {
         };
 
         // Display caller info
-        $print("$file:$line", $caller);
+        $print("$file:$line ($caller)");
 
         // Display data in a friendly manner
         $args = func_get_args();
@@ -81,9 +83,10 @@ if (!function_exists('d')) {
             $arguments_name = [];
             foreach ($bt as $trace) {
                 if (!empty($trace['object'])) {
-                    $line = isset($trace['line']) ? $trace['line'] : 0;
-                    $function = isset($trace['function']) ? $trace['function'] : 'unknown function';
-                    $arguments_name[] = $function . ':' . $line;
+                    $line             = isset($trace['line']) ? $trace['line'] : 0;
+                    $function         = isset($trace['function']) ? $trace['function']
+                            : 'unknown function';
+                    $arguments_name[] = $function.':'.$line;
                     $args[]           = $trace['object'];
                 }
             }
@@ -94,7 +97,7 @@ if (!function_exists('d')) {
             // Echo name of the variable
             $len = 20;
             if (isset($arguments_name[$i])) {
-                $print($arguments_name[$i]);
+                $print('Value for: '.$arguments_name[$i]);
                 $len = strlen($arguments_name[$i]);
             }
             // For ajax requests, a good old print_r is much better
