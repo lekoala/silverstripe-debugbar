@@ -199,6 +199,9 @@ class DebugBarDatabaseProxy extends SS_Database
             if (!$class) {
                 continue;
             }
+            if ($function && $function == '{closure}') {
+                continue;
+            }
             if (strpos($class, 'DebugBar') === 0) {
                 continue;
             }
