@@ -147,6 +147,12 @@ class DebugBar extends Object
             return;
         }
 
+        // Requirements may have been cleared (CMS iframes...)
+        $js = Requirements::backend()->get_javascript();
+        if(!in_array('debugbar/assets/debugbar.js', $js)) {
+            return;
+        }
+
         $initialize = true;
         if (Director::is_ajax()) {
             $initialize = false;
