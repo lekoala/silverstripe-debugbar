@@ -28,7 +28,7 @@ class DebugBarRequestFilter implements \RequestFilter
                 $timeData->addMeasure("framework boot",
                     $_SERVER['REQUEST_TIME_FLOAT'], microtime(true));
             }
-            $timeData->startMeasure("pre-request", "pre request");
+            $timeData->startMeasure("pre_request", "pre request");
         });
     }
 
@@ -43,21 +43,40 @@ class DebugBarRequestFilter implements \RequestFilter
     public function postRequest(SS_HTTPRequest $request,
                                 SS_HTTPResponse $response, DataModel $model)
     {
-        DebugBar::withDebugBar(function(DebugBar\DebugBar $debugbar) {
-            if (!Director::is_ajax()) {
+        $debugbar = DebugBar::getDebugBar();
+        if (!$debugbar) {
+            return;
+        }
+
+        $script = DebugBar::renderDebugBar();
+
+        // If the bar is not renderable, return early
+        if (!$script) {
+            return;
+        }
+
+        // Inject init script into the HTML response
+        $body = $response->getBody();
+        if (strpos($body, '</body>') !== false) {
+            $body = str_replace('</body>', $script.'</body>', $body);
+            $response->setBody($body);
+        }
+
+        // Ajax support
+        if (Director::is_ajax() && !headers_sent()) {
+            if (DebugBar::IsAdminUrl() && !DebugBar::config()->enabled_in_admin) {
                 return;
             }
-            if (headers_sent()) {
-                return;
+            // Always enable in admin because everything is mostly loaded through ajax
+            if (DebugBar::config()->ajax || DebugBar::IsAdminUrl()) {
+                $headers = $debugbar->getDataAsHeaders();
+                ;
+
+                // Prevent throwing js errors in case header size is too large
+                if (is_array($headers)) {
+                    $debugbar->sendDataInHeaders();
+                }
             }
-            // No need to inject data since the bar is not rendered in the cms
-            $uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null;
-            if ($uri && strpos($uri, '/admin/') === 0) {
-                return;
-            }
-            if (DebugBar::config()->ajax) {
-                $debugbar->sendDataInHeaders();
-            }
-        });
+        }
     }
 }

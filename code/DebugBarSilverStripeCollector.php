@@ -1,8 +1,14 @@
 <?php
 
-class DebugBarSilverStripeCollector extends DebugBar\DataCollector\DataCollector implements DebugBar\DataCollector\Renderable
+use DebugBar\DataCollector\AssetProvider;
+use DebugBar\DataCollector\DataCollector;
+use DebugBar\DataCollector\Renderable;
+
+class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
+    AssetProvider
 {
     protected static $debug = array();
+    protected static $controller;
 
     public function collect()
     {
@@ -39,11 +45,10 @@ class DebugBarSilverStripeCollector extends DebugBar\DataCollector\DataCollector
 
     public static function getRequestParameters()
     {
-        if (!Controller::has_curr()) {
+        if (!self::$controller) {
             return array();
         }
-        $ctrl    = Controller::curr();
-        $request = $ctrl->getRequest();
+        $request = self::$controller->getRequest();
 
         $p = array();
         foreach ($request->getVars() as $k => $v) {
@@ -107,19 +112,31 @@ class DebugBarSilverStripeCollector extends DebugBar\DataCollector\DataCollector
         }
     }
 
+    public function setController($controller)
+    {
+        self::$controller = $controller;
+    }
+
     public function getName()
     {
-        return 'silvertripe';
+        return 'silverstripe';
     }
 
     public function getWidgets()
     {
         $name = $this->getName();
 
+        $userIcon = 'user';
+        $userText = 'Current member';
+        if (Session::get('Masquerade.Old.loggedInAs')) {
+            $userIcon = 'user-secret';
+            $userText = 'Masquerading as member';
+        }
+
         $widgets = array(
             'user' => array(
-                'icon' => 'user',
-                'tooltip' => 'Current member',
+                'icon' => $userIcon,
+                'tooltip' => $userText,
                 "map" => "$name.user",
                 "default" => "",
             ),
@@ -182,5 +199,18 @@ class DebugBarSilverStripeCollector extends DebugBar\DataCollector\DataCollector
         }
 
         return $widgets;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAssets()
+    {
+        return array(
+            'base_path' => '/'.DEBUGBAR_DIR.'/javascript',
+            'base_url' => DEBUGBAR_DIR.'/javascript',
+            'css' => [],
+            'js' => 'widgets.js',
+        );
     }
 }

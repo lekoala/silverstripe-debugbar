@@ -17,6 +17,11 @@ class DebugBar extends Object
     public static $bufferingEnabled = false;
 
     /**
+     * @var DebugBar\JavascriptRenderer
+     */
+    protected static $renderer = null;
+
+    /**
      * Get the Debug Bar instance
      *
      * @global array $databaseConfig
@@ -29,7 +34,8 @@ class DebugBar extends Object
         }
 
         if (!Director::isDev() || self::IsDisabled() || self::VendorNotInstalled()
-            || self::NotLocalIp() || Director::is_cli() || self::IsDevUrl() || self::IsAdminUrl()
+            || self::NotLocalIp() || Director::is_cli() || self::IsDevUrl() || (self::IsAdminUrl()
+            && !self::config()->enabled_in_admin)
         ) {
             self::$debugbar = false; // No need to check again
             return;
@@ -103,6 +109,59 @@ class DebugBar extends Object
         return $debugbar;
     }
 
+    public static function includeRequirements()
+    {
+        $debugbar = self::getDebugBar();
+
+        if (!$debugbar) {
+            return;
+        }
+
+        $renderer = $debugbar->getJavascriptRenderer();
+
+        // We don't need the true path since we are going to use Requirements API that appends the BASE_PATH
+        $renderer->setBasePath(DEBUGBAR_DIR.'/assets');
+        $renderer->setBaseUrl(DEBUGBAR_DIR.'/assets');
+
+        $renderer->disableVendor('jquery');
+        $renderer->setEnableJqueryNoConflict(false);
+
+        if (DebugBar::config()->enable_storage) {
+            $renderer->setOpenHandlerUrl('__debugbar');
+        }
+
+        foreach ($renderer->getAssets('css') as $cssFile) {
+            Requirements::css(ltrim($cssFile,'/'));
+        }
+
+        foreach ($renderer->getAssets('js') as $jsFile) {
+            Requirements::javascript(ltrim($jsFile,'/'));
+        }
+
+        self::$renderer = $renderer;
+    }
+
+    public static function renderDebugBar()
+    {
+        if (!self::$renderer) {
+            return;
+        }
+
+        // Requirements may have been cleared (CMS iframes...)
+        $js = Requirements::backend()->get_javascript();
+        if(!in_array('debugbar/assets/debugbar.js', $js)) {
+            return;
+        }
+
+        $initialize = true;
+        if (Director::is_ajax()) {
+            $initialize = false;
+        }
+
+        $script = self::$renderer->render($initialize);
+        return $script;
+    }
+
     /**
      * Determine why DebugBar is disabled
      * 
@@ -128,7 +187,7 @@ class DebugBar extends Object
         if (self::IsDevUrl()) {
             return 'Dev tools';
         }
-        if (self::IsAdminUrl()) {
+        if (self::IsAdminUrl() && !self::config()->enabled_in_admin) {
             return 'In admin';
         }
         return "I don't know why";
