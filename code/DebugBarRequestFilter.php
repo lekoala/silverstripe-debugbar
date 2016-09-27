@@ -67,10 +67,13 @@ class DebugBarRequestFilter implements \RequestFilter
             if (DebugBar::IsAdminUrl() && !DebugBar::config()->enabled_in_admin) {
                 return;
             }
+            // Skip anything that is not a GET request
+            if(!$request->isGET()) {
+                return;
+            }
             // Always enable in admin because everything is mostly loaded through ajax
             if (DebugBar::config()->ajax || DebugBar::IsAdminUrl()) {
                 $headers = $debugbar->getDataAsHeaders();
-                ;
 
                 // Prevent throwing js errors in case header size is too large
                 if (is_array($headers)) {
