@@ -121,6 +121,9 @@ if (!function_exists('l')) {
 
     function l($message, $priority = 7, $extras = null)
     {
+        if (!is_string($message)) {
+            $message = json_encode((array) $message);
+        }
         SS_Log::log($message, $priority, $extras);
     }
 }
