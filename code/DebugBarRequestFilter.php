@@ -48,9 +48,15 @@ class DebugBarRequestFilter implements \RequestFilter
             return;
         }
 
-        // Inject init script into the response
         $script = DebugBar::renderDebugBar();
-        $body   = $response->getBody();
+
+        // If the bar is not renderable, return early
+        if (!$script) {
+            return;
+        }
+
+        // Inject init script into the HTML response
+        $body = $response->getBody();
         if (strpos($body, '</body>') !== false) {
             $body = str_replace('</body>', $script.'</body>', $body);
             $response->setBody($body);
@@ -61,9 +67,13 @@ class DebugBarRequestFilter implements \RequestFilter
             if (DebugBar::IsAdminUrl() && !DebugBar::config()->enabled_in_admin) {
                 return;
             }
+            // Skip anything that is not a GET request
+            if(!$request->isGET()) {
+                return;
+            }
             // Always enable in admin because everything is mostly loaded through ajax
             if (DebugBar::config()->ajax || DebugBar::IsAdminUrl()) {
-                $headers = $debugbar->getDataAsHeaders();;
+                $headers = $debugbar->getDataAsHeaders();
 
                 // Prevent throwing js errors in case header size is too large
                 if (is_array($headers)) {

@@ -221,6 +221,9 @@ class DebugBarDatabaseNewProxy extends SS_Database
             if (!$class) {
                 continue;
             }
+            if ($function && $function == '{closure}') {
+                continue;
+            }
             if (strpos($class, 'DebugBar') === 0) {
                 continue;
             }
@@ -231,14 +234,19 @@ class DebugBarDatabaseNewProxy extends SS_Database
                 if ($function == 'includeGeneratedTemplate') {
                     $templates = $object->templates();
 
+                    $template = null;
                     if (isset($templates['main'])) {
                         $template = basename($templates['main']);
                     } else {
-                        $keys     = array_keys($templates);
-                        $key      = reset($keys);
-                        $template = $key.':'.basename($templates[$key]);
+                        $keys = array_keys($templates);
+                        $key  = reset($keys);
+                        if (isset($templates[$key])) {
+                            $template = $key.':'.basename($templates[$key]);
+                        }
                     }
-                    $sources[] = $template;
+                    if ($template) {
+                        $sources[] = $template;
+                    }
                 }
                 continue;
             }
