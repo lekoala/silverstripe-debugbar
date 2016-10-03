@@ -61,21 +61,34 @@
                         li.addClass(csscls('error'));
                         li.append($('<span />').addClass(csscls('error')).text("[" + stmt.error_code + "] " + stmt.error_message));
                     }
-                    if (stmt.params && !$.isEmptyObject(stmt.params)) {
-                        var table = $('<table><tr><th colspan="2">Params</th></tr></table>').addClass(csscls('params')).appendTo(li);
-                        for (var key in stmt.params) {
-                            if (typeof stmt.params[key] !== 'function') {
-                                table.append('<tr><td class="' + csscls('name') + '">' + key + '</td><td class="' + csscls('value') +
-                                        '">' + stmt.params[key] + '</td></tr>');
-                            }
+                    if (stmt.params) {
+                        var table;
+                        switch ($.type(stmt.params)) {
+                            case 'string':
+                                table = $('<div class="' + csscls('queryinfo') + '">' + stmt.params + '</div>').appendTo(li);
+                                break;
+                            case 'array':
+                                if ($.isEmptyObject(stmt.params)) {
+                                    break;
+                                }
+                                table = $('<table><tr><th colspan="2">Params</th></tr></table>').addClass(csscls('params')).appendTo(li);
+                                for (var key in stmt.params) {
+                                    if (typeof stmt.params[key] !== 'function') {
+                                        table.append('<tr><td class="' + csscls('name') + '">' + key + '</td><td class="' + csscls('value') +
+                                                '">' + stmt.params[key] + '</td></tr>');
+                                    }
+                                }
+                                break;
                         }
-                        li.css('cursor', 'pointer').click(function () {
-                            if (table.is(':visible')) {
-                                table.hide();
-                            } else {
-                                table.show();
-                            }
-                        });
+                        if (table) {
+                            li.css('cursor', 'pointer').click(function () {
+                                if (table.is(':visible')) {
+                                    table.hide();
+                                } else {
+                                    table.show();
+                                }
+                            });
+                        }
                     }
                 }
             });
@@ -125,7 +138,7 @@
                 // We have multiple database or duplicates, show filters
                 if (filters.length > 1 || duplicate) {
                     self.$toolbar.empty();
-                    
+
                     if (filters.length > 1) {
                         $.each(filters, function (index, value) {
                             $('<a />')

@@ -132,6 +132,7 @@ class DebugBarDatabaseProxy extends SS_Database
             Debug::message("\n$sql\n{$endtime}s\n", false);
             $handle    = $result;
         } else {
+            /* @var $handle MySQLQuery  */
             $handle = $callback($sql);
         }
 

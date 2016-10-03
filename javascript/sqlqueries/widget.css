@@ -56,6 +56,16 @@ div.phpdebugbar-widgets-sqlqueries span.phpdebugbar-widgets-stmt-id:before {
 div.phpdebugbar-widgets-sqlqueries span.phpdebugbar-widgets-source:before {
     content: "\f126";
 }
+div.phpdebugbar-widgets-sqlqueries div.phpdebugbar-widgets-queryinfo {
+    display: none;
+    width: 70%;
+    margin: 10px;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #ddd;
+    font-family: monospace;
+    border-collapse: collapse;
+}
 div.phpdebugbar-widgets-sqlqueries table.phpdebugbar-widgets-params {
     display: none;
     width: 70%;
