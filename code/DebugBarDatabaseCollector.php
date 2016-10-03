@@ -63,6 +63,10 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
         $queries = $this->db->getQueries();
         $limit   = DebugBar::config()->query_limit;
 
+        $showDb = count(array_unique(array_map(function($stmt) {
+                        return $stmt['database'];
+                    }, $queries))) > 1;
+
         foreach ($queries as $stmt) {
             $i++;
 
@@ -89,7 +93,7 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
                 'memory' => $stmt['memory'],
                 'memory_str' => $this->getDataFormatter()->formatBytes($stmt['memory']),
                 'is_success' => $stmt['success'],
-                'database' => $stmt['database'],
+                'database' => $showDb ? $stmt['database'] : null,
                 'source' => $stmt['source'],
             );
 
