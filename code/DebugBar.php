@@ -22,6 +22,12 @@ class DebugBar extends Object
     protected static $renderer = null;
 
     /**
+     *
+     * @var bool
+     */
+    protected static $showQueries = false;
+
+    /**
      * Get the Debug Bar instance
      *
      * @global array $databaseConfig
@@ -54,6 +60,11 @@ class DebugBar extends Object
         $debugbar->addCollector(new DebugBar\DataCollector\TimeDataCollector());
         $debugbar->addCollector(new DebugBar\DataCollector\MemoryCollector());
 
+        if (isset($_REQUEST['showqueries'])) {
+            self::$showQueries = true;
+            unset($_REQUEST['showqueries']);
+        }
+
         // On 3.1, PDO does not exist
         if (method_exists('DB', 'get_conn')) {
             if (!DB::get_conn()) {
@@ -75,6 +86,7 @@ class DebugBar extends Object
                 $debugbar->addCollector(new DebugBar\DataCollector\PDO\PDOCollector($traceablePdo));
             } else {
                 DB::set_conn($db = new DebugBarDatabaseNewProxy(DB::get_conn()));
+                $db->setShowQueries(self::$showQueries);
                 $debugbar->addCollector(new DebugBarDatabaseCollector($db));
             }
         } else {
@@ -85,6 +97,7 @@ class DebugBar extends Object
                 }
             }
             DB::setConn($db = new DebugBarDatabaseProxy(DB::getConn()));
+            $db->setShowQueries(self::$showQueries);
             $debugbar->addCollector(new DebugBarDatabaseCollector($db));
         }
 
@@ -101,12 +114,16 @@ class DebugBar extends Object
             $_REQUEST['debug_request'] = true;
         }
 
-        if (isset($_REQUEST['debug']) || isset($_REQUEST['debug_request'])) {
+        if (isset($_REQUEST['debug']) || isset($_REQUEST['debug_request']) || self::$showQueries) {
             self::$bufferingEnabled = true;
             ob_start(); // We buffer everything until we have called an action
         }
 
         return $debugbar;
+    }
+
+    public static function showQueries() {
+        return self::$showQueries;
     }
 
     public static function includeRequirements()
@@ -131,11 +148,11 @@ class DebugBar extends Object
         }
 
         foreach ($renderer->getAssets('css') as $cssFile) {
-            Requirements::css(ltrim($cssFile,'/'));
+            Requirements::css(ltrim($cssFile, '/'));
         }
 
         foreach ($renderer->getAssets('js') as $jsFile) {
-            Requirements::javascript(ltrim($jsFile,'/'));
+            Requirements::javascript(ltrim($jsFile, '/'));
         }
 
         self::$renderer = $renderer;
@@ -149,7 +166,7 @@ class DebugBar extends Object
 
         // Requirements may have been cleared (CMS iframes...)
         $js = Requirements::backend()->get_javascript();
-        if(!in_array('debugbar/assets/debugbar.js', $js)) {
+        if (!in_array('debugbar/assets/debugbar.js', $js)) {
             return;
         }
 

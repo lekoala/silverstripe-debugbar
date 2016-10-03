@@ -48,6 +48,11 @@ class DebugBarRequestFilter implements \RequestFilter
             return;
         }
 
+        // All queries have been displayed
+        if(DebugBar::showQueries()) {
+            exit();
+        }
+
         $script = DebugBar::renderDebugBar();
 
         // If the bar is not renderable, return early

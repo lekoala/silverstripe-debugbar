@@ -16,6 +16,7 @@ class DebugBarDatabaseProxy extends SS_Database
     protected $connector;
     protected $schemaManager;
     protected $queryBuilder;
+    protected $showQueries = false;
 
     /**
      * @param MySQLDatabase $realConn
@@ -25,6 +26,17 @@ class DebugBarDatabaseProxy extends SS_Database
         $this->realConn   = $realConn;
         $this->queries    = [];
         $this->findSource = DebugBar::config()->find_source;
+    }
+
+    public function getShowQueries()
+    {
+        return $this->showQueries;
+    }
+
+    public function setShowQueries($showQueries)
+    {
+        $this->showQueries = $showQueries;
+        return $this;
     }
 
     /**
@@ -125,12 +137,41 @@ class DebugBarDatabaseProxy extends SS_Database
         $starttime   = microtime(true);
         $startmemory = memory_get_usage(true);
 
-        if (isset($_REQUEST['showqueries']) && Director::isDev()) {
-            $starttime = microtime(true);
-            $result    = $callback($sql);
-            $endtime   = round(microtime(true) - $starttime, 4);
-            Debug::message("\n$sql\n{$endtime}s\n", false);
-            $handle    = $result;
+        if ($this->showQueries && Director::isDev()) {
+            $starttime    = microtime(true);
+            $result       = $callback($sql);
+            $endtime      = round(microtime(true) - $starttime, 4);
+            
+            $formattedSql = JdornSqlFormatter::format($sql);
+            $rows         = $result->numRecords();
+            echo '<pre>The following query took <b>'.$endtime.'</b>s an returned <b>'.$rows."</b> row(s) \n";
+            echo 'Triggered by: <i>'.$this->findSource().'</i></pre>';
+            echo $formattedSql;
+
+            $results = iterator_to_array($result);
+            if ($rows > 0) {
+
+                if ($rows == 1) {
+                    dump($results[0]);
+                } else {
+                    $linearValues = count($results[0]);
+                    if ($linearValues) {
+                        dump(implode(',',(array_map(function($item) {
+                                return $item[key($item)];
+                            }, $results))));
+                    } else {
+                        if ($rows < 20) {
+                            dump($results);
+                        } else {
+                            dump("Too many results to display");
+                        }
+                    }
+                }
+            }
+            echo '<hr/>';
+
+            $handle = $result;
+            $handle->rewind(); // Rewind the results
         } else {
             /* @var $handle MySQLQuery  */
             $handle = $callback($sql);
