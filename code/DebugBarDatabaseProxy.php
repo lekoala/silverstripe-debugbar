@@ -182,7 +182,7 @@ class DebugBarDatabaseProxy extends SS_Database
 
         // Not relevant to determine source
         $internalClasses = array('DB', 'SQLExpression', 'DataList', 'DataObject',
-            'DataQuery', 'SQLSelect', 'SS_Map', 'SS_ListDecorator', 'Object');
+            'DataQuery', 'SQLSelect', 'SQLQuery', 'SS_Map', 'SS_ListDecorator', 'Object');
 
         $viewerClasses = array('SSViewer_DataPresenter', 'SSViewer_Scope', 'SSViewer',
             'ViewableData');
