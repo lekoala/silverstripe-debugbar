@@ -17,6 +17,7 @@ class DebugBarRequestFilter implements \RequestFilter
     public function preRequest(SS_HTTPRequest $request, Session $session,
                                DataModel $model)
     {
+
         DebugBar::withDebugBar(function(DebugBar\DebugBar $debugbar) {
             /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugbar['time'];
@@ -49,7 +50,7 @@ class DebugBarRequestFilter implements \RequestFilter
         }
 
         // All queries have been displayed
-        if(DebugBar::showQueries()) {
+        if (DebugBar::getShowQueries()) {
             exit();
         }
 
@@ -73,7 +74,7 @@ class DebugBarRequestFilter implements \RequestFilter
                 return;
             }
             // Skip anything that is not a GET request
-            if(!$request->isGET()) {
+            if (!$request->isGET()) {
                 return;
             }
             // Always enable in admin because everything is mostly loaded through ajax

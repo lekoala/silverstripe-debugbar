@@ -55,15 +55,17 @@ class DebugBar extends Object
 
         self::$debugbar = $debugbar       = new DebugBar\DebugBar();
 
+        if (isset($_REQUEST['showqueries'])) {
+            self::setShowQueries(true);
+            echo "The queries above have been run before we started DebugBar";
+            echo '<hr>' ;
+            unset($_REQUEST['showqueries']);
+        }
+
         $debugbar->addCollector(new DebugBar\DataCollector\PhpInfoCollector());
         $debugbar->addCollector(new DebugBar\DataCollector\MessagesCollector());
         $debugbar->addCollector(new DebugBar\DataCollector\TimeDataCollector());
         $debugbar->addCollector(new DebugBar\DataCollector\MemoryCollector());
-
-        if (isset($_REQUEST['showqueries'])) {
-            self::$showQueries = true;
-            unset($_REQUEST['showqueries']);
-        }
 
         // On 3.1, PDO does not exist
         if (method_exists('DB', 'get_conn')) {
@@ -86,7 +88,7 @@ class DebugBar extends Object
                 $debugbar->addCollector(new DebugBar\DataCollector\PDO\PDOCollector($traceablePdo));
             } else {
                 DB::set_conn($db = new DebugBarDatabaseNewProxy(DB::get_conn()));
-                $db->setShowQueries(self::$showQueries);
+                $db->setShowQueries(self::getShowQueries());
                 $debugbar->addCollector(new DebugBarDatabaseCollector($db));
             }
         } else {
@@ -97,7 +99,7 @@ class DebugBar extends Object
                 }
             }
             DB::setConn($db = new DebugBarDatabaseProxy(DB::getConn()));
-            $db->setShowQueries(self::$showQueries);
+            $db->setShowQueries(self::getShowQueries());
             $debugbar->addCollector(new DebugBarDatabaseCollector($db));
         }
 
@@ -114,7 +116,7 @@ class DebugBar extends Object
             $_REQUEST['debug_request'] = true;
         }
 
-        if (isset($_REQUEST['debug']) || isset($_REQUEST['debug_request']) || self::$showQueries) {
+        if (isset($_REQUEST['debug']) || isset($_REQUEST['debug_request'])) {
             self::$bufferingEnabled = true;
             ob_start(); // We buffer everything until we have called an action
         }
@@ -122,8 +124,14 @@ class DebugBar extends Object
         return $debugbar;
     }
 
-    public static function showQueries() {
+    public static function getShowQueries()
+    {
         return self::$showQueries;
+    }
+
+    public static function setShowQueries($showQueries)
+    {
+        self::$showQueries = $showQueries;
     }
 
     public static function includeRequirements()
