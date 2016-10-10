@@ -58,7 +58,7 @@ class DebugBar extends Object
         if (isset($_REQUEST['showqueries'])) {
             self::setShowQueries(true);
             echo "The queries above have been run before we started DebugBar";
-            echo '<hr>' ;
+            echo '<hr>';
             unset($_REQUEST['showqueries']);
         }
 
@@ -229,7 +229,7 @@ class DebugBar extends Object
             return false;
         }
         if (isset($_SERVER['REMOTE_ADDR'])) {
-            return $_SERVER['REMOTE_ADDR'] != '127.0.0.1';
+            return in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1', '1']);
         }
         return false;
     }
