@@ -96,9 +96,10 @@ if (!function_exists('d')) {
         foreach ($args as $arg) {
             // Echo name of the variable
             $len = 20;
-            if (isset($arguments_name[$i])) {
-                $print('Value for: '.$arguments_name[$i]);
-                $len = strlen($arguments_name[$i]);
+            $varname = isset($arguments_name[$i]) ? $arguments_name[$i]: null;
+            if($varname) {
+                $print('Value for: '.$varname);
+                $len = strlen($varname);
             }
             // For ajax requests, a good old print_r is much better
             if ($isAjax || !function_exists('dump')) {
@@ -108,7 +109,11 @@ if (!function_exists('d')) {
                     $print(str_repeat('-', $len));
                 }
             } else {
-                dump($arg);
+                if ($varname && is_string($arg) && strpos($varname,'sql') !== false) {
+                    echo JdornSqlFormatter::format($arg);
+                } else {
+                    dump($arg);
+                }
             }
             $i++;
         }
