@@ -74,12 +74,16 @@ In a ajax context, it will simply display the data is a simpler fashion.
 Called without argument, it will display all objects in the debug backtrace.
 It will display the variable name before its content to make it easy to identify data amongst multiple values
 
-    d($myvar,$myothervar)
+    d($myvar,$myothervar);
+    
+Any call to "d" with "sql" in the name of the variable will output a properly formatted sql query, for instance:
+
+    d($MyDataList->sql());
 
 The "l" function helps you to log messages (and since they will appear in the Messages tab, it is very useful).
 
-    l("My message")
-    
+    l("My message");
+
 A quick note about the Security Page
 ==================
 
@@ -96,7 +100,7 @@ as well.
 
 Third party
 ==================
-- [SqlFormatter](https://github.com/jdorn/sql-formatter)
+- (SqlFormatted)[https://github.com/jdorn/sql-formatter]
 
 Compatibility
 ==================
