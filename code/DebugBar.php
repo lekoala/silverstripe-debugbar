@@ -142,6 +142,11 @@ class DebugBar extends Object
             return;
         }
 
+        // Already called
+        if(self::$renderer) {
+            return;
+        }
+
         $renderer = $debugbar->getJavascriptRenderer();
 
         // We don't need the true path since we are going to use Requirements API that appends the BASE_PATH
@@ -172,12 +177,11 @@ class DebugBar extends Object
             return;
         }
 
-        // Requirements may have been cleared (CMS iframes...)
+        // Requirements may have been cleared (CMS iframes...) or not set (Security...)
         $js = Requirements::backend()->get_javascript();
         if (!in_array('debugbar/assets/debugbar.js', $js)) {
             return;
         }
-
         $initialize = true;
         if (Director::is_ajax()) {
             $initialize = false;

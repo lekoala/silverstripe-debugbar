@@ -28,7 +28,11 @@ class DebugBarControllerExtension extends Extension
 
     public function onAfterInit()
     {
-        DebugBar::includeRequirements();
+        // On Security, onAfterInit is called before init() in your Page method
+        // jQuery is most likely not included yet
+        if (!$this->owner instanceof Security) {
+            DebugBar::includeRequirements();
+        }
 
         $class = get_class($this->owner);
 

@@ -15,9 +15,10 @@ This module will:
 
 The DebugBar is automatically injected into any html response through the request filter.
 
-Please note that jQuery is excluded from vendors and you are expected to include your own jQuery.
+Please note that jQuery is excluded from vendors and you are expected to include
+your own jQuery version in Page::init().
 
-You can force the DebugBar to be disabled by defining
+You can force the DebugBar to be disabled by defining:
 
     define('DEBUGBAR_DISABLE',true);
 
@@ -59,6 +60,12 @@ the data when possible.
 To help you in this task, it is recommended to leave the find_source option on. This
 will help you to identify what triggers the query and where to setup the cache appropriately.
 
+If you are using ?showqueries=1, you will also see that the usage has been optimised to display
+all queries nicely and their result on the page.
+
+Also remember that if you use the "d" helper (see below), any string variable with "sql" in the name
+will be formatted as a sql string.
+
 Helpers
 ==================
 
@@ -72,6 +79,24 @@ It will display the variable name before its content to make it easy to identify
 The "l" function helps you to log messages (and since they will appear in the Messages tab, it is very useful).
 
     l("My message")
+    
+A quick note about the Security Page
+==================
+
+DebugBarControllerExtension will include for you all the required assets for DebugBar.
+This is done "onAfterInit". However, on Security, "onAfterInit" is called before your init()
+method in Page.php.
+Since you need to add jQuery before DebugBar, this may be a problem, and therefore, requirements
+will NOT be included on Security.
+
+If you want DebugBar to work on Security, make sure to include all relevant requirements by
+calling DebugBar::includeRequirements(); after you include jQuery. When DebugBar is disabled, 
+this call will be ignored. Also note that any subsequent call to this method will be ignored
+as well.
+
+Third party
+==================
+- [SqlFormatter](https://github.com/jdorn/sql-formatter)
 
 Compatibility
 ==================
