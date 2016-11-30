@@ -135,12 +135,11 @@ class DebugBarDatabaseNewProxy extends SS_Database
      * @param callable $callback Callback to execute code
      * @return mixed Result of query
      */
-    protected function benchmarkQuery($sql, $callback)
+    protected function benchmarkQuery($sql, $callback, $parameters = array())
     {
         $starttime   = microtime(true);
         $startmemory = memory_get_usage(true);
 
-        $parameters = array();
         if (is_array($sql)) {
             $parameters = $sql[1];
             $sql        = $sql[0];
