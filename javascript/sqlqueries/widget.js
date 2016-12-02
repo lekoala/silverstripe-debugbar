@@ -10,11 +10,18 @@
      */
     var SQLQueriesWidget = PhpDebugBar.Widgets.SQLQueriesWidget = PhpDebugBar.Widget.extend({
         className: csscls('sqlqueries'),
-        onFilterClick: function (el, cls, reverse) {
+        onFilterClick: function (el, cls, reverse, reset) {
+            if (typeof (reset) != 'undefined' && reset) {
+                this.$toolbar.find(csscls('.filter')).each(function () {
+                    $(this).addClass(csscls('excluded'));
+                });
+                this.$list.$el.find("li").show();
+            }
+
             $(el).toggleClass(csscls('excluded'));
 
             var excludedLabels = [];
-            this.$toolbar.find(csscls('.filter') + csscls('.excluded')).each(function () {
+            this.$toolbar.find(csscls('filter') + csscls('excluded')).each(function () {
                 excludedLabels.push(this.rel);
             });
 
@@ -158,12 +165,25 @@
                         $('<a />')
                                 .addClass(csscls('filter'))
                                 .addClass(csscls('excluded'))
-                                .text('only duplicated queries')
+                                .text('all duplicates')
                                 .attr('rel', '_duplicated')
                                 .on('click', function () {
                                     self.onFilterClick(this, 'sql-duplicate', true);
                                 })
                                 .appendTo(self.$toolbar);
+
+                        for (var i = duplicate; i > 0; i--) {
+                            $('<a />')
+                                    .addClass(csscls('filter'))
+                                    .addClass(csscls('excluded'))
+                                    .data('duplicate', i)
+                                    .text('duplicates ' + i)
+                                    .attr('rel', '_duplicated_' + i)
+                                    .on('click', function () {
+                                        self.onFilterClick(this, 'sql-duplicate-' + $(this).data('duplicate'), true, true);
+                                    })
+                                    .appendTo(self.$toolbar);
+                        }
                     }
                     self.$toolbar.show();
                     self.$list.$el.css("margin-bottom", "24px");
