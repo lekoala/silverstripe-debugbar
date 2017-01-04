@@ -10,13 +10,19 @@ if (!function_exists('d')) {
      * Helpful debugging helper. Pass as many arguments as you need.
      * Keep the call on one line to be able to output arguments names
      * Without arguments, it will display all object instances in the backtrace
-     * 
+     *
      * @return void
      */
     function d()
     {
+        $args = func_get_args();
+
+        // Prevent exit in test session
+        $isTest = !empty($args) && $args[0] instanceof SapphireTest;
+
         // Clean buffer that may be in the way
-        if (ob_get_contents()) ob_end_clean();
+        if (!$isTest && ob_get_contents())
+            ob_end_clean();
 
         $bt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS | DEBUG_BACKTRACE_PROVIDE_OBJECT);
 
@@ -26,10 +32,10 @@ if (!function_exists('d')) {
 
         // Caller
         $caller_function = isset($bt[1]['function']) ? $bt[1]['function'] : null;
-        $caller_class    = isset($bt[1]['class']) ? $bt[1]['class'] : null;
-        $caller          = $caller_function;
+        $caller_class = isset($bt[1]['class']) ? $bt[1]['class'] : null;
+        $caller = $caller_function;
         if ($caller_class) {
-            $caller = $caller_class.'::'.$caller_function;
+            $caller = $caller_class . '::' . $caller_function;
         }
 
         // Probably best to avoid using this in live websites...
@@ -39,15 +45,14 @@ if (!function_exists('d')) {
         }
 
         // Arguments passed to the function are stored in matches
-        $src      = file($file);
+        $src = file($file);
         $src_line = $src[$line - 1];
         preg_match("/d\((.+)\)/", $src_line, $matches);
 
         // Find all arguments, ignore variables within parenthesis
         $arguments_name = [];
         if (!empty($matches[1])) {
-            $arguments_name = array_map('trim',
-                preg_split("/(?![^(]*\)),/", $matches[1]));
+            $arguments_name = array_map('trim', preg_split("/(?![^(]*\)),/", $matches[1]));
         }
 
         $isAjax = Director::is_ajax();
@@ -78,16 +83,14 @@ if (!function_exists('d')) {
         $print("$file:$line ($caller)");
 
         // Display data in a friendly manner
-        $args = func_get_args();
         if (empty($args)) {
             $arguments_name = [];
             foreach ($bt as $trace) {
                 if (!empty($trace['object'])) {
-                    $line             = isset($trace['line']) ? $trace['line'] : 0;
-                    $function         = isset($trace['function']) ? $trace['function']
-                            : 'unknown function';
-                    $arguments_name[] = $function.':'.$line;
-                    $args[]           = $trace['object'];
+                    $line = isset($trace['line']) ? $trace['line'] : 0;
+                    $function = isset($trace['function']) ? $trace['function'] : 'unknown function';
+                    $arguments_name[] = $function . ':' . $line;
+                    $args[] = $trace['object'];
                 }
             }
         }
@@ -96,9 +99,9 @@ if (!function_exists('d')) {
         foreach ($args as $arg) {
             // Echo name of the variable
             $len = 20;
-            $varname = isset($arguments_name[$i]) ? $arguments_name[$i]: null;
-            if($varname) {
-                $print('Value for: '.$varname);
+            $varname = isset($arguments_name[$i]) ? $arguments_name[$i] : null;
+            if ($varname) {
+                $print('Value for: ' . $varname);
                 $len = strlen($varname);
             }
             // For ajax requests, a good old print_r is much better
@@ -109,7 +112,7 @@ if (!function_exists('d')) {
                     $print(str_repeat('-', $len));
                 }
             } else {
-                if ($varname && is_string($arg) && strpos($varname,'sql') !== false) {
+                if ($varname && is_string($arg) && strpos($varname, 'sql') !== false) {
                     echo JdornSqlFormatter::format($arg);
                 } else {
                     dump($arg);
@@ -117,7 +120,10 @@ if (!function_exists('d')) {
             }
             $i++;
         }
-        exit();
+
+        if (!$isTest) {
+            exit();
+        }
     }
 }
 

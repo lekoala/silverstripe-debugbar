@@ -5,6 +5,7 @@
  */
 class DebugBar extends Object
 {
+
     /**
      * @var DebugBar\StandardDebugBar
      */
@@ -39,12 +40,32 @@ class DebugBar extends Object
             return self::$debugbar;
         }
 
-        if (!Director::isDev() || self::IsDisabled() || self::VendorNotInstalled()
-            || self::NotLocalIp() || Director::is_cli() || self::IsDevUrl() || (self::IsAdminUrl()
-            && !self::config()->enabled_in_admin)
+        if (!Director::isDev() || self::IsDisabled() || self::VendorNotInstalled() || self::NotLocalIp() || Director::is_cli() || self::IsDevUrl() || (self::IsAdminUrl() && !self::config()->enabled_in_admin)
         ) {
             self::$debugbar = false; // No need to check again
             return;
+        }
+
+        self::initDebugBar();
+
+        if (!self::$debugbar) {
+            throw new Exception("Failed to initialize the DebugBar");
+        }
+
+        return self::$debugbar;
+    }
+
+    /**
+     * Init the debugbar instance
+     *
+     * @global array $databaseConfig
+     * @return DebugBar\StandardDebugBar
+     */
+    public static function initDebugBar()
+    {
+        // Prevent multiple inits
+        if (self::$debugbar) {
+            return self::$debugbar;
         }
 
         // Add the controller extension programmaticaly because it might not be added properly through yml
@@ -53,7 +74,7 @@ class DebugBar extends Object
         // Add a custom logger that logs everything under the Messages tab
         SS_Log::add_writer(new DebugBarLogWriter(), SS_Log::DEBUG, '<=');
 
-        self::$debugbar = $debugbar       = new DebugBar\DebugBar();
+        self::$debugbar = $debugbar = new DebugBar\DebugBar();
 
         if (isset($_REQUEST['showqueries'])) {
             self::setShowQueries(true);
@@ -79,8 +100,8 @@ class DebugBar extends Object
             $connector = DB::get_connector();
             if (!self::config()->force_proxy && $connector instanceof PDOConnector) {
                 // Use a little bit of magic to replace the pdo instance
-                $refObject    = new ReflectionObject($connector);
-                $refProperty  = $refObject->getProperty('pdoConnection');
+                $refObject = new ReflectionObject($connector);
+                $refProperty = $refObject->getProperty('pdoConnection');
                 $refProperty->setAccessible(true);
                 $traceablePdo = new DebugBar\DataCollector\PDO\TraceablePDO($refProperty->getValue($connector));
                 $refProperty->setValue($connector, $traceablePdo);
@@ -107,12 +128,12 @@ class DebugBar extends Object
         $debugbar->addCollector(new DebugBarSilverStripeCollector());
 
         if (self::config()->enable_storage) {
-            $debugbar->setStorage(new DebugBar\Storage\FileStorage(TEMP_FOLDER.'/debugbar'));
+            $debugbar->setStorage(new DebugBar\Storage\FileStorage(TEMP_FOLDER . '/debugbar'));
         }
 
         // Since we buffer everything, why not enable all dev options ?
         if (self::config()->auto_debug) {
-            $_REQUEST['debug']         = true;
+            $_REQUEST['debug'] = true;
             $_REQUEST['debug_request'] = true;
         }
 
@@ -122,6 +143,11 @@ class DebugBar extends Object
         }
 
         return $debugbar;
+    }
+
+    public static function clearDebugBar()
+    {
+        self::$debugbar = null;
     }
 
     public static function getShowQueries()
@@ -143,15 +169,15 @@ class DebugBar extends Object
         }
 
         // Already called
-        if(self::$renderer) {
+        if (self::$renderer) {
             return;
         }
 
         $renderer = $debugbar->getJavascriptRenderer();
 
         // We don't need the true path since we are going to use Requirements API that appends the BASE_PATH
-        $renderer->setBasePath(DEBUGBAR_DIR.'/assets');
-        $renderer->setBaseUrl(DEBUGBAR_DIR.'/assets');
+        $renderer->setBasePath(DEBUGBAR_DIR . '/assets');
+        $renderer->setBaseUrl(DEBUGBAR_DIR . '/assets');
 
         $renderer->disableVendor('jquery');
         $renderer->setEnableJqueryNoConflict(false);
@@ -193,7 +219,7 @@ class DebugBar extends Object
 
     /**
      * Determine why DebugBar is disabled
-     * 
+     *
      * @return string
      */
     public static function WhyDisabled()
@@ -258,7 +284,7 @@ class DebugBar extends Object
 
     /**
      * Avoid triggering data collection for open handler
-     * 
+     *
      * @return boolean
      */
     public static function IsDebugBarRequest()
@@ -271,7 +297,7 @@ class DebugBar extends Object
 
     /**
      * Get request url
-     * 
+     *
      * @return string
      */
     public static function getRequestUrl()
