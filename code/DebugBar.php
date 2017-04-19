@@ -147,7 +147,7 @@ class DebugBar extends Object
 
     public static function clearDebugBar()
     {
-        self::$debugbar = null;
+        self::$debugbar = false;
     }
 
     public static function getShowQueries()
