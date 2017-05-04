@@ -132,7 +132,7 @@ class DebugBarDatabaseProxy extends SS_Database
      * @param callable $callback Callback to execute code
      * @return mixed Result of query
      */
-    protected function benchmarkQuery($sql, $callback)
+    protected function benchmarkQuery($sql, $callback, $parameters = array())
     {
         $starttime   = microtime(true);
         $startmemory = memory_get_usage(true);
@@ -141,7 +141,7 @@ class DebugBarDatabaseProxy extends SS_Database
             $starttime    = microtime(true);
             $result       = $callback($sql);
             $endtime      = round(microtime(true) - $starttime, 4);
-            
+
             $formattedSql = JdornSqlFormatter::format($sql);
             $rows         = $result->numRecords();
             echo '<pre>The following query took <b>'.$endtime.'</b>s an returned <b>'.$rows."</b> row(s) \n";
@@ -157,8 +157,8 @@ class DebugBarDatabaseProxy extends SS_Database
                     $linearValues = count($results[0]);
                     if ($linearValues) {
                         dump(implode(',',(array_map(function($item) {
-                                return $item[key($item)];
-                            }, $results))));
+                            return $item[key($item)];
+                        }, $results))));
                     } else {
                         if ($rows < 20) {
                             dump($results);
@@ -315,7 +315,7 @@ class DebugBarDatabaseProxy extends SS_Database
         if (!$this->connector) {
             $self = $this;
             return $this->benchmarkQuery($sql,
-                    function($sql) use($self, $errorLevel) {
+                function($sql) use($self, $errorLevel) {
                     return $self->oldQuery($sql, $errorLevel);
                 });
         }
@@ -323,8 +323,8 @@ class DebugBarDatabaseProxy extends SS_Database
         // Benchmark query
         $connector = $this->connector;
         return $this->benchmarkQuery(
-                $sql,
-                function($sql) use($connector, $errorLevel) {
+            $sql,
+            function($sql) use($connector, $errorLevel) {
                 return $connector->query($sql, $errorLevel);
             }
         );
@@ -353,8 +353,8 @@ class DebugBarDatabaseProxy extends SS_Database
         // Benchmark query
         $connector = $this->connector;
         return $this->benchmarkQuery(
-                $sql,
-                function($sql) use($connector, $parameters, $errorLevel) {
+            $sql,
+            function($sql) use($connector, $parameters, $errorLevel) {
                 return $connector->preparedQuery($sql, $parameters, $errorLevel);
             }
         );
@@ -386,15 +386,15 @@ class DebugBarDatabaseProxy extends SS_Database
     }
 
     public function alterTable($table, $newFields = null, $newIndexes = null,
-                               $alteredFields = null, $alteredIndexes = null,
-                               $alteredOptions = null, $advancedOptions = null)
+        $alteredFields = null, $alteredIndexes = null,
+        $alteredOptions = null, $advancedOptions = null)
     {
         return call_user_func_array([$this->realConn, __FUNCTION__],
             func_get_args());
     }
 
     public function comparisonClause($field, $value, $exact = false,
-                                     $negate = false, $caseSensitive = false)
+        $negate = false, $caseSensitive = false, $parameterised = false)
     {
         return call_user_func_array([$this->realConn, __FUNCTION__],
             func_get_args());
@@ -413,7 +413,7 @@ class DebugBarDatabaseProxy extends SS_Database
     }
 
     public function createTable($table, $fields = null, $indexes = null,
-                                $options = null, $advancedOptions = null)
+        $options = null, $advancedOptions = null)
     {
         return call_user_func_array([$this->realConn, __FUNCTION__],
             func_get_args());
@@ -437,7 +437,7 @@ class DebugBarDatabaseProxy extends SS_Database
             func_get_args());
     }
 
-    protected function fieldList($table)
+    public function fieldList($table)
     {
         return call_user_func_array([$this->realConn, __FUNCTION__],
             func_get_args());
@@ -497,13 +497,13 @@ class DebugBarDatabaseProxy extends SS_Database
             func_get_args());
     }
 
-    protected function tableList()
+    public function tableList()
     {
         return call_user_func_array([$this->realConn, __FUNCTION__],
             func_get_args());
     }
 
-    public function transactionEnd()
+    public function transactionEnd($chain = false)
     {
         return call_user_func_array([$this->realConn, __FUNCTION__],
             func_get_args());
@@ -522,7 +522,7 @@ class DebugBarDatabaseProxy extends SS_Database
     }
 
     public function transactionStart($transaction_mode = false,
-                                     $session_characteristics = false)
+        $session_characteristics = false)
     {
         return call_user_func_array([$this->realConn, __FUNCTION__],
             func_get_args());
@@ -550,15 +550,15 @@ class DebugBarDatabaseProxy extends SS_Database
     }
 
     public function searchEngine($classesToSearch, $keywords, $start,
-                                 $pageLength, $sortBy = "Relevance DESC",
-                                 $extraFilter = "", $booleanSearch = false,
-                                 $alternativeFileFilter = "",
-                                 $invertedMatch = false)
+        $pageLength, $sortBy = "Relevance DESC",
+        $extraFilter = "", $booleanSearch = false,
+        $alternativeFileFilter = "",
+        $invertedMatch = false)
     {
         if (!class_exists('SiteTree'))
-                throw new Exception('MySQLDatabase->searchEngine() requires "SiteTree" class');
+            throw new Exception('MySQLDatabase->searchEngine() requires "SiteTree" class');
         if (!class_exists('File'))
-                throw new Exception('MySQLDatabase->searchEngine() requires "File" class');
+            throw new Exception('MySQLDatabase->searchEngine() requires "File" class');
 
         $keywords           = $this->escapeString($keywords);
         $htmlEntityKeywords = htmlentities($keywords, ENT_NOQUOTES, 'UTF-8');
@@ -571,7 +571,7 @@ class DebugBarDatabaseProxy extends SS_Database
             $extraFilters['SiteTree'] = " AND $extraFilter";
 
             if ($alternativeFileFilter)
-                    $extraFilters['File'] = " AND $alternativeFileFilter";
+                $extraFilters['File'] = " AND $alternativeFileFilter";
             else $extraFilters['File'] = $extraFilters['SiteTree'];
         }
 
@@ -582,7 +582,7 @@ class DebugBarDatabaseProxy extends SS_Database
         // by checking for its existence first
         $fields = $this->fieldList('File');
         if (array_key_exists('ShowInSearch', $fields))
-                $extraFilters['File'] .= " AND ShowInSearch <> 0";
+            $extraFilters['File'] .= " AND ShowInSearch <> 0";
 
         $limit = $start.", ".(int) $pageLength;
 
@@ -647,7 +647,7 @@ class DebugBarDatabaseProxy extends SS_Database
 
             // There's no need to do all that joining
             $query->setFrom(array(str_replace(array('"', '`'), '',
-                    $baseClasses[$class]) => $baseClasses[$class]));
+                $baseClasses[$class]) => $baseClasses[$class]));
             $query->setSelect($select[$class]);
             $query->setOrderBy(array());
 
