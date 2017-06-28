@@ -38,30 +38,30 @@ class DebugBarDatabaseCollectorTest extends SapphireTest
 
     public function testGetWidgets()
     {
-        $expected = array(
-            'database' => array(
+        $expected = [
+            'database' => [
                 'icon' => 'inbox',
                 'widget' => 'PhpDebugBar.Widgets.SQLQueriesWidget',
                 'map' => 'db',
                 'default' => '[]'
-            ),
-            'database:badge' => array(
+            ],
+            'database:badge' => [
                 'map' => 'db.nb_statements',
                 'default' => 0
-            )
-        );
+            ]
+        ];
 
         $this->assertSame($expected, $this->collector->getWidgets());
     }
 
     public function testGetAssets()
     {
-        $expected = array(
+        $expected = [
             'base_path' => '/debugbar/javascript',
             'base_url' => 'debugbar/javascript',
             'css' => 'sqlqueries/widget.css',
             'js' => 'sqlqueries/widget.js'
-        );
+        ];
 
         $this->assertSame($expected, $this->collector->getAssets());
     }

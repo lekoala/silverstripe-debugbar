@@ -60,7 +60,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function setConnector(DBConnector $connector)
     {
         parent::setConnector($connector);
-        return $this->realConn->setConnector($connector);
+        $this->realConn->setConnector($connector);
     }
 
     /**
@@ -81,7 +81,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function setSchemaManager(DBSchemaManager $schemaManager)
     {
         parent::setSchemaManager($schemaManager);
-        return $this->realConn->setSchemaManager($schemaManager);
+        $this->realConn->setSchemaManager($schemaManager);
     }
 
     /**
@@ -102,7 +102,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function setQueryBuilder(DBQueryBuilder $queryBuilder)
     {
         parent::setQueryBuilder($queryBuilder);
-        return $this->realConn->setQueryBuilder($queryBuilder);
+        $this->realConn->setQueryBuilder($queryBuilder);
     }
 
     /**
@@ -133,9 +133,10 @@ class DebugBarDatabaseNewProxy extends SS_Database
      *
      * @param string $sql Query to run, and single parameter to callback
      * @param callable $callback Callback to execute code
+     * @param array $parameters
      * @return mixed Result of query
      */
-    protected function benchmarkQuery($sql, $callback, $parameters = array())
+    protected function benchmarkQuery($sql, $callback, $parameters = [])
     {
         $starttime   = microtime(true);
         $startmemory = memory_get_usage(true);
@@ -158,16 +159,20 @@ class DebugBarDatabaseNewProxy extends SS_Database
 
             $results = iterator_to_array($result);
             if ($rows > 0) {
-
                 if ($rows == 1) {
                     dump($results[0]);
                 } else {
                     $linearValues = count($results[0]);
                     if ($linearValues) {
-                        dump(implode(',',
-                                (array_map(function($item) {
+                        dump(implode(
+                            ',',
+                            array_map(
+                                function ($item) {
                                     return $item[key($item)];
-                                }, $results))));
+                                },
+                                $results
+                            )
+                        ));
                     } else {
                         if ($rows < 20) {
                             dump($results);
@@ -243,13 +248,17 @@ class DebugBarDatabaseNewProxy extends SS_Database
         $traces = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS | DEBUG_BACKTRACE_PROVIDE_OBJECT);
 
         // Not relevant to determine source
-        $internalClasses = array('DB', 'SQLExpression', 'DataList', 'DataObject',
-            'DataQuery', 'SQLSelect', 'SQLQuery', 'SS_Map', 'SS_ListDecorator', 'Object');
+        $internalClasses = [
+            'DB', 'SQLExpression', 'DataList', 'DataObject',
+            'DataQuery', 'SQLSelect', 'SQLQuery', 'SS_Map', 'SS_ListDecorator', 'Object'
+        ];
 
-        $viewerClasses = array('SSViewer_DataPresenter', 'SSViewer_Scope', 'SSViewer',
-            'ViewableData');
+        $viewerClasses = [
+            'SSViewer_DataPresenter', 'SSViewer_Scope', 'SSViewer',
+            'ViewableData'
+        ];
 
-        $sources = array();
+        $sources = [];
         foreach ($traces as $trace) {
             $class    = isset($trace['class']) ? $trace['class'] : null;
             $line     = isset($trace['line']) ? $trace['line'] : null;
@@ -335,17 +344,19 @@ class DebugBarDatabaseNewProxy extends SS_Database
 
         if (!$this->connector) {
             $self = $this;
-            return $this->benchmarkQuery($sql,
-                    function($sql) use($self, $errorLevel) {
+            return $this->benchmarkQuery(
+                $sql,
+                function ($sql) use ($self, $errorLevel) {
                     return $self->oldQuery($sql, $errorLevel);
-                });
+                }
+            );
         }
 
         // Benchmark query
         $connector = $this->connector;
         return $this->benchmarkQuery(
-                $sql,
-                function($sql) use($connector, $errorLevel) {
+            $sql,
+            function ($sql) use ($connector, $errorLevel) {
                 return $connector->query($sql, $errorLevel);
             }
         );
@@ -374,8 +385,8 @@ class DebugBarDatabaseNewProxy extends SS_Database
         // Benchmark query
         $connector = $this->connector;
         return $this->benchmarkQuery(
-                array($sql, $parameters),
-                function($sql) use($connector, $parameters, $errorLevel) {
+            [$sql, $parameters],
+            function ($sql) use ($connector, $parameters, $errorLevel) {
                 return $connector->preparedQuery($sql, $parameters, $errorLevel);
             }
         );
@@ -402,191 +413,268 @@ class DebugBarDatabaseNewProxy extends SS_Database
 
     public function addslashes($val)
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
-    public function alterTable($table, $newFields = null, $newIndexes = null,
-                               $alteredFields = null, $alteredIndexes = null,
-                               $alteredOptions = null, $advancedOptions = null)
-    {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+    public function alterTable(
+        $table,
+        $newFields = null,
+        $newIndexes = null,
+        $alteredFields = null,
+        $alteredIndexes = null,
+        $alteredOptions = null,
+        $advancedOptions = null
+    ) {
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
-    public function comparisonClause($field, $value, $exact = false,
-                                     $negate = false, $caseSensitive = false,
-                                     $parameterised = false)
-    {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+    public function comparisonClause(
+        $field,
+        $value,
+        $exact = false,
+        $negate = false,
+        $caseSensitive = false,
+        $parameterised = false
+    ) {
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function createDatabase()
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function createField($table, $field, $spec)
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
-    public function createTable($table, $fields = null, $indexes = null,
-                                $options = null, $advancedOptions = null)
-    {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+    public function createTable(
+        $table,
+        $fields = null,
+        $indexes = null,
+        $options = null,
+        $advancedOptions = null
+    ) {
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function datetimeDifferenceClause($date1, $date2)
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function datetimeIntervalClause($date, $interval)
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function enumValuesForField($tableName, $fieldName)
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function fieldList($table)
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function formattedDatetimeClause($date, $format)
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function getConnect($parameters)
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function getGeneratedID($table)
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function hasTable($tableName)
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function isActive()
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function renameField($tableName, $oldName, $newName)
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function renameTable($oldTableName, $newTableName)
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function supportsTimezoneOverride()
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function supportsTransactions()
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function tableList()
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function transactionEnd($chain = false)
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function transactionRollback($savepoint = false)
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function transactionSavepoint($savepoint)
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
-    public function transactionStart($transaction_mode = false,
-                                     $session_characteristics = false)
+    public function transactionStart($transaction_mode = false, $session_characteristics = false)
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function clearTable($table)
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function getDatabaseServer()
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function now()
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function random()
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
-    public function searchEngine($classesToSearch, $keywords, $start,
-                                 $pageLength, $sortBy = "Relevance DESC",
-                                 $extraFilter = "", $booleanSearch = false,
-                                 $alternativeFileFilter = "",
-                                 $invertedMatch = false)
-    {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+    public function searchEngine(
+        $classesToSearch,
+        $keywords,
+        $start,
+        $pageLength,
+        $sortBy = "Relevance DESC",
+        $extraFilter = "",
+        $booleanSearch = false,
+        $alternativeFileFilter = "",
+        $invertedMatch = false
+    ) {
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 
     public function supportsCollations()
     {
-        return call_user_func_array([$this->realConn, __FUNCTION__],
-            func_get_args());
+        return call_user_func_array(
+            [$this->realConn, __FUNCTION__],
+            func_get_args()
+        );
     }
 }

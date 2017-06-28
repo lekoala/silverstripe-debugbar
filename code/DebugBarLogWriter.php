@@ -11,11 +11,11 @@ class DebugBarLogWriter extends Zend_Log_Writer_Abstract
      *
      * @var array
      */
-    protected $levelsMap = array(
+    protected $levelsMap = [
         'NOTICE' => 'info',
         'WARN' => 'warning',
         'ERR' => 'error'
-    );
+    ];
 
     /**
      * The default log level to use if not recognised (MessagesCollector format)

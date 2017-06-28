@@ -4,15 +4,16 @@ use DebugBar\DataCollector\AssetProvider;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 
-class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
+class DebugBarSilverStripeCollector extends DataCollector implements
+    Renderable,
     AssetProvider
 {
-    protected static $debug = array();
+    protected static $debug = [];
     protected static $controller;
 
     public function collect()
     {
-        $data = array(
+        $data = [
             'debugcount' => count(self::$debug),
             'debug' => self::$debug,
             'session' => self::getSessionData(),
@@ -23,7 +24,7 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
             'parameters' => self::getRequestParameters(),
             'requirements' => self::getRequirementsData(),
             'user' => Member::currentUserID() ? Member::currentUser()->Title : 'Not logged in',
-        );
+        ];
         return $data;
     }
 
@@ -40,17 +41,17 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
         if (!empty($matches[1])) {
             return $matches[1];
         }
-        return array();
+        return [];
     }
 
     public static function getRequestParameters()
     {
         if (!self::$controller) {
-            return array();
+            return [];
         }
         $request = self::$controller->getRequest();
 
-        $p = array();
+        $p = [];
         foreach ($request->getVars() as $k => $v) {
             $p["GET - $k"] = $v;
         }
@@ -75,7 +76,7 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
     public static function getSessionData()
     {
         $data     = Session::get_all();
-        $filtered = array();
+        $filtered = [];
 
         // Filter not useful data
         foreach ($data as $k => $v) {
@@ -104,8 +105,11 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
     {
         $matches = null;
 
-        preg_match_all("/<p class=\"message warning\">\n(.*?)<\/p>/s", $data,
-            $matches);
+        preg_match_all(
+            "/<p class=\"message warning\">\n(.*?)<\/p>/s",
+            $data,
+            $matches
+        );
 
         if (!empty($matches[1])) {
             self::$debug = $matches[1];
@@ -146,66 +150,66 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
             $userText = 'Masquerading as member';
         }
 
-        $widgets = array(
-            'user' => array(
+        $widgets = [
+            'user' => [
                 'icon' => $userIcon,
                 'tooltip' => $userText,
                 "default" => "",
-            ),
-            "version" => array(
+            ],
+            "version" => [
                 "icon" => "desktop",
                 "tooltip" => LeftAndMain::create()->CMSVersion(),
                 "default" => ""
-            ),
-            "locale" => array(
+            ],
+            "locale" => [
                 "icon" => "globe",
                 "tooltip" => i18n::get_locale(),
                 "default" => "",
-            ),
-            "session" => array(
+            ],
+            "session" => [
                 "icon" => "archive",
                 "widget" => "PhpDebugBar.Widgets.VariableListWidget",
                 "map" => "$name.session",
                 "default" => "{}"
-            ),
-            "cookies" => array(
+            ],
+            "cookies" => [
                 "icon" => "asterisk",
                 "widget" => "PhpDebugBar.Widgets.VariableListWidget",
                 "map" => "$name.cookies",
                 "default" => "{}"
-            ),
-            "parameters" => array(
+            ],
+            "parameters" => [
                 "icon" => "arrow-right",
                 "widget" => "PhpDebugBar.Widgets.VariableListWidget",
                 "map" => "$name.parameters",
                 "default" => "{}"
-            ),
-            "config" => array(
+            ],
+            "config" => [
                 "icon" => "gear",
                 "widget" => "PhpDebugBar.Widgets.VariableListWidget",
                 "map" => "$name.config",
                 "default" => "{}"
-            ),
-            "requirements" => array(
+            ],
+            "requirements" => [
                 "icon" => "file-o ",
                 "widget" => "PhpDebugBar.Widgets.ListWidget",
                 "map" => "$name.requirements",
                 "default" => "{}"
-            ),
-        );
+            ],
+        ];
 
 
         if (!empty(self::$debug)) {
-            $widgets["debug"]       = array(
+            $widgets["debug"]       = [
                 "icon" => "list-alt",
                 "widget" => "PhpDebugBar.Widgets.ListWidget",
                 "map" => "$name.debug",
                 "default" => "[]"
-            );
-            $widgets["debug:badge"] = array(
+            ];
+            $widgets["debug:badge"] = [
                 "map" => "$name.debugcount",
                 "default" => "null"
-            );
+            ];
         }
 
         return $widgets;
@@ -216,11 +220,11 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
      */
     public function getAssets()
     {
-        return array(
+        return [
             'base_path' => '/'.DEBUGBAR_DIR.'/javascript',
             'base_url' => DEBUGBAR_DIR.'/javascript',
             'css' => [],
             'js' => 'widgets.js',
-        );
+        ];
     }
 }

@@ -2,9 +2,9 @@
 
 class DebugBarControllerExtensionTest extends FunctionalTest
 {
-    protected $requiredExtensions = array(
-        'Controller' => array('DebugBarControllerExtension')
-    );
+    protected $requiredExtensions = [
+        'Controller' => ['DebugBarControllerExtension']
+    ];
 
     /**
      * @var Controller

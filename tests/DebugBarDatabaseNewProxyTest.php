@@ -51,7 +51,7 @@ class DebugBarDatabaseNewProxyTest extends SapphireTest
      */
     public function testMethodsAreProxiedToRealConnection()
     {
-        $proxyMethods = array(
+        $proxyMethods = [
             'addslashes',
             'alterTable',
             'comparisonClause',
@@ -82,7 +82,7 @@ class DebugBarDatabaseNewProxyTest extends SapphireTest
             'random',
             'searchEngine',
             'supportsCollations',
-        );
+        ];
 
         $mockConnection = $this->getMockBuilder('MySQLDatabase')->setMethods($proxyMethods)->getMock();
         $proxy = new DebugBarDatabaseNewProxy($mockConnection);
