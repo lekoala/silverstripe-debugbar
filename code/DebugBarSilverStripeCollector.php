@@ -112,9 +112,22 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
         }
     }
 
+    /**
+     * @param Controller $controller
+     * @return $this
+     */
     public function setController($controller)
     {
         self::$controller = $controller;
+        return $this;
+    }
+
+    /**
+     * @return Controller
+     */
+    public function getController()
+    {
+        return self::$controller;
     }
 
     public function getName()

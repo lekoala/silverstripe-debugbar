@@ -14,7 +14,7 @@ class DebugBarControllerExtension extends Extension
             // We must set the current controller when it's available and before it's pushed out of stack
             $debugbar->getCollector('silverstripe')->setController(Controller::curr());
 
-            /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
+            /** @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugbar['time'];
             if (!$timeData) {
                 return;
@@ -38,7 +38,7 @@ class DebugBarControllerExtension extends Extension
 
         DebugBar::withDebugBar(function(DebugBar\DebugBar $debugbar) use ($class) {
 
-            /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
+            /** @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugbar['time'];
             if (!$timeData) {
                 return;
