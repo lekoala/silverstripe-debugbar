@@ -137,19 +137,16 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
             'user' => array(
                 'icon' => $userIcon,
                 'tooltip' => $userText,
-                "map" => "$name.user",
                 "default" => "",
             ),
             "version" => array(
-                "icon" => "bullseye",
-                "tooltip" => "Version",
-                "map" => "$name.version",
+                "icon" => "desktop",
+                "tooltip" => LeftAndMain::create()->CMSVersion(),
                 "default" => ""
             ),
             "locale" => array(
-                "icon" => "flag",
-                "tooltip" => "Current locale",
-                "map" => "$name.locale",
+                "icon" => "globe",
+                "tooltip" => i18n::get_locale(),
                 "default" => "",
             ),
             "session" => array(

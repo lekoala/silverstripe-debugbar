@@ -99,14 +99,13 @@ div.phpdebugbar-widgets-sqlqueries li.phpdebugbar-widgets-list-item.phpdebugbar-
 }
 
 div.phpdebugbar-widgets-sqlqueries li.phpdebugbar-widgets-list-item.phpdebugbar-widgets-sql-duplicate:hover {
-    background-color: #ffc;
+    background-color: #e3e3e3;
 }
 
 div.phpdebugbar-widgets-sqlqueries .phpdebugbar-widgets-badge {
     float: right;
     margin-left: 8px;
-    color: #888;
-    background:#888;
+    background: #005A92;
     color:#fff;
     border-radius:4px;
     padding:0 4px;
@@ -128,7 +127,7 @@ div.phpdebugbar-widgets-sqlqueries div.phpdebugbar-widgets-toolbar a.phpdebugbar
     float: right;
     font-size: 12px;
     padding: 2px 4px;
-    background: #7cacd5;
+    background: #005A92;
     margin: 0 2px;
     border-radius: 4px;
     color: #fff;
