@@ -18,7 +18,7 @@ if (!function_exists('d')) {
         $args = func_get_args();
 
         // Prevent exit in test session
-        $isTest = !empty($args) && $args[0] instanceof SapphireTest;
+        $isTest = SapphireTest::is_running_test();
 
         // Clean buffer that may be in the way
         if (!$isTest && ob_get_contents())
