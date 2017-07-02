@@ -4,6 +4,8 @@
  * A proxy database to log queries (compatible with 3.1)
  *
  * @author Koala
+ * @deprecated 1.0.0 Please upgrade to at least SilverStripe 3.2. Use DebugBarDatabaseNewProxy.
+ * @codeCoverageIgnore
  */
 class DebugBarDatabaseProxy extends SS_Database
 {
