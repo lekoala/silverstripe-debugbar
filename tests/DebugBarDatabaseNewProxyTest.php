@@ -1,7 +1,5 @@
 <?php
-/**
- * @coversDefaultClass DebugBarDatabaseNewProxy
- */
+
 class DebugBarDatabaseNewProxyTest extends SapphireTest
 {
     /**
@@ -50,52 +48,49 @@ class DebugBarDatabaseNewProxyTest extends SapphireTest
     /**
      * Test method to ensure that a set of methods are proxied through to the real connection. This test covers
      * all methods listed below:
-     *
-     * @covers ::addslashes
-     * @covers ::alterTable
-     * @covers ::comparisonClause
-     * @covers ::createDatabase
-     * @covers ::createField
-     * @covers ::createTable
-     * @covers ::datetimeDifferenceClause
-     * @covers ::datetimeIntervalClause
-     * @covers ::enumValuesForField
-     * @covers ::fieldList
-     * @covers ::formattedDatetimeClause
-     * @covers ::getConnect
-     * @covers ::getGeneratedID
-     * @covers ::hasTable
-     * @covers ::isActive
-     * @covers ::renameField
-     * @covers ::renameTable
-     * @covers ::supportsTimezoneOverride
-     * @covers ::supportsTransactions
-     * @covers ::tableList
-     * @covers ::transactionEnd
-     * @covers ::transactionRollback
-     * @covers ::transactionSavepoint
-     * @covers ::transactionStart
-     * @covers ::clearTable
-     * @covers ::getDatabaseServer
-     * @covers ::now
-     * @covers ::random
-     * @covers ::searchEngine
-     * @covers ::supportsCollations
      */
     public function testMethodsAreProxiedToRealConnection()
     {
-        $mockConnection = $this->getMockBuilder('MySQLDatabase')
-            ->setMethods(array('fieldList', 'addslashes', 'random'))
-            ->getMock();
+        $proxyMethods = array(
+            'addslashes',
+            'alterTable',
+            'comparisonClause',
+            'createDatabase',
+            'createField',
+            'createTable',
+            'datetimeDifferenceClause',
+            'datetimeIntervalClause',
+            'enumValuesForField',
+            'fieldList',
+            'formattedDatetimeClause',
+            'getConnect',
+            'getGeneratedID',
+            'hasTable',
+            'isActive',
+            'renameField',
+            'renameTable',
+            'supportsTimezoneOverride',
+            'supportsTransactions',
+            'tableList',
+            'transactionEnd',
+            'transactionRollback',
+            'transactionSavepoint',
+            'transactionStart',
+            'clearTable',
+            'getDatabaseServer',
+            'now',
+            'random',
+            'searchEngine',
+            'supportsCollations',
+        );
 
-        $mockConnection->expects($this->once())->method('fieldList');
-        $mockConnection->expects($this->once())->method('addslashes');
-        $mockConnection->expects($this->once())->method('random');
-
+        $mockConnection = $this->getMockBuilder('MySQLDatabase')->setMethods($proxyMethods)->getMock();
         $proxy = new DebugBarDatabaseNewProxy($mockConnection);
 
-        $proxy->fieldList('foo');
-        $proxy->addslashes('bar');
-        $proxy->random();
+        foreach ($proxyMethods as $proxyMethod) {
+            $mockConnection->expects($this->once())->method($proxyMethod);
+            // Pass mock arguments - the large number is in searchEngine
+            $proxy->$proxyMethod(null, null, null, null, null, null, null, null);
+        }
     }
 }

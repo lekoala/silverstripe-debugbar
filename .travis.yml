@@ -20,7 +20,7 @@ matrix:
 before_script:
   - composer self-update || true
   - git clone git://github.com/silverstripe/silverstripe-travis-support.git ~/travis-support
-  - php ~/travis-support/travis_setup.php --source `pwd` --target ~/build/ss --require undefinedoffset/sortablegridfield:~0.6.9
+  - php ~/travis-support/travis_setup.php --source `pwd` --target ~/build/ss
   - cd ~/build/ss
 
 script:

@@ -3,9 +3,8 @@
 /**
  * Tests for DebugBar
  */
-class DebugBarTest extends FunctionalTest
+class DebugBarTest extends SapphireTest
 {
-
     public function setUp()
     {
         parent::setUp();
@@ -71,16 +70,6 @@ class DebugBarTest extends FunctionalTest
         $this->assertTrue((bool) strpos($content, "Value for: 'test'"), "Value for test not found");
         $this->assertTrue((bool) strpos($content, 'sf-dump'), "Symfony dumper not found");
         $this->assertTrue((bool) strpos($content, '<span style="font-weight:bold;">SELECT</span>'), "Sql formatted query not found");
-    }
-
-    public function testShowOnHomepage()
-    {
-        $this->markTestIncomplete('Robbie: todo');
-
-        $content = (string) $this->get('/')->getBody();
-
-        $this->assertContains('"/debugbar/assets/debugbar.js', $content, "Base script not found");
-        $this->assertContains('var phpdebugbar = new PhpDebugBar.DebugBar();', $content, "Init script not found");
     }
 
     /**
