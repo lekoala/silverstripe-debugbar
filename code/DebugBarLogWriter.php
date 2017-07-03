@@ -6,6 +6,23 @@ require_once 'Zend/Log/Writer/Abstract.php';
  */
 class DebugBarLogWriter extends Zend_Log_Writer_Abstract
 {
+    /**
+     * Map SS_Log levels to MessagesCollector levels
+     *
+     * @var array
+     */
+    protected $levelsMap = array(
+        'NOTICE' => 'info',
+        'WARN' => 'warning',
+        'ERR' => 'error'
+    );
+
+    /**
+     * The default log level to use if not recognised (MessagesCollector format)
+     *
+     * @var string
+     */
+    const LOG_LEVEL_DEFAULT = 'info';
 
     /**
      * @param array|\Zend_Config $config
@@ -33,7 +50,7 @@ class DebugBarLogWriter extends Zend_Log_Writer_Abstract
             return;
         }
 
-        $level = $event['priorityName'];
+        $level = $this->convertLogLevel($event['priorityName']);
 
         // Gather info
         if (isset($event['message']['errstr'])) {
@@ -49,11 +66,25 @@ class DebugBarLogWriter extends Zend_Log_Writer_Abstract
         $relfile = Director::makeRelative($file);
 
         // Save message
-        $message = "$level - {$str} ({$relfile}:{$line})";
+        $message = "{$str} ({$relfile}:{$line})";
 
         // Escape \ for proper js display
         $message = str_replace('\\', '\\\\', $message);
 
-        $messagesCollector->addMessage($message, false);
+        $messagesCollector->addMessage($message, $level);
+    }
+
+    /**
+     * Convert a SilverStripe log level (see SS_Log) to a MessagesCollector level
+     *
+     * @param  string $input SS_Log level
+     * @return string        MessagesCollector level
+     */
+    protected function convertLogLevel($input)
+    {
+        if (array_key_exists($input, $this->levelsMap)) {
+            return $this->levelsMap[$input];
+        }
+        return static::LOG_LEVEL_DEFAULT;
     }
 }
