@@ -93,4 +93,14 @@ class DebugBarDatabaseNewProxyTest extends SapphireTest
             $proxy->$proxyMethod(null, null, null, null, null, null, null, null);
         }
     }
+
+    /**
+     * Test whether passing an array to the constructor still produces a DBConnector instance
+     */
+    public function testConstructorArguments()
+    {
+        global $databaseConfig;
+        $newProxy = new DebugBarDatabaseNewProxy($databaseConfig);
+        $this->assertInstanceOf('DBConnector', $newProxy->getConnector());
+    }
 }
