@@ -228,7 +228,7 @@ class DebugBar extends Object
             return 'Not in dev mode';
         }
         if (self::IsDisabled()) {
-            return 'Disabled by a constant';
+            return 'Disabled by a constant or configuration';
         }
         if (self::VendorNotInstalled()) {
             return 'DebugBar is not installed in vendors';
@@ -266,8 +266,8 @@ class DebugBar extends Object
 
     public static function IsDisabled()
     {
-        if (defined('DEBUGBAR_DISABLE')) {
-            return DEBUGBAR_DISABLE;
+        if ((defined('DEBUGBAR_DISABLE') && DEBUGBAR_DISABLE) || static::config()->disabled) {
+            return true;
         }
         return false;
     }

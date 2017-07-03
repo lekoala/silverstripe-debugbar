@@ -17,7 +17,8 @@
     ],
     "require": {
         "php": ">=5.4.8",
-        "silverstripe/framework": "~3.1",
+        "silverstripe/framework": "~3.2",
+        "silverstripe/siteconfig": "~3.2",
         "maximebf/debugbar": "^1.13"
     },
     "extra": {
