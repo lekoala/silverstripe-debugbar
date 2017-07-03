@@ -10,7 +10,7 @@ class DebugBarLeftAndMainExtension extends LeftAndMainExtension
 
     public function accessedCMS()
     {
-        DebugBar::withDebugBar(function(DebugBar\DebugBar $debugbar) {
+        DebugBar::withDebugBar(function (DebugBar\DebugBar $debugbar) {
             /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugbar['time'];
             if (!$timeData) {
@@ -25,7 +25,7 @@ class DebugBarLeftAndMainExtension extends LeftAndMainExtension
 
     public function init()
     {
-        DebugBar::withDebugBar(function(DebugBar\DebugBar $debugbar) {
+        DebugBar::withDebugBar(function (DebugBar\DebugBar $debugbar) {
             /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugbar['time'];
             if (!$timeData) {

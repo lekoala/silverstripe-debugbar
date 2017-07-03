@@ -30,9 +30,9 @@ class DebugBar extends Object
 
     /**
      * Get the Debug Bar instance
-     *
+     * @return \DebugBar\StandardDebugBar
+     * @throws Exception
      * @global array $databaseConfig
-     * @return DebugBar\StandardDebugBar
      */
     public static function getDebugBar()
     {
@@ -40,7 +40,9 @@ class DebugBar extends Object
             return self::$debugbar;
         }
 
-        if (!Director::isDev() || self::IsDisabled() || self::VendorNotInstalled() || self::NotLocalIp() || Director::is_cli() || self::IsDevUrl() || (self::IsAdminUrl() && !self::config()->enabled_in_admin)
+        if (!Director::isDev() || self::isDisabled() || self::vendorNotInstalled() ||
+            self::notLocalIp() || Director::is_cli() || self::isDevUrl() ||
+            (self::isAdminUrl() && !self::config()->enabled_in_admin)
         ) {
             self::$debugbar = false; // No need to check again
             return;
@@ -222,38 +224,38 @@ class DebugBar extends Object
      *
      * @return string
      */
-    public static function WhyDisabled()
+    public static function whyDisabled()
     {
         if (!Director::isDev()) {
             return 'Not in dev mode';
         }
-        if (self::IsDisabled()) {
+        if (self::isDisabled()) {
             return 'Disabled by a constant or configuration';
         }
-        if (self::VendorNotInstalled()) {
+        if (self::vendorNotInstalled()) {
             return 'DebugBar is not installed in vendors';
         }
-        if (self::NotLocalIp()) {
+        if (self::notLocalIp()) {
             return 'Not a local ip';
         }
         if (Director::is_cli()) {
             return 'In CLI mode';
         }
-        if (self::IsDevUrl()) {
+        if (self::isDevUrl()) {
             return 'Dev tools';
         }
-        if (self::IsAdminUrl() && !self::config()->enabled_in_admin) {
+        if (self::isAdminUrl() && !self::config()->enabled_in_admin) {
             return 'In admin';
         }
         return "I don't know why";
     }
 
-    public static function VendorNotInstalled()
+    public static function vendorNotInstalled()
     {
         return !class_exists('DebugBar\\StandardDebugBar');
     }
 
-    public static function NotLocalIp()
+    public static function notLocalIp()
     {
         if (!self::config()->check_local_ip) {
             return false;
@@ -264,7 +266,7 @@ class DebugBar extends Object
         return false;
     }
 
-    public static function IsDisabled()
+    public static function isDisabled()
     {
         if ((defined('DEBUGBAR_DISABLE') && DEBUGBAR_DISABLE) || static::config()->disabled) {
             return true;
@@ -272,12 +274,12 @@ class DebugBar extends Object
         return false;
     }
 
-    public static function IsDevUrl()
+    public static function isDevUrl()
     {
         return strpos(self::getRequestUrl(), '/dev/') === 0;
     }
 
-    public static function IsAdminUrl()
+    public static function isAdminUrl()
     {
         return strpos(self::getRequestUrl(), '/admin/') === 0;
     }
@@ -287,7 +289,7 @@ class DebugBar extends Object
      *
      * @return boolean
      */
-    public static function IsDebugBarRequest()
+    public static function isDebugBarRequest()
     {
         if ($url = self::getRequestUrl()) {
             return strpos($url, '/__debugbar') === 0;
@@ -318,7 +320,7 @@ class DebugBar extends Object
      */
     public static function withDebugBar($callback)
     {
-        if (self::getDebugBar() && !self::IsDebugBarRequest()) {
+        if (self::getDebugBar() && !self::isDebugBarRequest()) {
             $callback(self::getDebugBar());
         }
     }

@@ -33,7 +33,7 @@ class DebugBarTest extends SapphireTest
         }
 
         $class = get_class($conn);
-        $this->assertContains($class, array('DebugBarDatabaseNewProxy', 'DebugBarDatabaseProxy'));
+        $this->assertContains($class, ['DebugBarDatabaseNewProxy', 'DebugBarDatabaseProxy']);
     }
 
     public function testLHelper()
@@ -61,7 +61,6 @@ class DebugBarTest extends SapphireTest
         $this->markTestSkipped(
             'This test needs to be looked at again, the output buffering is not capturing the result'
         );
-
         $sql = 'SELECT * FROM Member';
         ob_start();
         // Passing a SapphireTest as first arg prevent exit
@@ -69,7 +68,10 @@ class DebugBarTest extends SapphireTest
         $content = ob_get_clean();
         $this->assertTrue((bool) strpos($content, "Value for: 'test'"), "Value for test not found");
         $this->assertTrue((bool) strpos($content, 'sf-dump'), "Symfony dumper not found");
-        $this->assertTrue((bool) strpos($content, '<span style="font-weight:bold;">SELECT</span>'), "Sql formatted query not found");
+        $this->assertTrue(
+            (bool)strpos($content, '<span style="font-weight:bold;">SELECT</span>'),
+            "Sql formatted query not found"
+        );
     }
 
     /**
@@ -80,7 +82,7 @@ class DebugBarTest extends SapphireTest
     public function testWhyDisabled($context, $expected)
     {
         $context();
-        $this->assertSame($expected, DebugBar::WhyDisabled());
+        $this->assertSame($expected, DebugBar::whyDisabled());
     }
 
     /**
@@ -88,42 +90,42 @@ class DebugBarTest extends SapphireTest
      */
     public function whyDisabledProvider()
     {
-        return array(
-            array(
+        return [
+            [
                 function () {
                     Director::set_environment_type('live');
                 },
                 'Not in dev mode'
-            ),
-            array(
+            ],
+            [
                 function () {
                     Config::inst()->update('DebugBar', 'disabled', true);
                 },
                 'Disabled by a constant or configuration'
-            ),
-            array(
+            ],
+            [
                 function () {
                     // no-op
                 },
                 'In CLI mode'
-            )
-        );
+            ]
+        ];
     }
 
     public function testNotLocalIp()
     {
         Config::inst()->update('DebugBar', 'check_local_ip', false);
-        $this->assertFalse(DebugBar::NotLocalIp());
+        $this->assertFalse(DebugBar::notLocalIp());
 
         Config::inst()->update('DebugBar', 'check_local_ip', true);
         $original = $_SERVER['REMOTE_ADDR'];
         $_SERVER['REMOTE_ADDR'] = '123.456.789.012';
-        $this->assertTrue(DebugBar::NotLocalIp());
+        $this->assertTrue(DebugBar::notLocalIp());
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-        $this->assertFalse(DebugBar::NotLocalIp());
+        $this->assertFalse(DebugBar::notLocalIp());
 
         unset($_SERVER['REMOTE_ADDR']);
-        $this->assertFalse(DebugBar::NotLocalIp());
+        $this->assertFalse(DebugBar::notLocalIp());
 
         $_SERVER['REMOTE_ADDR'] = $original;
     }

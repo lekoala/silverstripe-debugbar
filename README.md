@@ -15,8 +15,16 @@ This module will:
 
 The DebugBar is automatically injected into any html response through the request filter.
 
+#### Enabling toolbar on front-end.
 Please note that jQuery is excluded from vendors and you are expected to include
-your own jQuery version in Page::init().
+your own jQuery version in Page::init(). Below is an example of how to the jquery which ships with the framework:
+```php
+    public function init()
+    {
+        parent::init();
+        Requirements::javascript(FRAMEWORK_DIR . '/thirdparty/jquery/jquery.min.js');
+    }
+```
 
 You can force the DebugBar to be disabled by defining:
 
@@ -31,7 +39,7 @@ Either run:
 
     composer require lekoala/silverstripe-debugbar --dev
 
-Or add: 
+Or add:
 
     lekoala/silverstripe-debugbar: "dev-master"
 
@@ -41,8 +49,8 @@ Options
 ==================
 
 - enable_storage: Store all previous request in the temp folder (enabled by default)
-- auto_debug: automatically collect debug and debug_request data (disabled by default) 
-- ajax: automatically inject data in ajax requests (disabled by default, 
+- auto_debug: automatically collect debug and debug_request data (disabled by default)
+- ajax: automatically inject data in ajax requests (disabled by default,
 since this makes the chrome request inspector very slow due to the large amount of header data)
 - force_proxy: always use the database proxy instead of built in PDO collector (enabled by default)
 - check_local_ip: do not display the DebugBar is not using a local ip (enabled by default)
@@ -75,7 +83,7 @@ Called without argument, it will display all objects in the debug backtrace.
 It will display the variable name before its content to make it easy to identify data amongst multiple values
 
     d($myvar,$myothervar);
-    
+
 Any call to "d" with "sql" in the name of the variable will output a properly formatted sql query, for instance:
 
     d($MyDataList->sql());
@@ -94,7 +102,7 @@ Since you need to add jQuery before DebugBar, this may be a problem, and therefo
 will NOT be included on Security.
 
 If you want DebugBar to work on Security, make sure to include all relevant requirements by
-calling DebugBar::includeRequirements(); after you include jQuery. When DebugBar is disabled, 
+calling DebugBar::includeRequirements(); after you include jQuery. When DebugBar is disabled,
 this call will be ignored. Also note that any subsequent call to this method will be ignored
 as well.
 

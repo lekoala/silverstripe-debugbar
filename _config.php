@@ -21,8 +21,9 @@ if (!function_exists('d')) {
         $isTest = SapphireTest::is_running_test();
 
         // Clean buffer that may be in the way
-        if (!$isTest && ob_get_contents())
+        if (!$isTest && ob_get_contents()) {
             ob_end_clean();
+        }
 
         $bt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS | DEBUG_BACKTRACE_PROVIDE_OBJECT);
 
@@ -58,7 +59,7 @@ if (!function_exists('d')) {
         $isAjax = Director::is_ajax();
 
         // Display data nicely according to context
-        $print = function() use($isAjax) {
+        $print = function () use ($isAjax) {
             $args = func_get_args();
             if (!$isAjax) {
                 echo '<pre>';

@@ -14,11 +14,14 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
     protected $db;
 
     /**
+     * @param SS_Database $db
      * @param TimeDataCollector $timeCollector
      */
-    public function __construct(SS_Database $db,
-                                TimeDataCollector $timeCollector = null)
-    {
+    public function __construct(
+        SS_Database $db,
+        TimeDataCollector $timeCollector = null
+    ) {
+
         $this->db            = $db;
         $this->timeCollector = $timeCollector;
     }
@@ -39,7 +42,7 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
      * @param string $str
      * @return array
      */
-    protected static function explode_fields($str)
+    protected static function explodeFields($str)
     {
         return preg_split("/(?![^(]*\)),/", $str);
     }
@@ -52,7 +55,7 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
      */
     protected function collectData(TimeDataCollector $timeCollector = null)
     {
-        $stmts = array();
+        $stmts = [];
 
         $total_duration = 0;
         $total_mem      = 0;
@@ -63,9 +66,9 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
         $queries = $this->db->getQueries();
         $limit   = DebugBar::config()->query_limit;
 
-        $showDb = count(array_unique(array_map(function($stmt) {
-                        return $stmt['database'];
-                    }, $queries))) > 1;
+        $showDb = count(array_unique(array_map(function ($stmt) {
+                return $stmt['database'];
+        }, $queries))) > 1;
 
         foreach ($queries as $stmt) {
             $i++;
@@ -78,13 +81,13 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
             }
 
             if ($limit && $i > $limit) {
-                $stmts[] = array(
+                $stmts[] = [
                     'sql' => "Only the first $limit queries are shown"
-                );
+                ];
                 break;
             }
 
-            $stmts[] = array(
+            $stmts[] = [
                 'sql' => $stmt['short_query'],
                 'row_count' => $stmt['rows'],
                 'params' => $stmt['select'] ? $stmt['select'] : null,
@@ -95,15 +98,18 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
                 'is_success' => $stmt['success'],
                 'database' => $showDb ? $stmt['database'] : null,
                 'source' => $stmt['source'],
-            );
+            ];
 
             if ($timeCollector !== null) {
-                $timeCollector->addMeasure($stmt['short_query'],
-                    $stmt['start_time'], $stmt['end_time']);
+                $timeCollector->addMeasure(
+                    $stmt['short_query'],
+                    $stmt['start_time'],
+                    $stmt['end_time']
+                );
             }
         }
 
-        return array(
+        return [
             'nb_statements' => count($queries),
             'nb_failed_statements' => $failed,
             'statements' => $stmts,
@@ -111,7 +117,7 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
             'accumulated_duration_str' => $this->getDataFormatter()->formatDuration($total_duration),
             'memory_usage' => $total_mem,
             'memory_usage_str' => $this->getDataFormatter()->formatBytes($total_mem),
-        );
+        ];
     }
 
     /**
@@ -127,18 +133,18 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
      */
     public function getWidgets()
     {
-        return array(
-            "database" => array(
+        return [
+            "database" => [
                 "icon" => "inbox",
                 "widget" => "PhpDebugBar.Widgets.SQLQueriesWidget",
                 "map" => "db",
                 "default" => "[]"
-            ),
-            "database:badge" => array(
+            ],
+            "database:badge" => [
                 "map" => "db.nb_statements",
                 "default" => 0
-            )
-        );
+            ]
+        ];
     }
 
     /**
@@ -146,11 +152,11 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
      */
     public function getAssets()
     {
-        return array(
+        return [
             'base_path' => '/'.DEBUGBAR_DIR.'/javascript',
             'base_url' => DEBUGBAR_DIR.'/javascript',
             'css' => 'sqlqueries/widget.css',
             'js' => 'sqlqueries/widget.js'
-        );
+        ];
     }
 }

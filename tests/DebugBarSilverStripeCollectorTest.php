@@ -53,11 +53,11 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
             new SS_HTTPRequest(
                 'GET',
                 '/',
-                array('getvar' => 'value', 'foo' => 'bar'),
-                array('postvar' => 'value', 'bar' => 'baz')
+                ['getvar' => 'value', 'foo' => 'bar'],
+                ['postvar' => 'value', 'bar' => 'baz']
             )
         );
-        $controller->getRequest()->setRouteParams(array('something' => 'here'));
+        $controller->getRequest()->setRouteParams(['something' => 'here']);
 
         $this->collector->setController($controller);
         $this->assertSame($controller, $this->collector->getController());
@@ -91,64 +91,64 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
         $result['version']['tooltip'] = 'Stub';
         $result['locale']['tooltip'] = 'Stub';
 
-        $expected = array(
-            'user' => array(
+        $expected = [
+            'user' => [
                 'icon' => 'user',
                 'tooltip' => 'Current member',
                 'default' => '',
-            ),
-            'version' => array(
+            ],
+            'version' => [
                 'icon' => 'desktop',
                 'tooltip' => 'Stub',
                 'default' => '',
-            ),
-            'locale' => array(
+            ],
+            'locale' => [
                 'icon' => 'globe',
                 'tooltip' => 'Stub',
                 'default' => '',
-            ),
-            'session' => array(
+            ],
+            'session' => [
                 'icon' => 'archive',
                 'widget' => 'PhpDebugBar.Widgets.VariableListWidget',
                 'map' => 'silverstripe.session',
                 'default' => '{}',
-            ),
-            'cookies' => array(
+            ],
+            'cookies' => [
                 'icon' => 'asterisk',
                 'widget' => 'PhpDebugBar.Widgets.VariableListWidget',
                 'map' => 'silverstripe.cookies',
                 'default' => '{}',
-            ),
-            'parameters' => array(
+            ],
+            'parameters' => [
                 'icon' => 'arrow-right',
                 'widget' => 'PhpDebugBar.Widgets.VariableListWidget',
                 'map' => 'silverstripe.parameters',
                 'default' => '{}',
-            ),
-            'config' => array(
+            ],
+            'config' => [
                 'icon' => 'gear',
                 'widget' => 'PhpDebugBar.Widgets.VariableListWidget',
                 'map' => 'silverstripe.config',
                 'default' => '{}',
-            ),
-            'requirements' => array(
+            ],
+            'requirements' => [
                 'icon' => 'file-o ',
                 'widget' => 'PhpDebugBar.Widgets.ListWidget',
                 'map' => 'silverstripe.requirements',
                 'default' => '{}',
-            ),
-        );
+            ],
+        ];
         $this->assertSame($expected, $result);
     }
 
     public function testGetAssets()
     {
-        $expected = array(
+        $expected = [
             'base_path' => '/debugbar/javascript',
             'base_url' => 'debugbar/javascript',
             'css' => [],
             'js' => 'widgets.js',
-        );
+        ];
         $this->assertSame($expected, $this->collector->getAssets());
     }
 }

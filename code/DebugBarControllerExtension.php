@@ -10,7 +10,7 @@ class DebugBarControllerExtension extends Extension
     {
         $class = get_class($this->owner);
 
-        DebugBar::withDebugBar(function(DebugBar\DebugBar $debugbar) use ($class) {
+        DebugBar::withDebugBar(function (DebugBar\DebugBar $debugbar) use ($class) {
             // We must set the current controller when it's available and before it's pushed out of stack
             $debugbar->getCollector('silverstripe')->setController(Controller::curr());
 
@@ -36,7 +36,7 @@ class DebugBarControllerExtension extends Extension
 
         $class = get_class($this->owner);
 
-        DebugBar::withDebugBar(function(DebugBar\DebugBar $debugbar) use ($class) {
+        DebugBar::withDebugBar(function (DebugBar\DebugBar $debugbar) use ($class) {
 
             /** @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugbar['time'];
@@ -80,7 +80,7 @@ class DebugBarControllerExtension extends Extension
         }
 
         $class = get_class($this->owner);
-        DebugBar::withDebugBar(function(DebugBar\DebugBar $debugbar) use($class, $action) {
+        DebugBar::withDebugBar(function (DebugBar\DebugBar $debugbar) use ($class, $action) {
             /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugbar['time'];
             if (!$timeData) {
@@ -108,7 +108,7 @@ class DebugBarControllerExtension extends Extension
         self::clearBuffer();
 
         $class = get_class($this->owner);
-        DebugBar::withDebugBar(function(DebugBar\DebugBar $debugbar) use($class, $action) {
+        DebugBar::withDebugBar(function (DebugBar\DebugBar $debugbar) use ($class, $action) {
             /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugbar['time'];
             if (!$timeData) {
@@ -117,8 +117,10 @@ class DebugBarControllerExtension extends Extension
             if ($timeData->hasStartedMeasure("action")) {
                 $timeData->stopMeasure("action");
             }
-            $timeData->startMeasure("after_action",
-                "$class after action $action");
+            $timeData->startMeasure(
+                "after_action",
+                "$class after action $action"
+            );
         });
     }
 
