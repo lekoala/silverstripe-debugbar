@@ -86,23 +86,25 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
 
     public function testGetWidgets()
     {
+        $result = $this->collector->getWidgets();
+        // Stub out the dynamic data
+        $result['version']['tooltip'] = 'Stub';
+        $result['locale']['tooltip'] = 'Stub';
+
         $expected = array(
             'user' => array(
                 'icon' => 'user',
                 'tooltip' => 'Current member',
-                'map' => 'silverstripe.user',
                 'default' => '',
             ),
             'version' => array(
-                'icon' => 'bullseye',
-                'tooltip' => 'Version',
-                'map' => 'silverstripe.version',
+                'icon' => 'desktop',
+                'tooltip' => 'Stub',
                 'default' => '',
             ),
             'locale' => array(
-                'icon' => 'flag',
-                'tooltip' => 'Current locale',
-                'map' => 'silverstripe.locale',
+                'icon' => 'globe',
+                'tooltip' => 'Stub',
                 'default' => '',
             ),
             'session' => array(
@@ -134,9 +136,9 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
                 'widget' => 'PhpDebugBar.Widgets.ListWidget',
                 'map' => 'silverstripe.requirements',
                 'default' => '{}',
-            )
+            ),
         );
-        $this->assertSame($expected, $this->collector->getWidgets());
+        $this->assertSame($expected, $result);
     }
 
     public function testGetAssets()
