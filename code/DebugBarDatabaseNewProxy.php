@@ -19,10 +19,14 @@ class DebugBarDatabaseNewProxy extends SS_Database
     protected $showQueries = false;
 
     /**
-     * @param MySQLDatabase $realConn
+     * @param MySQLDatabase|array $realConn
      */
     public function __construct($realConn)
     {
+        // Some service hooks pass $databaseConfig to constructor
+        if (is_array($realConn)) {
+            $realConn = DB::connect($realConn);
+        }
         $this->realConn      = $realConn;
         $this->connector     = $this->connector ? : $realConn->getConnector();
         $this->schemaManager = $this->schemaManager ? : $realConn->getSchemaManager();
