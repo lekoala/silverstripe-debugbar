@@ -143,7 +143,6 @@ class DebugBar extends Object
             self::$bufferingEnabled = true;
             ob_start(); // We buffer everything until we have called an action
         }
-        $debugbar->getCollector('messages')->addMessage('foobar');
 
         return $debugbar;
     }
