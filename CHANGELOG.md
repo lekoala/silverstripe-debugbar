@@ -6,6 +6,11 @@ Changes are grouped as following : Added, Changed, Deprecated, Removed, Fixed, S
 ## [Unreleased]
 
 - Clearing DebugBar should prevent it from being used
+- Improve tests
+- Improve styles
+- Use default log levels
+- Configurable threshold for slow queries
+- Template tab
 
 ## [0.1.1] - 2016-12-02
 ### Added
