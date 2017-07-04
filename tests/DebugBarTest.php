@@ -33,7 +33,7 @@ class DebugBarTest extends SapphireTest
         }
 
         $class = get_class($conn);
-        $this->assertContains($class, ['DebugBarDatabaseNewProxy', 'DebugBarDatabaseProxy']);
+        $this->assertContains($class, array('DebugBarDatabaseNewProxy', 'DebugBarDatabaseProxy'));
     }
 
     public function testLHelper()
@@ -90,26 +90,26 @@ class DebugBarTest extends SapphireTest
      */
     public function whyDisabledProvider()
     {
-        return [
-            [
+        return array(
+            array(
                 function () {
                     Director::set_environment_type('live');
                 },
                 'Not in dev mode'
-            ],
-            [
+            ),
+            array(
                 function () {
                     Config::inst()->update('DebugBar', 'disabled', true);
                 },
                 'Disabled by a constant or configuration'
-            ],
-            [
+            ),
+            array(
                 function () {
                     // no-op
                 },
                 'In CLI mode'
-            ]
-        ];
+            )
+        );
     }
 
     public function testNotLocalIp()

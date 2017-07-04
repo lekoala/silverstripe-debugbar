@@ -39,7 +39,7 @@ class DebugBarLogWriterTest extends SapphireTest
 
     public function testFactory()
     {
-        $instance = DebugBarLogWriter::factory(['foo']);
+        $instance = DebugBarLogWriter::factory(array('foo'));
         $this->assertInstanceOf('DebugBarLogWriter', $instance);
     }
 

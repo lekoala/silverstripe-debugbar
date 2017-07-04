@@ -33,7 +33,7 @@ class JdornSqlFormatter
     const TOKEN_VALUE = 1;
 
     // Reserved words (for syntax highlighting)
-    protected static $reserved = [
+    protected static $reserved = array(
         'ACCESSIBLE', 'ACTION', 'AGAINST', 'AGGREGATE', 'ALGORITHM', 'ALL', 'ALTER',
         'ANALYSE', 'ANALYZE', 'AS', 'ASC',
         'AUTOCOMMIT', 'AUTO_INCREMENT', 'BACKUP', 'BEGIN', 'BETWEEN', 'BINLOG', 'BOTH',
@@ -82,19 +82,19 @@ class JdornSqlFormatter
         'TRUNCATE', 'TYPE', 'TYPES', 'UNCOMMITTED', 'UNIQUE', 'UNLOCK', 'UNSIGNED',
         'USAGE', 'USE', 'USING', 'VARIABLES',
         'VIEW', 'WHEN', 'WITH', 'WORK', 'WRITE', 'YEAR_MONTH'
-    ];
+    );
     // For SQL formatting
     // These keywords will all be on their own line
-    protected static $reserved_toplevel = [
+    protected static $reserved_toplevel = array(
         'SELECT', 'FROM', 'WHERE', 'SET', 'ORDER BY', 'GROUP BY', 'LIMIT', 'DROP',
         'VALUES', 'UPDATE', 'HAVING', 'ADD', 'AFTER', 'ALTER TABLE', 'DELETE FROM',
         'UNION ALL', 'UNION', 'EXCEPT', 'INTERSECT'
-    ];
-    protected static $reserved_newline = [
+    );
+    protected static $reserved_newline = array(
         'LEFT OUTER JOIN', 'RIGHT OUTER JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'OUTER JOIN',
         'INNER JOIN', 'JOIN', 'XOR', 'OR', 'AND'
-    ];
-    protected static $functions = [
+    );
+    protected static $functions = array(
         'ABS', 'ACOS', 'ADDDATE', 'ADDTIME', 'AES_DECRYPT', 'AES_ENCRYPT', 'AREA',
         'ASBINARY', 'ASCII', 'ASIN', 'ASTEXT', 'ATAN', 'ATAN2',
         'AVG', 'BDMPOLYFROMTEXT', 'BDMPOLYFROMWKB', 'BDPOLYFROMTEXT', 'BDPOLYFROMWKB',
@@ -147,12 +147,12 @@ class JdornSqlFormatter
         'UPDATEXML', 'UPPER', 'USER', 'UTC_DATE', 'UTC_TIME', 'UTC_TIMESTAMP',
         'UUID', 'VARIANCE', 'VAR_POP', 'VAR_SAMP', 'VERSION', 'WEEK', 'WEEKDAY',
         'WEEKOFYEAR', 'WITHIN', 'X', 'Y', 'YEAR', 'YEARWEEK'
-    ];
+    );
     // Punctuation that can be used as a boundary between other tokens
-    protected static $boundaries = [
+    protected static $boundaries = array(
         ',', ';', ':', ')', '(', '.', '=', '<',
         '>', '+', '-', '*', '/', '!', '^', '%', '|', '&', '#'
-    ];
+    );
     // For HTML syntax highlighting
     // Styles applied to different token types
     public static $quote_attributes          = 'style="color: blue;"';
@@ -195,7 +195,7 @@ class JdornSqlFormatter
     // Cache variables
     // Only tokens shorter than this size will be cached.  Somewhere between 10 and 20 seems to work well for most cases.
     public static $max_cachekey_size = 15;
-    protected static $token_cache    = [];
+    protected static $token_cache    = array();
     protected static $cache_hits     = 0;
     protected static $cache_misses   = 0;
 
@@ -205,12 +205,12 @@ class JdornSqlFormatter
      */
     public static function getCacheStats()
     {
-        return [
+        return array(
             'hits' => self::$cache_hits,
             'misses' => self::$cache_misses,
             'entries' => count(self::$token_cache),
             'size' => strlen(serialize(self::$token_cache))
-        ];
+        );
     }
 
     /**
@@ -228,20 +228,20 @@ class JdornSqlFormatter
 
         // Set up regular expressions
         self::$regex_boundaries        = '('.implode('|',
-                array_map([__CLASS__, 'quote_regex'], self::$boundaries)).')';
+                array_map(array(__CLASS__, 'quote_regex'), self::$boundaries)).')';
         self::$regex_reserved          = '('.implode('|',
-                array_map([__CLASS__, 'quote_regex'], self::$reserved)).')';
+                array_map(array(__CLASS__, 'quote_regex'), self::$reserved)).')';
         self::$regex_reserved_toplevel = str_replace(' ', '\\s+',
             '('.implode('|',
-                array_map([__CLASS__, 'quote_regex'],
+                array_map(array(__CLASS__, 'quote_regex'),
                     self::$reserved_toplevel)).')');
         self::$regex_reserved_newline  = str_replace(' ', '\\s+',
             '('.implode('|',
-                array_map([__CLASS__, 'quote_regex'],
+                array_map(array(__CLASS__, 'quote_regex'),
                     self::$reserved_newline)).')');
 
         self::$regex_function = '('.implode('|',
-                array_map([__CLASS__, 'quote_regex'], self::$functions)).')';
+                array_map(array(__CLASS__, 'quote_regex'), self::$functions)).')';
 
         self::$init = true;
     }
@@ -259,10 +259,10 @@ class JdornSqlFormatter
     {
         // Whitespace
         if (preg_match('/^\s+/', $string, $matches)) {
-            return [
+            return array(
                 self::TOKEN_VALUE => $matches[0],
                 self::TOKEN_TYPE => self::TOKEN_TYPE_WHITESPACE
-            ];
+            );
         }
 
         // Comment
@@ -281,30 +281,30 @@ class JdornSqlFormatter
                 $last = strlen($string);
             }
 
-            return [
+            return array(
                 self::TOKEN_VALUE => substr($string, 0, $last),
                 self::TOKEN_TYPE => $type
-            ];
+            );
         }
 
         // Quoted String
         if ($string[0] === '"' || $string[0] === '\'' || $string[0] === '`' || $string[0]
             === '[') {
-            $return = [
+            $return = array(
                 self::TOKEN_TYPE => (($string[0] === '`' || $string[0] === '[') ? self::TOKEN_TYPE_BACKTICK_QUOTE
                         : self::TOKEN_TYPE_QUOTE),
                 self::TOKEN_VALUE => self::getQuotedString($string)
-            ];
+            );
 
             return $return;
         }
 
         // User-defined Variable
         if (($string[0] === '@' || $string[0] === ':') && isset($string[1])) {
-            $ret = [
+            $ret = array(
                 self::TOKEN_VALUE => null,
                 self::TOKEN_TYPE => self::TOKEN_TYPE_VARIABLE
-            ];
+            );
 
             // If the variable name is quoted
             if ($string[1] === '"' || $string[1] === '\'' || $string[1] === '`') {
@@ -326,18 +326,18 @@ class JdornSqlFormatter
         // Number (decimal, binary, or hex)
         if (preg_match('/^([0-9]+(\.[0-9]+)?|0x[0-9a-fA-F]+|0b[01]+)($|\s|"\'`|'.self::$regex_boundaries.')/',
                 $string, $matches)) {
-            return [
+            return array(
                 self::TOKEN_VALUE => $matches[1],
                 self::TOKEN_TYPE => self::TOKEN_TYPE_NUMBER
-            ];
+            );
         }
 
         // Boundary Character (punctuation and symbols)
         if (preg_match('/^('.self::$regex_boundaries.')/', $string, $matches)) {
-            return [
+            return array(
                 self::TOKEN_VALUE => $matches[1],
                 self::TOKEN_TYPE => self::TOKEN_TYPE_BOUNDARY
-            ];
+            );
         }
 
         // A reserved word cannot be preceded by a '.'
@@ -348,26 +348,26 @@ class JdornSqlFormatter
             // Top Level Reserved Word
             if (preg_match('/^('.self::$regex_reserved_toplevel.')($|\s|'.self::$regex_boundaries.')/',
                     $upper, $matches)) {
-                return [
+                return array(
                     self::TOKEN_TYPE => self::TOKEN_TYPE_RESERVED_TOPLEVEL,
                     self::TOKEN_VALUE => substr($string, 0, strlen($matches[1]))
-                ];
+                );
             }
             // Newline Reserved Word
             if (preg_match('/^('.self::$regex_reserved_newline.')($|\s|'.self::$regex_boundaries.')/',
                     $upper, $matches)) {
-                return [
+                return array(
                     self::TOKEN_TYPE => self::TOKEN_TYPE_RESERVED_NEWLINE,
                     self::TOKEN_VALUE => substr($string, 0, strlen($matches[1]))
-                ];
+                );
             }
             // Other Reserved Word
             if (preg_match('/^('.self::$regex_reserved.')($|\s|'.self::$regex_boundaries.')/',
                     $upper, $matches)) {
-                return [
+                return array(
                     self::TOKEN_TYPE => self::TOKEN_TYPE_RESERVED,
                     self::TOKEN_VALUE => substr($string, 0, strlen($matches[1]))
-                ];
+                );
             }
         }
 
@@ -377,20 +377,20 @@ class JdornSqlFormatter
         // function
         if (preg_match('/^('.self::$regex_function.'[(]|\s|[)])/', $upper,
                 $matches)) {
-            return [
+            return array(
                 self::TOKEN_TYPE => self::TOKEN_TYPE_RESERVED,
                 self::TOKEN_VALUE => substr($string, 0, strlen($matches[1]) - 1)
-            ];
+            );
         }
 
         // Non reserved word
         preg_match('/^(.*?)($|\s|["\'`]|'.self::$regex_boundaries.')/', $string,
             $matches);
 
-        return [
+        return array(
             self::TOKEN_VALUE => $matches[1],
             self::TOKEN_TYPE => self::TOKEN_TYPE_WORD
-        ];
+        );
     }
 
     protected static function getQuotedString($string)
@@ -422,7 +422,7 @@ class JdornSqlFormatter
     {
         self::init();
 
-        $tokens = [];
+        $tokens = array();
 
         // Used for debugging if there is an error while tokenizing the string
         $original_length = strlen($string);
@@ -438,10 +438,10 @@ class JdornSqlFormatter
         while ($current_length) {
             // If the string stopped shrinking, there was a problem
             if ($old_string_len <= $current_length) {
-                $tokens[] = [
+                $tokens[] = array(
                     self::TOKEN_VALUE => $string,
                     self::TOKEN_TYPE => self::TOKEN_TYPE_ERROR
-                ];
+                );
 
                 return $tokens;
             }
@@ -504,7 +504,7 @@ class JdornSqlFormatter
         $inline_parentheses      = false;
         $increase_special_indent = false;
         $increase_block_indent   = false;
-        $indent_types            = [];
+        $indent_types            = array();
         $added_newline           = false;
         $inline_count            = 0;
         $inline_indented         = false;
@@ -514,7 +514,7 @@ class JdornSqlFormatter
         $original_tokens = self::tokenize($string);
 
         // Remove existing whitespace
-        $tokens = [];
+        $tokens = array();
         foreach ($original_tokens as $i => $token) {
             if ($token[self::TOKEN_TYPE] !== self::TOKEN_TYPE_WHITESPACE) {
                 $token['i'] = $i;
@@ -831,7 +831,7 @@ class JdornSqlFormatter
      */
     public static function splitQuery($string)
     {
-        $queries       = [];
+        $queries       = array();
         $current_query = '';
         $empty         = true;
 

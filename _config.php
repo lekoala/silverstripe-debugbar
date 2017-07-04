@@ -51,7 +51,7 @@ if (!function_exists('d')) {
         preg_match("/d\((.+)\)/", $src_line, $matches);
 
         // Find all arguments, ignore variables within parenthesis
-        $arguments_name = [];
+        $arguments_name = array();
         if (!empty($matches[1])) {
             $arguments_name = array_map('trim', preg_split("/(?![^(]*\)),/", $matches[1]));
         }
@@ -85,7 +85,7 @@ if (!function_exists('d')) {
 
         // Display data in a friendly manner
         if (empty($args)) {
-            $arguments_name = [];
+            $arguments_name = array();
             foreach ($bt as $trace) {
                 if (!empty($trace['object'])) {
                     $line = isset($trace['line']) ? $trace['line'] : 0;
