@@ -181,7 +181,13 @@ class DebugBar extends Object
         $renderer->setBasePath(DEBUGBAR_DIR . '/assets');
         $renderer->setBaseUrl(DEBUGBAR_DIR . '/assets');
 
-        $renderer->setEnableJqueryNoConflict(true);
+        if (self::isAdminController()) {
+            // In CMS, jQuery is already included
+            $renderer->disableVendor('jquery');
+            $renderer->setEnableJqueryNoConflict(false);
+        } else {
+            $renderer->setEnableJqueryNoConflict(true);
+        }
 
         if (DebugBar::config()->enable_storage) {
             $renderer->setOpenHandlerUrl('__debugbar');
@@ -281,6 +287,14 @@ class DebugBar extends Object
     public static function isAdminUrl()
     {
         return strpos(self::getRequestUrl(), '/admin/') === 0;
+    }
+
+    public static function isAdminController()
+    {
+        if (Controller::curr()) {
+            return Controller::curr() instanceof LeftAndMain;
+        }
+        return self::isAdminUrl();
     }
 
     /**
