@@ -65,6 +65,7 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
         $i       = 0;
         $queries = $this->db->getQueries();
         $limit   = DebugBar::config()->query_limit;
+        $warnDurationThreshold = Config::inst()->get('DebugBar', 'warn_dbqueries_threshold_seconds');
 
         $showDb = count(array_unique(array_map(function ($stmt) {
                 return $stmt['database'];
@@ -98,6 +99,7 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
                 'is_success' => $stmt['success'],
                 'database' => $showDb ? $stmt['database'] : null,
                 'source' => $stmt['source'],
+                'warn' => $stmt['duration'] > $warnDurationThreshold
             ];
 
             if ($timeCollector !== null) {

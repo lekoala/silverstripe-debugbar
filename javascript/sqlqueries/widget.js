@@ -57,6 +57,9 @@
                     if (typeof (stmt.stmt_id) != 'undefined' && stmt.stmt_id) {
                         $('<span title="Prepared statement ID" />').addClass(csscls('stmt-id')).text(stmt.stmt_id).appendTo(li);
                     }
+                    if (typeof stmt.warn !== 'undefined' && stmt.warn) {
+                        li.addClass(csscls('database-time-warning'));
+                    }
                     if (stmt.database) {
                         $('<span title="Database" />').addClass(csscls('database')).text(stmt.database).appendTo(li);
                         li.addClass(csscls('database' + stmt.database));

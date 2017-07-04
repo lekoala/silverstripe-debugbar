@@ -17,6 +17,8 @@ DebugBar:
   find_source: true
   enabled_in_admin: true
   query_limit: 200
+  # Threshold (seconds) for how long a database query can run for before it will be shown as a warning
+  warn_dbqueries_threshold_seconds: 1.0
 Director:
   rules:
     '__debugbar': 'DebugBarController'
