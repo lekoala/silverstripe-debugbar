@@ -91,6 +91,7 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
         // Stub out the dynamic data
         $result['version']['tooltip'] = 'Stub';
         $result['locale']['tooltip'] = 'Stub';
+        $result['user']['tooltip'] = 'Current member';
 
         $expected = array(
             'user' => array(
@@ -146,8 +147,7 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
             )
         );
 
-        //TODO: expected should reflect the dynamic data for the current user
-//        $this->assertSame($expected, $result);
+        $this->assertSame($expected, $result);
     }
 
     public function testGetAssets()
