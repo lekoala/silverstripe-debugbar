@@ -24,8 +24,28 @@ class DebugBarSilverStripeCollector extends DataCollector implements
             'parameters' => self::getRequestParameters(),
             'requirements' => self::getRequirementsData(),
             'user' => Member::currentUserID() ? Member::currentUser()->Title : 'Not logged in',
+            'templates' => self::getTemplateData(),
         ];
         return $data;
+    }
+
+    /**
+     * Returns the names of all the templates rendered.
+     * @return array
+     */
+    public static function getTemplateData()
+    {
+        $result = [];
+        $controller = self::$controller;
+        if ($controller) {
+            /** @var SSViewer $viewer */
+            if ($viewer = $controller->getViewer($controller->getAction())) {
+                foreach ($viewer->templates() as $key => $val) {
+                    $result[] = str_ireplace(BASE_PATH, '', $val);
+                }
+            }
+        }
+        return $result;
     }
 
     public static function getRequirementsData()
@@ -196,8 +216,13 @@ class DebugBarSilverStripeCollector extends DataCollector implements
                 "map" => "$name.requirements",
                 "default" => "{}"
             ],
+            'templates' => [
+                'icon' => 'edit',
+                'widget' => 'PhpDebugBar.Widgets.ListWidget',
+                'map' => "$name.templates",
+                'default' => '{}'
+            ]
         ];
-
 
         if (!empty(self::$debug)) {
             $widgets["debug"]       = [

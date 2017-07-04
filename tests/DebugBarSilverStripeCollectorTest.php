@@ -28,6 +28,7 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
         $this->assertArrayHasKey('debug', $data);
         $this->assertArrayHasKey('locale', $data);
         $this->assertArrayHasKey('parameters', $data);
+        $this->assertArrayHasKey('templates', $data);
         $this->assertContains('Framework', $data['version']);
         $this->assertSame('SiteConfig', $data['config']['ClassName']);
         $this->assertSame('User, ADMIN', $data['user']);
@@ -137,6 +138,12 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
                 'map' => 'silverstripe.requirements',
                 'default' => '{}',
             ],
+            'templates' => [
+                'icon' => 'edit',
+                'widget' => 'PhpDebugBar.Widgets.ListWidget',
+                'map' => "silverstripe.templates",
+                'default' => '{}'
+            ]
         ];
         $this->assertSame($expected, $result);
     }
@@ -150,5 +157,22 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
             'js' => 'widgets.js',
         ];
         $this->assertSame($expected, $this->collector->getAssets());
+    }
+
+    /**
+     * Test that at least one template is returned when visiting the home page
+     */
+    public function testGetTemplateData()
+    {
+        $controller = new Controller;
+        $controller->init();
+        $controller->setRequest(
+            new SS_HTTPRequest(
+                'GET',
+                '/'
+            )
+        );
+        $this->collector->setController($controller);
+        $this->assertGreaterThan(1, count($this->collector->getTemplateData()));
     }
 }
