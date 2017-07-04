@@ -15,9 +15,21 @@ This module will:
 
 The DebugBar is automatically injected into any html response through the request filter.
 
-#### Enabling toolbar on front-end.
-Please note that jQuery is excluded from vendors and you are expected to include
-your own jQuery version in Page::init(). Below is an example of how to the jquery which ships with the framework:
+#### Managing jQuery
+
+The DebugBar will include its own version of jQuery by default. It will only be disabled
+in the admin (which already use jQuery).
+
+If you have added jQuery in your requirements (filename must be jquery.js or jquery.min.js),
+the DebugBar will not load its own jQuery version. You can also set the following
+configuration flag to false to prevent the DebugBar to include its own jQuery.
+
+    DebugBar:
+      include_jquery: false
+
+If you are including jQuery yourself, it is expected to you include it in Page::init().
+Below is an example of how to the jquery which ships with the framework:
+
 ```php
     public function init()
     {
@@ -108,7 +120,7 @@ as well.
 
 Third party
 ==================
-- (SqlFormatted)[https://github.com/jdorn/sql-formatter]
+- [SqlFormatted](https://github.com/jdorn/sql-formatter)
 
 Compatibility
 ==================

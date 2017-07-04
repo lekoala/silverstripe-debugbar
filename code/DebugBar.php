@@ -181,12 +181,26 @@ class DebugBar extends Object
         $renderer->setBasePath(DEBUGBAR_DIR . '/assets');
         $renderer->setBaseUrl(DEBUGBAR_DIR . '/assets');
 
+        $includeJquery = self::config()->include_jquery;
+        // In CMS, jQuery is already included
         if (self::isAdminController()) {
-            // In CMS, jQuery is already included
+            $includeJquery = false;
+        }
+        // If jQuery is already included, set to false
+        $js = Requirements::backend()->get_javascript();
+        foreach ($js as $url) {
+            $name = basename($url);
+            if ($name == 'jquery.js' || $name == 'jquery.min.js') {
+                $includeJquery = false;
+                break;
+            }
+        }
+
+        if ($includeJquery) {
+            $renderer->setEnableJqueryNoConflict(true);
+        } else {
             $renderer->disableVendor('jquery');
             $renderer->setEnableJqueryNoConflict(false);
-        } else {
-            $renderer->setEnableJqueryNoConflict(true);
         }
 
         if (DebugBar::config()->enable_storage) {
