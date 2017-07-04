@@ -181,8 +181,7 @@ class DebugBar extends Object
         $renderer->setBasePath(DEBUGBAR_DIR . '/assets');
         $renderer->setBaseUrl(DEBUGBAR_DIR . '/assets');
 
-        $renderer->disableVendor('jquery');
-        $renderer->setEnableJqueryNoConflict(false);
+        $renderer->setEnableJqueryNoConflict(true);
 
         if (DebugBar::config()->enable_storage) {
             $renderer->setOpenHandlerUrl('__debugbar');
