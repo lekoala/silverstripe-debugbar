@@ -4,10 +4,9 @@ use DebugBar\DataCollector\AssetProvider;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 
-class DebugBarSilverStripeCollector extends DataCollector implements
-    Renderable,
-    AssetProvider
+class DebugBarSilverStripeCollector extends DataCollector implements Renderable, AssetProvider
 {
+
     protected static $debug = [];
     protected static $controller;
 
@@ -95,7 +94,7 @@ class DebugBarSilverStripeCollector extends DataCollector implements
 
     public static function getSessionData()
     {
-        $data     = Session::get_all();
+        $data = Session::get_all();
         $filtered = [];
 
         // Filter not useful data
@@ -126,9 +125,7 @@ class DebugBarSilverStripeCollector extends DataCollector implements
         $matches = null;
 
         preg_match_all(
-            "/<p class=\"message warning\">\n(.*?)<\/p>/s",
-            $data,
-            $matches
+            "/<p class=\"message warning\">\n(.*?)<\/p>/s", $data, $matches
         );
 
         if (!empty($matches[1])) {
@@ -163,11 +160,20 @@ class DebugBarSilverStripeCollector extends DataCollector implements
     {
         $name = $this->getName();
 
-        $userIcon = 'user';
-        $userText = 'Current member';
-        if (Session::get('Masquerade.Old.loggedInAs')) {
-            $userIcon = 'user-secret';
-            $userText = 'Masquerading as member';
+        $userIcon = 'user-times';
+        $userText = 'Not logged in';
+        if (Member::currentUserID()) {
+            $member = Member::currentUser();
+            $memberTag = $member->getTitle() . ' (#' . $member->ID . ')';
+
+            $userIcon = 'user';
+            $userText = 'Logged in as ' . $memberTag;
+
+            // Masquerade integration
+            if (Session::get('Masquerade.Old.loggedInAs')) {
+                $userIcon = 'user-secret';
+                $userText = 'Masquerading as member ' . $memberTag;
+            }
         }
 
         $widgets = [
@@ -225,7 +231,7 @@ class DebugBarSilverStripeCollector extends DataCollector implements
         ];
 
         if (!empty(self::$debug)) {
-            $widgets["debug"]       = [
+            $widgets["debug"] = [
                 "icon" => "list-alt",
                 "widget" => "PhpDebugBar.Widgets.ListWidget",
                 "map" => "$name.debug",
@@ -246,8 +252,8 @@ class DebugBarSilverStripeCollector extends DataCollector implements
     public function getAssets()
     {
         return [
-            'base_path' => '/'.DEBUGBAR_DIR.'/javascript',
-            'base_url' => DEBUGBAR_DIR.'/javascript',
+            'base_path' => '/' . DEBUGBAR_DIR . '/javascript',
+            'base_url' => DEBUGBAR_DIR . '/javascript',
             'css' => [],
             'js' => 'widgets.js',
         ];
