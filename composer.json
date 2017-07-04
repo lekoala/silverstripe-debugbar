@@ -22,7 +22,10 @@
         "maximebf/debugbar": "^1.13"
     },
     "extra": {
-        "installer-name": "debugbar"
+        "installer-name": "debugbar",
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
     },
     "support": {
         "issues": "https://github.com/lekoala/silverstripe-debugbar/issues"
