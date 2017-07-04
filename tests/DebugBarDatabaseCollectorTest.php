@@ -24,6 +24,8 @@ class DebugBarDatabaseCollectorTest extends SapphireTest
 
     public function testCollect()
     {
+        // Deliberately high warning threshold
+        Config::inst()->update('DebugBar', 'warn_dbqueries_threshold_seconds', 200);
         $result = $this->collector->collect();
 
         $this->assertGreaterThan(1, $result['nb_statements']);
@@ -34,6 +36,15 @@ class DebugBarDatabaseCollectorTest extends SapphireTest
         $this->assertNotEmpty($statement['sql']);
         $this->assertEquals(1, $statement['is_success']);
         $this->assertContains('PHPUnit_Framework_TestCase', $statement['source']);
+        $this->assertFalse($statement['warn']);
+
+        // Deliberately low warning threshold
+        Config::inst()->update('DebugBar', 'warn_dbqueries_threshold_seconds', 0.0000001);
+        $result = $this->collector->collect();
+
+        $this->assertNotEmpty($result['statements']);
+        $statement = array_shift($result['statements']);
+        $this->assertTrue($statement['warn']);
     }
 
     public function testGetWidgets()
