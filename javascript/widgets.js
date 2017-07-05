@@ -46,4 +46,23 @@
 
     });
 
+    /**
+     * A customised indicator class that will allow "warnable" behaviour. This can be invoked by including
+     * "warn" => "ok", "danger" or "warning" in the data map.
+     *
+     * See the Indicator class for more information on API usage.
+     */
+    var indicatorcss = PhpDebugBar.utils.makecsscls('phpdebugbar-');
+    var WarnableRequestTimeIndicator = PhpDebugBar.DebugBar.WarnableRequestTimeIndicator = PhpDebugBar.DebugBar.Indicator.extend({
+        render: function() {
+            WarnableRequestTimeIndicator.__super__.render.apply(this);
+
+            if (typeof this._attributes.warn === 'undefined') {
+                return;
+            }
+
+            this.$el.addClass(indicatorcss('requesttime-' + this._attributes.warn));
+        }
+    });
+
 })(PhpDebugBar.$);

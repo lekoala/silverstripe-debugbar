@@ -87,7 +87,7 @@ class DebugBar extends Object
 
         $debugbar->addCollector(new DebugBar\DataCollector\PhpInfoCollector());
         $debugbar->addCollector(new DebugBar\DataCollector\MessagesCollector());
-        $debugbar->addCollector(new DebugBar\DataCollector\TimeDataCollector());
+        $debugbar->addCollector(new DebugBarTimeDataCollector());
         $debugbar->addCollector(new DebugBar\DataCollector\MemoryCollector());
 
         // On 3.1, PDO does not exist
