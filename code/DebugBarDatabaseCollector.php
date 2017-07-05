@@ -10,18 +10,22 @@ use DebugBar\DataCollector\TimeDataCollector;
  */
 class DebugBarDatabaseCollector extends DataCollector implements Renderable, AssetProvider
 {
+    /**
+     * @var TimeDataCollector
+     */
     protected $timeCollector;
+
+    /**
+     * @var SS_Database
+     */
     protected $db;
 
     /**
      * @param SS_Database $db
      * @param TimeDataCollector $timeCollector
      */
-    public function __construct(
-        SS_Database $db,
-        TimeDataCollector $timeCollector = null
-    ) {
-
+    public function __construct(SS_Database $db, TimeDataCollector $timeCollector = null)
+    {
         $this->db            = $db;
         $this->timeCollector = $timeCollector;
     }
@@ -32,6 +36,19 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
     public function collect()
     {
         $data = $this->collectData($this->timeCollector);
+
+        // Check for excessive number of queries
+        $dbQueryWarningLevel = DebugBar::config()->warn_query_limit;
+        if ($dbQueryWarningLevel && $data['nb_statements'] > $dbQueryWarningLevel) {
+            DebugBar::getDebugBar()
+                ->getCollector('messages')
+                ->addMessage(
+                    'Your page is running a high number of database queries. You could reduce this by implementing '
+                    . 'caching. <a href="https://docs.silverstripe.org/en/developer_guides/performance/"'
+                    . ' target="_blank">More information.</a>',
+                    'warning'
+                );
+        }
 
         return $data;
     }

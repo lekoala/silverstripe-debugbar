@@ -301,3 +301,30 @@ div.phpdebugbar-mini-design a.phpdebugbar-tab {
   div.phpdebugbar-mini-design a.phpdebugbar-tab i {
     display:inline-block;
   }
+
+/* -------------------------------------- */
+
+div.phpdebugbar .phpdebugbar-indicator.phpdebugbar-requesttime-ok:after,
+div.phpdebugbar .phpdebugbar-indicator.phpdebugbar-requesttime-warning:after,
+div.phpdebugbar .phpdebugbar-indicator.phpdebugbar-requesttime-danger:after {
+    content: '';
+    height: 5px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+div.phpdebugbar .phpdebugbar-indicator.phpdebugbar-requesttime-ok:after {
+    background-color: #05a805;
+}
+div.phpdebugbar .phpdebugbar-indicator.phpdebugbar-requesttime-warning:after {
+    background-color: #F6932E;
+}
+div.phpdebugbar .phpdebugbar-indicator.phpdebugbar-requesttime-danger:after {
+    background-color: #ED0000;
+}
+
+div.phpdebugbar .phpdebugbar-widgets-value a {
+    text-decoration: underline;
+}
