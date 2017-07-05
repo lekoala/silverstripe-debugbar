@@ -86,7 +86,6 @@ class DebugBar extends Object
         }
 
         $debugbar->addCollector(new DebugBar\DataCollector\PhpInfoCollector());
-        $debugbar->addCollector(new DebugBar\DataCollector\MessagesCollector());
         $debugbar->addCollector(new DebugBarTimeDataCollector());
         $debugbar->addCollector(new DebugBar\DataCollector\MemoryCollector());
 
@@ -125,6 +124,9 @@ class DebugBar extends Object
             $db->setShowQueries(self::getShowQueries());
             $debugbar->addCollector(new DebugBarDatabaseCollector($db));
         }
+
+        // Add message collector last so other collectors can send messages to the console using it
+        $debugbar->addCollector(new DebugBar\DataCollector\MessagesCollector());
 
         // Add some SilverStripe specific infos
         $debugbar->addCollector(new DebugBarSilverStripeCollector());

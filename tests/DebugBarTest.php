@@ -1,5 +1,7 @@
 <?php
 
+use DebugBar\DataCollector\MessagesCollector;
+
 /**
  * Tests for DebugBar
  */
@@ -128,5 +130,25 @@ class DebugBarTest extends SapphireTest
         $this->assertFalse(DebugBar::notLocalIp());
 
         $_SERVER['REMOTE_ADDR'] = $original;
+    }
+
+    /**
+     * For the database collector to be able to push messages to the message collector, it must be loaded
+     * before the message collector. This test ensures that won't accidentally change in future.
+     */
+    public function testMessageCollectorIsLoadedAfterDatabaseCollector()
+    {
+        $bar = DebugBar::getDebugBar();
+
+        $passedDatabaseCollector = false;
+        foreach ($bar->getCollectors() as $collector) {
+            if ($collector instanceof DebugBarDatabaseCollector) {
+                $passedDatabaseCollector = true;
+            }
+            if ($collector instanceof MessagesCollector) {
+                $this->assertTrue($passedDatabaseCollector, 'Message collector must be after database collector');
+                break;
+            }
+        }
     }
 }

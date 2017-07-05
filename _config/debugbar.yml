@@ -20,6 +20,8 @@ DebugBar:
   include_jquery: true
   # Maximum number of queries to display
   query_limit: 200
+  # Number of DB queries before a warning will be displayed
+  warn_query_limit: 100
   # Threshold (seconds) for how long a database query can run for before it will be shown as a warning
   warn_dbqueries_threshold_seconds: 1.0
   # Threshold (seconds) for what constitutes a *dangerously* long page request (upper limit)
