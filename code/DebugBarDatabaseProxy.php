@@ -26,7 +26,7 @@ class DebugBarDatabaseProxy extends SS_Database
     public function __construct($realConn)
     {
         $this->realConn   = $realConn;
-        $this->queries    = [];
+        $this->queries    = array();
         $this->findSource = DebugBar::config()->find_source;
     }
 
@@ -135,7 +135,7 @@ class DebugBarDatabaseProxy extends SS_Database
      * @param array $parameters
      * @return mixed Result of query
      */
-    protected function benchmarkQuery($sql, $callback, $parameters = [])
+    protected function benchmarkQuery($sql, $callback, $parameters = array())
     {
         $starttime   = microtime(true);
         $startmemory = memory_get_usage(true);
@@ -202,7 +202,7 @@ class DebugBarDatabaseProxy extends SS_Database
             $select = null;
         }
 
-        $this->queries[] = [
+        $this->queries[] = array(
             'raw_query' => $rawsql,
             'short_query' => $shortsql,
             'select' => $select,
@@ -215,7 +215,7 @@ class DebugBarDatabaseProxy extends SS_Database
             'success' => $handle ? true : false,
             'database' => $this->currentDatabase(),
             'source' => $this->findSource ? $this->findSource() : null
-        ];
+        );
         return $handle;
     }
 
@@ -224,17 +224,17 @@ class DebugBarDatabaseProxy extends SS_Database
         $traces = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS | DEBUG_BACKTRACE_PROVIDE_OBJECT);
 
         // Not relevant to determine source
-        $internalClasses = [
+        $internalClasses = array(
             'DB', 'SQLExpression', 'DataList', 'DataObject',
             'DataQuery', 'SQLSelect', 'SQLQuery', 'SS_Map', 'SS_ListDecorator', 'Object'
-        ];
+        );
 
-        $viewerClasses = [
+        $viewerClasses = array(
             'SSViewer_DataPresenter', 'SSViewer_Scope', 'SSViewer',
             'ViewableData'
-        ];
+        );
 
-        $sources = [];
+        $sources = array();
         foreach ($traces as $trace) {
             $class    = isset($trace['class']) ? $trace['class'] : null;
             $line     = isset($trace['line']) ? $trace['line'] : null;
@@ -384,13 +384,13 @@ class DebugBarDatabaseProxy extends SS_Database
     public function __call($name, $arguments)
     {
         //return call_user_func_array([$this->realConn, __FUNCTION__],            func_get_args());
-        return call_user_func_array([$this->realConn, $name], $arguments);
+        return call_user_func_array(array($this->realConn, $name), $arguments);
     }
 
     public function addslashes($val)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -406,7 +406,7 @@ class DebugBarDatabaseProxy extends SS_Database
     ) {
 
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -421,7 +421,7 @@ class DebugBarDatabaseProxy extends SS_Database
     ) {
 
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -429,7 +429,7 @@ class DebugBarDatabaseProxy extends SS_Database
     public function createDatabase()
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -437,7 +437,7 @@ class DebugBarDatabaseProxy extends SS_Database
     public function createField($table, $field, $spec)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -451,7 +451,7 @@ class DebugBarDatabaseProxy extends SS_Database
     ) {
 
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -459,7 +459,7 @@ class DebugBarDatabaseProxy extends SS_Database
     public function datetimeDifferenceClause($date1, $date2)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -467,7 +467,7 @@ class DebugBarDatabaseProxy extends SS_Database
     public function datetimeIntervalClause($date, $interval)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -475,7 +475,7 @@ class DebugBarDatabaseProxy extends SS_Database
     public function enumValuesForField($tableName, $fieldName)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -483,7 +483,7 @@ class DebugBarDatabaseProxy extends SS_Database
     public function fieldList($table)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -491,7 +491,7 @@ class DebugBarDatabaseProxy extends SS_Database
     public function formattedDatetimeClause($date, $format)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -499,7 +499,7 @@ class DebugBarDatabaseProxy extends SS_Database
     public function getConnect($parameters)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -507,7 +507,7 @@ class DebugBarDatabaseProxy extends SS_Database
     public function getGeneratedID($table)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -515,7 +515,7 @@ class DebugBarDatabaseProxy extends SS_Database
     public function hasTable($tableName)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -523,7 +523,7 @@ class DebugBarDatabaseProxy extends SS_Database
     public function isActive()
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -531,7 +531,7 @@ class DebugBarDatabaseProxy extends SS_Database
     public function renameField($tableName, $oldName, $newName)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -539,7 +539,7 @@ class DebugBarDatabaseProxy extends SS_Database
     public function renameTable($oldTableName, $newTableName)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -547,7 +547,7 @@ class DebugBarDatabaseProxy extends SS_Database
     public function supportsTimezoneOverride()
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -555,7 +555,7 @@ class DebugBarDatabaseProxy extends SS_Database
     public function supportsTransactions()
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -563,7 +563,7 @@ class DebugBarDatabaseProxy extends SS_Database
     public function tableList()
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -571,7 +571,7 @@ class DebugBarDatabaseProxy extends SS_Database
     public function transactionEnd($chain = false)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -579,7 +579,7 @@ class DebugBarDatabaseProxy extends SS_Database
     public function transactionRollback($savepoint = false)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -587,7 +587,7 @@ class DebugBarDatabaseProxy extends SS_Database
     public function transactionSavepoint($savepoint)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -598,7 +598,7 @@ class DebugBarDatabaseProxy extends SS_Database
     ) {
 
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -606,7 +606,7 @@ class DebugBarDatabaseProxy extends SS_Database
     public function clearTable($table)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -648,7 +648,7 @@ class DebugBarDatabaseProxy extends SS_Database
         $keywords           = $this->escapeString($keywords);
         $htmlEntityKeywords = htmlentities($keywords, ENT_NOQUOTES, 'UTF-8');
 
-        $extraFilters = ['SiteTree' => '', 'File' => ''];
+        $extraFilters = array('SiteTree' => '', 'File' => '');
 
         if ($booleanSearch) {
             $boolean = "IN BOOLEAN MODE";
@@ -685,8 +685,8 @@ class DebugBarDatabaseProxy extends SS_Database
             $match['File'] = "MATCH (Filename, Title, Content) AGAINST ('$keywords' $boolean) AND ClassName = 'File'";
 
             // We make the relevance search by converting a boolean mode search into a normal one
-            $relevanceKeywords = str_replace(['*', '+', '-'], '', $keywords);
-            $htmlEntityRelevanceKeywords = str_replace(['*', '+', '-'], '', $htmlEntityKeywords);
+            $relevanceKeywords = str_replace(array('*', '+', '-'), '', $keywords);
+            $htmlEntityRelevanceKeywords = str_replace(array('*', '+', '-'), '', $htmlEntityKeywords);
             $relevance['SiteTree']       = "MATCH (Title, MenuTitle, Content, MetaDescription) "
                 ."AGAINST ('$relevanceKeywords') "
                 ."+ MATCH (Title, MenuTitle, Content, MetaDescription) AGAINST ('$htmlEntityRelevanceKeywords')";
@@ -697,8 +697,8 @@ class DebugBarDatabaseProxy extends SS_Database
         }
 
         // Generate initial DataLists and base table names
-        $lists       = [];
-        $baseClasses = ['SiteTree' => '', 'File' => ''];
+        $lists       = array();
+        $baseClasses = array('SiteTree' => '', 'File' => '');
         foreach ($classesToSearch as $class) {
             $lists[$class] = DataList::create($class)->where($notMatch . $match[$class] . $extraFilters[$class], "");
             $baseClasses[$class] = '"' . $class . '"';
@@ -707,36 +707,36 @@ class DebugBarDatabaseProxy extends SS_Database
         $charset = Config::inst()->get('MySQLDatabase', 'charset');
 
         // Make column selection lists
-        $select = [
-            'SiteTree' => [
+        $select = array(
+            'SiteTree' => array(
                 "ClassName", "$baseClasses[SiteTree].\"ID\"", "ParentID",
                 "Title", "MenuTitle", "URLSegment", "Content",
                 "LastEdited", "Created",
                 "Filename" => "_{$charset}''", "Name" => "_{$charset}''",
                 "Relevance" => $relevance['SiteTree'], "CanViewType"
-            ],
-            'File' => [
+            ),
+            'File' => array(
                 "ClassName", "$baseClasses[File].\"ID\"", "ParentID",
                 "Title", "MenuTitle" => "_{$charset}''", "URLSegment" => "_{$charset}''",
                 "Content",
                 "LastEdited", "Created",
                 "Filename", "Name",
                 "Relevance" => $relevance['File'], "CanViewType" => "NULL"
-            ],
-        ];
+            ),
+        );
 
         // Process and combine queries
-        $querySQLs       = [];
-        $queryParameters = [];
+        $querySQLs       = array();
+        $queryParameters = array();
         $totalCount      = 0;
         foreach ($lists as $class => $list) {
             $query = $list->dataQuery()->query();
 
             // There's no need to do all that joining
-            $replacedString = str_replace(['"', '`'], '', $baseClasses[$class]);
-            $query->setFrom([$replacedString => $baseClasses[$class]]);
+            $replacedString = str_replace(array('"', '`'), '', $baseClasses[$class]);
+            $query->setFrom(array($replacedString => $baseClasses[$class]));
             $query->setSelect($select[$class]);
-            $query->setOrderBy([]);
+            $query->setOrderBy(array());
 
             $querySQLs[]     = $query->sql($parameters);
             $queryParameters = array_merge($queryParameters, $parameters);
@@ -748,7 +748,7 @@ class DebugBarDatabaseProxy extends SS_Database
         // Get records
         $records = $this->preparedQuery($fullQuery, $queryParameters);
 
-        $objects = [];
+        $objects = array();
 
         foreach ($records as $record) {
             $objects[] = new $record['ClassName']($record);

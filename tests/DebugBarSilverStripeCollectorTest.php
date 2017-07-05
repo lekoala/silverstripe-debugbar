@@ -54,11 +54,11 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
             new SS_HTTPRequest(
                 'GET',
                 '/',
-                ['getvar' => 'value', 'foo' => 'bar'],
-                ['postvar' => 'value', 'bar' => 'baz']
+                array('getvar' => 'value', 'foo' => 'bar'),
+                array('postvar' => 'value', 'bar' => 'baz')
             )
         );
-        $controller->getRequest()->setRouteParams(['something' => 'here']);
+        $controller->getRequest()->setRouteParams(array('something' => 'here'));
 
         $this->collector->setController($controller);
         $this->assertSame($controller, $this->collector->getController());
@@ -91,73 +91,73 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
         // Stub out the dynamic data
         $result['version']['tooltip'] = 'Stub';
         $result['locale']['tooltip'] = 'Stub';
+        $result['user']['tooltip'] = 'Current member';
 
-        $expected = [
-            'user' => [
+        $expected = array(
+            'user' => array(
                 'icon' => 'user',
                 'tooltip' => 'Current member',
                 'default' => '',
-            ],
-            'version' => [
+            ),
+            'version' => array(
                 'icon' => 'desktop',
                 'tooltip' => 'Stub',
                 'default' => '',
-            ],
-            'locale' => [
+            ),
+            'locale' => array(
                 'icon' => 'globe',
                 'tooltip' => 'Stub',
                 'default' => '',
-            ],
-            'session' => [
+            ),
+            'session' => array(
                 'icon' => 'archive',
                 'widget' => 'PhpDebugBar.Widgets.VariableListWidget',
                 'map' => 'silverstripe.session',
                 'default' => '{}',
-            ],
-            'cookies' => [
+            ),
+            'cookies' => array(
                 'icon' => 'asterisk',
                 'widget' => 'PhpDebugBar.Widgets.VariableListWidget',
                 'map' => 'silverstripe.cookies',
                 'default' => '{}',
-            ],
-            'parameters' => [
+            ),
+            'parameters' => array(
                 'icon' => 'arrow-right',
                 'widget' => 'PhpDebugBar.Widgets.VariableListWidget',
                 'map' => 'silverstripe.parameters',
                 'default' => '{}',
-            ],
-            'config' => [
+            ),
+            'config' => array(
                 'icon' => 'gear',
                 'widget' => 'PhpDebugBar.Widgets.VariableListWidget',
                 'map' => 'silverstripe.config',
                 'default' => '{}',
-            ],
-            'requirements' => [
+            ),
+            'requirements' => array(
                 'icon' => 'file-o ',
                 'widget' => 'PhpDebugBar.Widgets.ListWidget',
                 'map' => 'silverstripe.requirements',
                 'default' => '{}',
-            ],
-            'templates' => [
+            ),
+            'templates' => array(
                 'icon' => 'edit',
                 'widget' => 'PhpDebugBar.Widgets.ListWidget',
                 'map' => "silverstripe.templates",
                 'default' => '{}'
-            ]
-        ];
+            )
+        );
 
-        //TODO: expected should reflect the dynamic data for the current user
-//        $this->assertSame($expected, $result);
+        $this->assertSame($expected, $result);
     }
 
     public function testGetAssets()
     {
-        $expected = [
+        $expected = array(
             'base_path' => '/debugbar/javascript',
             'base_url' => 'debugbar/javascript',
-            'css' => [],
+            'css' => array(),
             'js' => 'widgets.js',
-        ];
+        );
         $this->assertSame($expected, $this->collector->getAssets());
     }
 

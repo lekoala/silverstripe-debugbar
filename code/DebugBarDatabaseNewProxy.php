@@ -31,7 +31,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
         $this->connector     = $this->connector ? : $realConn->getConnector();
         $this->schemaManager = $this->schemaManager ? : $realConn->getSchemaManager();
         $this->queryBuilder  = $this->queryBuilder ? : $realConn->getQueryBuilder();
-        $this->queries       = [];
+        $this->queries       = array();
         $this->findSource    = DebugBar::config()->find_source;
     }
 
@@ -140,7 +140,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
      * @param array $parameters
      * @return mixed Result of query
      */
-    protected function benchmarkQuery($sql, $callback, $parameters = [])
+    protected function benchmarkQuery($sql, $callback, $parameters = array())
     {
         $starttime   = microtime(true);
         $startmemory = memory_get_usage(true);
@@ -230,7 +230,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
             $select = null;
         }
 
-        $this->queries[] = [
+        $this->queries[] = array(
             'raw_query' => $rawsql,
             'short_query' => $shortsql,
             'select' => $select,
@@ -243,7 +243,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
             'success' => $handle ? true : false,
             'database' => $this->getSelectedDatabase(),
             'source' => $this->findSource ? $this->findSource() : null
-        ];
+        );
         return $handle;
     }
 
@@ -252,17 +252,17 @@ class DebugBarDatabaseNewProxy extends SS_Database
         $traces = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS | DEBUG_BACKTRACE_PROVIDE_OBJECT);
 
         // Not relevant to determine source
-        $internalClasses = [
+        $internalClasses = array(
             'DB', 'SQLExpression', 'DataList', 'DataObject',
             'DataQuery', 'SQLSelect', 'SQLQuery', 'SS_Map', 'SS_ListDecorator', 'Object'
-        ];
+        );
 
-        $viewerClasses = [
+        $viewerClasses = array(
             'SSViewer_DataPresenter', 'SSViewer_Scope', 'SSViewer',
             'ViewableData'
-        ];
+        );
 
-        $sources = [];
+        $sources = array();
         foreach ($traces as $trace) {
             $class    = isset($trace['class']) ? $trace['class'] : null;
             $line     = isset($trace['line']) ? $trace['line'] : null;
@@ -389,7 +389,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
         // Benchmark query
         $connector = $this->connector;
         return $this->benchmarkQuery(
-            [$sql, $parameters],
+            array($sql, $parameters),
             function ($sql) use ($connector, $parameters, $errorLevel) {
                 return $connector->preparedQuery($sql, $parameters, $errorLevel);
             }
@@ -412,13 +412,13 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function __call($name, $arguments)
     {
         //return call_user_func_array([$this->realConn, __FUNCTION__],            func_get_args());
-        return call_user_func_array([$this->realConn, $name], $arguments);
+        return call_user_func_array(array($this->realConn, $name), $arguments);
     }
 
     public function addslashes($val)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -433,7 +433,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
         $advancedOptions = null
     ) {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -447,7 +447,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
         $parameterised = false
     ) {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -455,7 +455,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function createDatabase()
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -463,7 +463,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function createField($table, $field, $spec)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -476,7 +476,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
         $advancedOptions = null
     ) {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -484,7 +484,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function datetimeDifferenceClause($date1, $date2)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -492,7 +492,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function datetimeIntervalClause($date, $interval)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -500,7 +500,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function enumValuesForField($tableName, $fieldName)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -508,7 +508,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function fieldList($table)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -516,7 +516,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function formattedDatetimeClause($date, $format)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -524,7 +524,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function getConnect($parameters)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -532,7 +532,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function getGeneratedID($table)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -540,7 +540,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function hasTable($tableName)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -548,7 +548,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function isActive()
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -556,7 +556,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function renameField($tableName, $oldName, $newName)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -564,7 +564,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function renameTable($oldTableName, $newTableName)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -572,7 +572,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function supportsTimezoneOverride()
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -580,7 +580,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function supportsTransactions()
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -588,7 +588,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function tableList()
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -596,7 +596,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function transactionEnd($chain = false)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -604,7 +604,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function transactionRollback($savepoint = false)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -612,7 +612,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function transactionSavepoint($savepoint)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -620,7 +620,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function transactionStart($transaction_mode = false, $session_characteristics = false)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -628,7 +628,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function clearTable($table)
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -636,7 +636,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function getDatabaseServer()
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -644,7 +644,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function now()
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -652,7 +652,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function random()
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -669,7 +669,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
         $invertedMatch = false
     ) {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
@@ -677,7 +677,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     public function supportsCollations()
     {
         return call_user_func_array(
-            [$this->realConn, __FUNCTION__],
+            array($this->realConn, __FUNCTION__),
             func_get_args()
         );
     }
