@@ -1,11 +1,13 @@
 <?php
 
+use SilverStripe\Control\Controller as BaseController;
+
 /**
  * A open handler controller for DebugBar
  *
  * @author Koala
  */
-class DebugBarController extends Controller
+class Controller extends BaseController
 {
 
     public function index(SS_HTTPRequest $request)

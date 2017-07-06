@@ -1,6 +1,6 @@
 <?php
 
-use JdornSqlFormatter;
+use SqlFormatter;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use SilverStripe\Control\Director;
@@ -118,7 +118,7 @@ if (!function_exists('d')) {
                 }
             } else {
                 if ($varname && is_string($arg) && strpos($varname, 'sql') !== false) {
-                    echo JdornSqlFormatter::format($arg);
+                    echo SqlFormatter::format($arg);
                 } else {
                     dump($arg);
                 }

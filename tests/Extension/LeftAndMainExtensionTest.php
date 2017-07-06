@@ -1,9 +1,9 @@
 <?php
 
-class DebugBarLeftAndMainExtensionTest extends SapphireTest
+class LeftAndMainExtensionTest extends SapphireTest
 {
     /**
-     * @var DebugBarLeftAndMainExtension
+     * @var LeftAndMainExtension
      */
     protected $extension;
 
@@ -16,7 +16,7 @@ class DebugBarLeftAndMainExtensionTest extends SapphireTest
     {
         parent::setUp();
 
-        $this->extension = new DebugBarLeftAndMainExtension;
+        $this->extension = new LeftAndMainExtension;
         DebugBar::initDebugBar();
         $this->timeCollector = DebugBar::getDebugBar()->getCollector('time');
     }

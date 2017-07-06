@@ -1,8 +1,8 @@
 <?php
 
-use DebugBar\DataCollector\TimeDataCollector;
+use DebugBar\DataCollector\TimeDataCollector as BaseTimeDataCollector;
 
-class DebugBarTimeDataCollector extends TimeDataCollector
+class TimeDataCollector extends BaseTimeDataCollector
 {
     /**
      * Add in a warning or danger notification if the request time is greater than the configured thresholds

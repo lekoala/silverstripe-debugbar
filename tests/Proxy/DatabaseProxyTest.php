@@ -1,16 +1,16 @@
 <?php
 
-class DebugBarDatabaseNewProxyTest extends SapphireTest
+class DatabaseProxyTest extends SapphireTest
 {
     /**
-     * @var DebugBarDatabaseNewProxy
+     * @var DebugBarDatabaseProxy
      */
     protected $proxy;
 
     public function setUp()
     {
         parent::setUp();
-        $this->proxy = new DebugBarDatabaseNewProxy(DB::get_conn());
+        $this->proxy = new DatabaseProxy(DB::get_conn());
     }
 
     public function testGetAndSetShowQueries()
@@ -85,7 +85,7 @@ class DebugBarDatabaseNewProxyTest extends SapphireTest
         );
 
         $mockConnection = $this->getMockBuilder('MySQLDatabase')->setMethods($proxyMethods)->getMock();
-        $proxy = new DebugBarDatabaseNewProxy($mockConnection);
+        $proxy = new DatabaseProxy($mockConnection);
 
         foreach ($proxyMethods as $proxyMethod) {
             $mockConnection->expects($this->once())->method($proxyMethod);
@@ -100,7 +100,7 @@ class DebugBarDatabaseNewProxyTest extends SapphireTest
     public function testConstructorArguments()
     {
         global $databaseConfig;
-        $newProxy = new DebugBarDatabaseNewProxy($databaseConfig);
+        $newProxy = new DatabaseProxy($databaseConfig);
         $this->assertInstanceOf('DBConnector', $newProxy->getConnector());
     }
 }

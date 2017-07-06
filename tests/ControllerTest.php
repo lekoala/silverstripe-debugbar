@@ -1,6 +1,6 @@
 <?php
 
-class DebugBarControllerTest extends FunctionalTest
+class ControllerTest extends FunctionalTest
 {
     public function tearDown()
     {

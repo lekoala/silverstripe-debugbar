@@ -1,11 +1,13 @@
 <?php
 
+use SqlFormatter;
+
 /**
- * A proxy database to log queries (compatible with 3.2+)
+ * A proxy database to log queries
  *
  * @author Koala
  */
-class DebugBarDatabaseNewProxy extends SS_Database
+class DatabaseProxy extends SS_Database
 {
     /** @var MySQLDatabase */
     protected $realConn;
@@ -155,7 +157,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
             $result    = $callback($sql);
             $endtime   = round(microtime(true) - $starttime, 4);
 
-            $formattedSql = JdornSqlFormatter::format($sql);
+            $formattedSql = SqlFormatter::format($sql);
             $rows         = $result->numRecords();
             echo '<pre>The following query took <b>'.$endtime.'</b>s an returned <b>'.$rows."</b> row(s) \n";
             echo 'Triggered by: <i>'.$this->findSource().'</i></pre>';

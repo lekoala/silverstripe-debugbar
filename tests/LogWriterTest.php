@@ -1,6 +1,8 @@
 <?php
 
-class DebugBarLogWriterTest extends SapphireTest
+use Psr\Log\LoggerInterface;
+
+class LogWriterTest extends SapphireTest
 {
     /**
      * Init manually because we are running tests
@@ -17,7 +19,8 @@ class DebugBarLogWriterTest extends SapphireTest
      */
     public function tearDown()
     {
-        SS_Log::clear_writers();
+        // Clear handlers
+        Injector::inst()->get(LoggerInterface::class)->setHandlers([]);
         DebugBar::clearDebugBar();
         parent::tearDown();
     }
@@ -27,20 +30,14 @@ class DebugBarLogWriterTest extends SapphireTest
      */
     public function testDebugBarLoggerIsAdded()
     {
-        $writers = SS_Log::get_writers();
+        $handlers = Injector::inst()->get(LoggerInterface::class)->getHandlers();
         $found = false;
-        foreach ($writers as $writer) {
-            if ($writer instanceof DebugBarLogWriter) {
+        foreach ($handlers as $handler) {
+            if ($handler instanceof DebugBarLogWriter) {
                 $found = true;
             }
         }
         $this->assertTrue($found, 'DebugBarLogWriter was not added to SS_Log\'s log writers');
-    }
-
-    public function testFactory()
-    {
-        $instance = DebugBarLogWriter::factory(array('foo'));
-        $this->assertInstanceOf('DebugBarLogWriter', $instance);
     }
 
     public function testLogLevels()

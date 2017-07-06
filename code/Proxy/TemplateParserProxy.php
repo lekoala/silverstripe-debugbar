@@ -4,7 +4,7 @@
  * The template parser proxy will monitor the templates that are used during a page request. Since the
  * use of the template parser is behind cache checks, this will only execute during a cache flush.
  */
-class DebugBarTemplateParserProxy extends SSTemplateParser
+class TemplateParserProxy extends SSTemplateParser
 {
     /**
      * Tracks all templates used in the current request

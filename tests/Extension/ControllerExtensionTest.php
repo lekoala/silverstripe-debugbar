@@ -1,9 +1,9 @@
 <?php
 
-class DebugBarControllerExtensionTest extends FunctionalTest
+class ControllerExtensionTest extends FunctionalTest
 {
     protected $requiredExtensions = array(
-        'Controller' => array('DebugBarControllerExtension')
+        'Controller' => array('ControllerExtension')
     );
 
     /**

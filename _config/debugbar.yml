@@ -1,14 +1,13 @@
 ---
 Name: debugbar
-Before:
-  - 'mysite/*'
+Before: 'mysite'
 After:
-  - 'framework/*'
-  - 'cms/*'
+  - 'framework'
+  - 'cms'
 Only:
   environment: 'dev'
 ---
-DebugBar:
+LeKoala\DebugBar\DebugBar:
   enable_storage: true
   auto_debug: false
   ajax: false
@@ -29,16 +28,16 @@ DebugBar:
   # Ratio to divide the warning request time by to get the *warning* level
   warn_warning_ratio: 0.5
 
-Director:
+SilverStripe\Control\Director:
   rules:
-    '__debugbar': 'DebugBarController'
-Injector:
-  RequestProcessor:
+    '__debugbar': 'LeKoala\DebugBar\Controller'
+SilverStripe\Core\Injector\Injector:
+  SilverStripe\Control\RequestProcessor:
     properties:
       filters:
         - '%$DebugBarRequestFilter'
-  SSTemplateParser:
-    class: DebugBarTemplateParserProxy
-LeftAndMain:
+  SilverStripe\View\SSTemplateParser:
+    class: LeKoala\DebugBar\Proxy\TemplateParserProxy
+SilverStripe\Admin\LeftAndMain:
   extensions:
-    - DebugBarLeftAndMainExtension
+    - LeKoala\DebugBar\Extension\LeftAndMainExtension

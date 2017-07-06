@@ -1,6 +1,6 @@
 <?php
 
-class DebugBarTimeDataCollectorTest extends SapphireTest
+class TimeDataCollectorTest extends SapphireTest
 {
     /**
      * @var DebugBarTimeDataCollector
@@ -10,7 +10,7 @@ class DebugBarTimeDataCollectorTest extends SapphireTest
     public function setUp()
     {
         parent::setUp();
-        $this->collector = new DebugBarTimeDataCollector;
+        $this->collector = new TimeDataCollector;
     }
 
     public function testCollectorTooltip()

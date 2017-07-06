@@ -4,7 +4,7 @@ use DebugBar\DataCollector\AssetProvider;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 
-class DebugBarSilverStripeCollector extends DataCollector implements Renderable, AssetProvider
+class SilverStripeCollector extends DataCollector implements Renderable, AssetProvider
 {
 
     protected static $debug = array();

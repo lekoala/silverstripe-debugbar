@@ -1,11 +1,13 @@
 <?php
 
+use SilverStripe\Admin\LeftAndMainExtension as BaseLeftAndMainExtension;
+
 /**
  * Description of DebugBarLeftAndMainExtension
  *
  * @author Koala
  */
-class DebugBarLeftAndMainExtension extends LeftAndMainExtension
+class LeftAndMainExtension extends BaseLeftAndMainExtension
 {
 
     public function accessedCMS()

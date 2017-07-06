@@ -1,9 +1,11 @@
 <?php
 
+use SilverStripe\Control\RequestFilter as BaseRequestFilter;
+
 /**
  * A request filter to log pre request time
  */
-class DebugBarRequestFilter implements \RequestFilter
+class RequestFilter implements BaseRequestFilter
 {
 
     /**

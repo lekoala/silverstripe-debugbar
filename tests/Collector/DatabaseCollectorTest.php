@@ -1,6 +1,6 @@
 <?php
 
-class DebugBarDatabaseCollectorTest extends SapphireTest
+class DatabaseCollectorTest extends SapphireTest
 {
     /**
      * @var DebugBarSilverStripeCollector

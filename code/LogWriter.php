@@ -1,10 +1,9 @@
 <?php
-require_once 'Zend/Log/Writer/Abstract.php';
 
 /**
  * Custom writer for SS_Log
  */
-class DebugBarLogWriter extends Zend_Log_Writer_Abstract
+class LogWriter implements Monolog\Handler\HandlerInterface
 {
     /**
      * Map SS_Log levels to MessagesCollector levels
@@ -23,15 +22,6 @@ class DebugBarLogWriter extends Zend_Log_Writer_Abstract
      * @var string
      */
     const LOG_LEVEL_DEFAULT = 'info';
-
-    /**
-     * @param array|\Zend_Config $config
-     * @return DebugBarLogWriter
-     */
-    public static function factory($config)
-    {
-        return new DebugBarLogWriter();
-    }
 
     /**
      * @param array $event

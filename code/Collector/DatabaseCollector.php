@@ -8,7 +8,7 @@ use DebugBar\DataCollector\TimeDataCollector;
 /**
  * Collects data about SQL statements executed through the DatabaseProxy
  */
-class DebugBarDatabaseCollector extends DataCollector implements Renderable, AssetProvider
+class DatabaseCollector extends DataCollector implements Renderable, AssetProvider
 {
     /**
      * @var TimeDataCollector

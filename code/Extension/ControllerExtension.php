@@ -3,7 +3,7 @@
 /**
  * A controller extension to log times and render the Debug Bar
  */
-class DebugBarControllerExtension extends Extension
+class ControllerExtension extends Extension
 {
 
     public function onBeforeInit()

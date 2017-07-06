@@ -28,7 +28,7 @@ class DebugBarTest extends SapphireTest
         $this->assertNotEmpty(DebugBar::getDebugBar());
 
         $conn = DB::get_conn();
-        $this->assertInstanceOf('DebugBarDatabaseNewProxy', $conn);
+        $this->assertInstanceOf('DatabaseProxy', $conn);
     }
 
     public function testLHelper()
@@ -94,7 +94,7 @@ class DebugBarTest extends SapphireTest
             ),
             array(
                 function () {
-                    Config::inst()->update('DebugBar', 'disabled', true);
+                    Config::modify()->set('DebugBar', 'disabled', true);
                 },
                 'Disabled by a constant or configuration'
             ),
@@ -109,10 +109,10 @@ class DebugBarTest extends SapphireTest
 
     public function testNotLocalIp()
     {
-        Config::inst()->update('DebugBar', 'check_local_ip', false);
+        Config::modify()->set('DebugBar', 'check_local_ip', false);
         $this->assertFalse(DebugBar::notLocalIp());
 
-        Config::inst()->update('DebugBar', 'check_local_ip', true);
+        Config::modify()->set('DebugBar', 'check_local_ip', true);
         $original = $_SERVER['REMOTE_ADDR'];
         $_SERVER['REMOTE_ADDR'] = '123.456.789.012';
         $this->assertTrue(DebugBar::notLocalIp());
@@ -135,7 +135,7 @@ class DebugBarTest extends SapphireTest
 
         $passedDatabaseCollector = false;
         foreach ($bar->getCollectors() as $collector) {
-            if ($collector instanceof DebugBarDatabaseCollector) {
+            if ($collector instanceof DatabaseCollector) {
                 $passedDatabaseCollector = true;
             }
             if ($collector instanceof MessagesCollector) {
