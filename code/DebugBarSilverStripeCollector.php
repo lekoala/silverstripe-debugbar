@@ -30,21 +30,25 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
 
     /**
      * Returns the names of all the templates rendered.
+     *
      * @return array
      */
     public static function getTemplateData()
     {
-        $result = array();
-        $controller = self::$controller;
-        if ($controller) {
-            /** @var SSViewer $viewer */
-            if ($viewer = $controller->getViewer($controller->getAction())) {
-                foreach ($viewer->templates() as $key => $val) {
-                    $result[] = str_ireplace(BASE_PATH, '', $val);
-                }
-            }
+        if (DebugBarTemplateParserProxy::getCached()) {
+            return array(
+                'templates' => array(
+                    'NOTE: Rendered templates will not display when cached, please flush to view the list.'
+                ),
+                'count' => '-'
+            );
         }
-        return $result;
+
+        $templates = DebugBarTemplateParserProxy::getTemplatesUsed();
+        return array(
+            'templates' => $templates,
+            'count' => count($templates)
+        );
     }
 
     public static function getRequirementsData()
@@ -225,8 +229,12 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
             'templates' => array(
                 'icon' => 'edit',
                 'widget' => 'PhpDebugBar.Widgets.ListWidget',
-                'map' => "$name.templates",
+                'map' => "$name.templates.templates",
                 'default' => '{}'
+            ),
+            'templates:badge' => array(
+                'map' => "$name.templates.count",
+                'default' => 0
             )
         );
 

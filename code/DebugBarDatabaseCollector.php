@@ -37,9 +37,9 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
             DebugBar::getDebugBar()
                 ->getCollector('messages')
                 ->addMessage(
-                    'Your page is running a high number of database queries. You could reduce this by implementing '
-                    . 'caching. <a href="https://docs.silverstripe.org/en/developer_guides/performance/"'
-                    . ' target="_blank">More information.</a>',
+                    'This page ran more than ' . $dbQueryWarningLevel . ' database queries. You could reduce this by '
+                    . 'implementing caching. For more information, <a href="https://docs.silverstripe.org/en/'
+                    . 'developer_guides/performance/" target="_blank">click here.</a>',
                     'warning'
                 );
         }

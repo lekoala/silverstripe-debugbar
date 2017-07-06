@@ -37,6 +37,8 @@ Injector:
     properties:
       filters:
         - '%$DebugBarRequestFilter'
+  SSTemplateParser:
+    class: DebugBarTemplateParserProxy
 LeftAndMain:
   extensions:
     - DebugBarLeftAndMainExtension
