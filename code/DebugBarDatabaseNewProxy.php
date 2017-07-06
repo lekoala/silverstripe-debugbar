@@ -28,9 +28,9 @@ class DebugBarDatabaseNewProxy extends SS_Database
             $realConn = DB::connect($realConn);
         }
         $this->realConn      = $realConn;
-        $this->connector     = $this->connector ? : $realConn->getConnector();
-        $this->schemaManager = $this->schemaManager ? : $realConn->getSchemaManager();
-        $this->queryBuilder  = $this->queryBuilder ? : $realConn->getQueryBuilder();
+        $this->connector     = $realConn->getConnector();
+        $this->schemaManager = $realConn->getSchemaManager();
+        $this->queryBuilder  = $realConn->getQueryBuilder();
         $this->queries       = array();
         $this->findSource    = DebugBar::config()->find_source;
     }
