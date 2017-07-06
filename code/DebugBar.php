@@ -111,7 +111,7 @@ class DebugBar extends Object
             } else {
                 DB::set_conn($db = new DebugBarDatabaseNewProxy(DB::get_conn()));
                 $db->setShowQueries(self::getShowQueries());
-                $debugbar->addCollector(new DebugBarDatabaseCollector($db));
+                $debugbar->addCollector(new DebugBarDatabaseCollector);
             }
         } else {
             if (!DB::getConn()) {

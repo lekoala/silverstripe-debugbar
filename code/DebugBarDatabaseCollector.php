@@ -21,20 +21,14 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
     protected $db;
 
     /**
-     * @param SS_Database $db
-     * @param TimeDataCollector $timeCollector
-     */
-    public function __construct(SS_Database $db, TimeDataCollector $timeCollector = null)
-    {
-        $this->db            = $db;
-        $this->timeCollector = $timeCollector;
-    }
-
-    /**
      * @return array
      */
     public function collect()
     {
+        // Gather the database connector at the last minute in case it has been replaced by other modules
+        $this->db = DB::get_conn();
+        $this->timeCollector = DebugBar::getDebugBar()->getCollector('time');
+
         $data = $this->collectData($this->timeCollector);
 
         // Check for excessive number of queries
@@ -81,6 +75,7 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
 
         $i       = 0;
         $queries = $this->db->getQueries();
+
         $limit   = DebugBar::config()->query_limit;
         $warnDurationThreshold = Config::inst()->get('DebugBar', 'warn_dbqueries_threshold_seconds');
 
