@@ -112,12 +112,6 @@ class DebugBar extends Object
             $debugbar->addCollector(new DebugBarDatabaseCollector);
         }
 
-        } else {
-            DB::set_conn($db = new DebugBarDatabaseNewProxy(DB::get_conn()));
-            $db->setShowQueries(self::getShowQueries());
-            $debugbar->addCollector(new DebugBarDatabaseCollector($db));
-        }
-
         // Add message collector last so other collectors can send messages to the console using it
         $debugbar->addCollector(new DebugBar\DataCollector\MessagesCollector());
 
