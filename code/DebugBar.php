@@ -89,38 +89,25 @@ class DebugBar extends Object
         $debugbar->addCollector(new DebugBarTimeDataCollector());
         $debugbar->addCollector(new DebugBar\DataCollector\MemoryCollector());
 
-        // On 3.1, PDO does not exist
-        if (method_exists('DB', 'get_conn')) {
-            if (!DB::get_conn()) {
-                global $databaseConfig;
-                if ($databaseConfig) {
-                    DB::connect($databaseConfig);
-                }
+        if (!DB::get_conn()) {
+            global $databaseConfig;
+            if ($databaseConfig) {
+                DB::connect($databaseConfig);
             }
+        }
 
-            $connector = DB::get_connector();
-            if (!self::config()->force_proxy && $connector instanceof PDOConnector) {
-                // Use a little bit of magic to replace the pdo instance
-                $refObject = new ReflectionObject($connector);
-                $refProperty = $refObject->getProperty('pdoConnection');
-                $refProperty->setAccessible(true);
-                $traceablePdo = new DebugBar\DataCollector\PDO\TraceablePDO($refProperty->getValue($connector));
-                $refProperty->setValue($connector, $traceablePdo);
+        $connector = DB::get_connector();
+        if (!self::config()->force_proxy && $connector instanceof PDOConnector) {
+            // Use a little bit of magic to replace the pdo instance
+            $refObject = new ReflectionObject($connector);
+            $refProperty = $refObject->getProperty('pdoConnection');
+            $refProperty->setAccessible(true);
+            $traceablePdo = new DebugBar\DataCollector\PDO\TraceablePDO($refProperty->getValue($connector));
+            $refProperty->setValue($connector, $traceablePdo);
 
-                $debugbar->addCollector(new DebugBar\DataCollector\PDO\PDOCollector($traceablePdo));
-            } else {
-                DB::set_conn($db = new DebugBarDatabaseNewProxy(DB::get_conn()));
-                $db->setShowQueries(self::getShowQueries());
-                $debugbar->addCollector(new DebugBarDatabaseCollector($db));
-            }
+            $debugbar->addCollector(new DebugBar\DataCollector\PDO\PDOCollector($traceablePdo));
         } else {
-            if (!DB::getConn()) {
-                global $databaseConfig;
-                if ($databaseConfig) {
-                    DB::connect($databaseConfig);
-                }
-            }
-            DB::setConn($db = new DebugBarDatabaseProxy(DB::getConn()));
+            DB::set_conn($db = new DebugBarDatabaseNewProxy(DB::get_conn()));
             $db->setShowQueries(self::getShowQueries());
             $debugbar->addCollector(new DebugBarDatabaseCollector($db));
         }

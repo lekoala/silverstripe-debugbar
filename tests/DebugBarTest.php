@@ -27,15 +27,8 @@ class DebugBarTest extends SapphireTest
         // De we have a debugbar instance
         $this->assertNotEmpty(DebugBar::getDebugBar());
 
-        // Do we have a db proxy
-        if (method_exists('DB', 'get_conn')) {
-            $conn = DB::get_conn();
-        } else {
-            $conn = DB::getConn();
-        }
-
-        $class = get_class($conn);
-        $this->assertContains($class, array('DebugBarDatabaseNewProxy', 'DebugBarDatabaseProxy'));
+        $conn = DB::get_conn();
+        $this->assertInstanceOf('DebugBarDatabaseNewProxy', $conn);
     }
 
     public function testLHelper()
