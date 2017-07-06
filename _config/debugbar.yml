@@ -3,7 +3,6 @@ Name: debugbar
 Before: 'mysite'
 After:
   - 'framework'
-  - 'cms'
 Only:
   environment: 'dev'
 ---
@@ -31,6 +30,7 @@ LeKoala\DebugBar\DebugBar:
 SilverStripe\Control\Director:
   rules:
     '__debugbar': 'LeKoala\DebugBar\Controller'
+
 SilverStripe\Core\Injector\Injector:
   SilverStripe\Control\RequestProcessor:
     properties:
@@ -38,6 +38,11 @@ SilverStripe\Core\Injector\Injector:
         - '%$DebugBarRequestFilter'
   SilverStripe\View\SSTemplateParser:
     class: LeKoala\DebugBar\Proxy\TemplateParserProxy
+  DebugBarRequestFilter:
+    class: LeKoala\DebugBar\RequestFilter
+  DebugBarLogHandler:
+    class: DebugBar\DataCollector\MessagesCollector
+
 SilverStripe\Admin\LeftAndMain:
   extensions:
     - LeKoala\DebugBar\Extension\LeftAndMainExtension

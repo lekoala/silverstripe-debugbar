@@ -2,9 +2,8 @@
 
 namespace LeKoala\DebugBar\Proxy;
 
-use SSTemplateParser;
-use DebugBar;
-
+use LeKoala\DebugBar\DebugBar;
+use SilverStripe\View\SSTemplateParser;
 
 /**
  * The template parser proxy will monitor the templates that are used during a page request. Since the

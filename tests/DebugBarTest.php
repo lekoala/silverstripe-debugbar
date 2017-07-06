@@ -2,15 +2,16 @@
 
 namespace LeKoala\DebugBar\Test;
 
-
 use DebugBar\DataCollector\MessagesCollector;
-use SapphireTest;
-use DebugBar;
-use DB;
-use Director;
-use Config;
-use DatabaseCollector;
-
+use LeKoala\DebugBar\Collector\DatabaseCollector;
+use LeKoala\DebugBar\DebugBar;
+use LeKoala\DebugBar\Proxy\DatabaseProxy;
+use SilverStripe\Control\Director;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Kernel;
+use SilverStripe\Dev\SapphireTest;
+use SilverStripe\ORM\DB;
 
 /**
  * Tests for DebugBar
@@ -38,7 +39,7 @@ class DebugBarTest extends SapphireTest
         $this->assertNotEmpty(DebugBar::getDebugBar());
 
         $conn = DB::get_conn();
-        $this->assertInstanceOf('DatabaseProxy', $conn);
+        $this->assertInstanceOf(DatabaseProxy::class, $conn);
     }
 
     public function testLHelper()
@@ -48,8 +49,8 @@ class DebugBarTest extends SapphireTest
 
         $debugbar = DebugBar::getDebugBar();
 
-        /* @var $messagesCollector  DebugBar\DataCollector\MessagesCollector  */
-        $messagesCollector = $debugbar->getCollector('messages');
+        /** @var DebugBar\Bridge\MonologCollector $messagesCollector */
+        $messagesCollector = $debugbar->getCollector('monolog');
         $messages = $messagesCollector->getMessages();
         $found = false;
         foreach ($messages as $message) {
@@ -98,13 +99,13 @@ class DebugBarTest extends SapphireTest
         return array(
             array(
                 function () {
-                    Director::set_environment_type('live');
+                    Injector::inst()->get(Kernel::class)->setEnvironment('live');
                 },
                 'Not in dev mode'
             ),
             array(
                 function () {
-                    Config::modify()->set('DebugBar', 'disabled', true);
+                    Config::modify()->set(DebugBar::class, 'disabled', true);
                 },
                 'Disabled by a constant or configuration'
             ),
@@ -119,10 +120,10 @@ class DebugBarTest extends SapphireTest
 
     public function testNotLocalIp()
     {
-        Config::modify()->set('DebugBar', 'check_local_ip', false);
+        Config::modify()->set(DebugBar::class, 'check_local_ip', false);
         $this->assertFalse(DebugBar::notLocalIp());
 
-        Config::modify()->set('DebugBar', 'check_local_ip', true);
+        Config::modify()->set(DebugBar::class, 'check_local_ip', true);
         $original = $_SERVER['REMOTE_ADDR'];
         $_SERVER['REMOTE_ADDR'] = '123.456.789.012';
         $this->assertTrue(DebugBar::notLocalIp());

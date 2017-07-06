@@ -2,10 +2,10 @@
 
 namespace LeKoala\DebugBar\Test\Collector;
 
-use SapphireTest;
-use DebugBar;
-use Config;
-
+use LeKoala\DebugBar\Collector\DatabaseCollector;
+use LeKoala\DebugBar\DebugBar;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Dev\SapphireTest;
 
 class DatabaseCollectorTest extends SapphireTest
 {
@@ -26,13 +26,13 @@ class DatabaseCollectorTest extends SapphireTest
 
     public function testCollectorExists()
     {
-        $this->assertInstanceOf('DebugBarDatabaseCollector', $this->collector);
+        $this->assertInstanceOf(DatabaseCollector::class, $this->collector);
     }
 
     public function testCollect()
     {
         // Deliberately high warning threshold
-        Config::inst()->update('DebugBar', 'warn_dbqueries_threshold_seconds', 200);
+        Config::modify()->set(DebugBar::class, 'warn_dbqueries_threshold_seconds', 200);
         $result = $this->collector->collect();
 
         $this->assertGreaterThan(1, $result['nb_statements']);
@@ -42,11 +42,11 @@ class DatabaseCollectorTest extends SapphireTest
         $statement = array_shift($result['statements']);
         $this->assertNotEmpty($statement['sql']);
         $this->assertEquals(1, $statement['is_success']);
-        $this->assertContains('PHPUnit_Framework_TestCase', $statement['source']);
+        $this->assertContains('SilverStripe\Dev\SapphireTest', $statement['source']);
         $this->assertFalse($statement['warn']);
 
         // Deliberately low warning threshold
-        Config::inst()->update('DebugBar', 'warn_dbqueries_threshold_seconds', 0.0000001);
+        Config::modify()->set(DebugBar::class, 'warn_dbqueries_threshold_seconds', 0.0000001);
         $result = $this->collector->collect();
 
         $this->assertNotEmpty($result['statements']);

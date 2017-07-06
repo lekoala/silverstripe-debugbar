@@ -2,10 +2,8 @@
 
 namespace LeKoala\DebugBar\Collector;
 
-
 use DebugBar\DataCollector\TimeDataCollector as BaseTimeDataCollector;
-use DebugBar;
-
+use LeKoala\DebugBar\DebugBar;
 
 class TimeDataCollector extends BaseTimeDataCollector
 {

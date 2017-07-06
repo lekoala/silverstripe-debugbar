@@ -2,24 +2,23 @@
 
 namespace LeKoala\DebugBar\Collector;
 
-
 use DebugBar\DataCollector\AssetProvider;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
-use i18n;
-use LeftAndMain;
-use Member;
-use DebugBarTemplateParserProxy;
-use Requirements;
-use Cookie;
-use Session;
-use SiteConfig;
-
+use LeKoala\DebugBar\Proxy\TemplateParserProxy;
+use SilverStripe\Admin\LeftAndMain;
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\Cookie;
+use SilverStripe\Control\Session;
+use SilverStripe\i18n\i18n;
+use SilverStripe\Security\Member;
+use SilverStripe\SiteConfig\SiteConfig;
+use SilverStripe\View\Requirements;
 
 class SilverStripeCollector extends DataCollector implements Renderable, AssetProvider
 {
 
-    protected static $debug = array();
+    protected static $debug = [];
     protected static $controller;
 
     public function collect()
@@ -47,7 +46,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
      */
     public static function getTemplateData()
     {
-        if (DebugBarTemplateParserProxy::getCached()) {
+        if (TemplateParserProxy::getCached()) {
             return array(
                 'templates' => array(
                     'NOTE: Rendered templates will not display when cached, please flush to view the list.'
@@ -56,7 +55,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
             );
         }
 
-        $templates = DebugBarTemplateParserProxy::getTemplatesUsed();
+        $templates = TemplateParserProxy::getTemplatesUsed();
         return array(
             'templates' => $templates,
             'count' => count($templates)
@@ -76,17 +75,17 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
         if (!empty($matches[1])) {
             return $matches[1];
         }
-        return array();
+        return [];
     }
 
     public static function getRequestParameters()
     {
         if (!self::$controller) {
-            return array();
+            return [];
         }
         $request = self::$controller->getRequest();
 
-        $p = array();
+        $p = [];
         foreach ($request->getVars() as $k => $v) {
             $p["GET - $k"] = $v;
         }
@@ -101,17 +100,13 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
 
     public static function getCookieData()
     {
-        // On 3.1, Cookie::get_all does not exist
-        if (!method_exists('Cookie', 'get_all')) {
-            return $_COOKIE;
-        }
         return Cookie::get_all();
     }
 
     public static function getSessionData()
     {
-        $data = Session::get_all();
-        $filtered = array();
+        $data = Controller::curr()->getRequest()->getSession()->getAll();
+        $filtered = [];
 
         // Filter not useful data
         foreach ($data as $k => $v) {
@@ -186,7 +181,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
             $userText = 'Logged in as ' . $memberTag;
 
             // Masquerade integration
-            if (Session::get('Masquerade.Old.loggedInAs')) {
+            if (Controller::curr()->getRequest()->getSession()->get('Masquerade.Old.loggedInAs')) {
                 $userIcon = 'user-secret';
                 $userText = 'Masquerading as member ' . $memberTag;
             }
@@ -274,7 +269,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
         return array(
             'base_path' => '/' . DEBUGBAR_DIR . '/javascript',
             'base_url' => DEBUGBAR_DIR . '/javascript',
-            'css' => array(),
+            'css' => [],
             'js' => 'widgets.js',
         );
     }

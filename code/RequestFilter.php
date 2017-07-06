@@ -2,15 +2,11 @@
 
 namespace LeKoala\DebugBar;
 
-
+use LeKoala\DebugBar\DebugBar;
+use SilverStripe\Control\Director;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\RequestFilter as BaseRequestFilter;
-use SS_HTTPRequest;
-use Session;
-use DataModel;
-use DebugBar;
-use SS_HTTPResponse;
-use Director;
-
 
 /**
  * A request filter to log pre request time
@@ -21,12 +17,9 @@ class RequestFilter implements BaseRequestFilter
     /**
      * Filter executed before a request processes
      *
-     * @param SS_HTTPRequest $request Request container object
-     * @param Session $session Request session
-     * @param DataModel $model Current DataModel
-     * @return boolean Whether to continue processing other filters. Null or true will continue processing (optional)
+     * {@inheritDoc}
      */
-    public function preRequest(SS_HTTPRequest $request, Session $session, DataModel $model)
+    public function preRequest(HTTPRequest $request)
     {
         DebugBar::withDebugBar(function (DebugBar\DebugBar $debugbar) {
             /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
@@ -49,12 +42,9 @@ class RequestFilter implements BaseRequestFilter
     /**
      * Filter executed AFTER a request
      *
-     * @param SS_HTTPRequest $request Request container object
-     * @param SS_HTTPResponse $response Response output object
-     * @param DataModel $model Current DataModel
-     * @return boolean Whether to continue processing other filters. Null or true will continue processing (optional)
+     * {@inheritDoc}
      */
-    public function postRequest(SS_HTTPRequest $request, SS_HTTPResponse $response, DataModel $model)
+    public function postRequest(HTTPRequest $request, HTTPResponse $response)
     {
         $debugbar = DebugBar::getDebugBar();
         if (!$debugbar) {

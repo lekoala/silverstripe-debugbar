@@ -1,6 +1,5 @@
 <?php
 
-use SqlFormatter;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use SilverStripe\Control\Director;
@@ -132,7 +131,7 @@ if (!function_exists('d')) {
 // Add a simple log helper that provides a default priority
 if (!function_exists('l')) {
 
-    function l($message, $priority = Logger::DEBUG, $extras = null)
+    function l($message, $priority = Logger::DEBUG, $extras = [])
     {
         if (!is_string($message)) {
             $message = json_encode((array) $message);

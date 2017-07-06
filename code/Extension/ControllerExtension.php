@@ -2,24 +2,22 @@
 
 namespace LeKoala\DebugBar\Extension;
 
-use Extension;
-use DebugBar;
-use Controller;
-use Security;
-use DebugBarSilverStripeCollector;
-
+use LeKoala\DebugBar\Collector\SilverStripeCollector;
+use LeKoala\DebugBar\DebugBar;
+use SilverStripe\Control\Controller;
+use SilverStripe\Core\Extension;
+use SilverStripe\Security\Security;
 
 /**
  * A controller extension to log times and render the Debug Bar
  */
 class ControllerExtension extends Extension
 {
-
     public function onBeforeInit()
     {
         $class = get_class($this->owner);
 
-        DebugBar::withDebugBar(function (DebugBar\DebugBar $debugbar) use ($class) {
+        DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugbar) use ($class) {
             // We must set the current controller when it's available and before it's pushed out of stack
             $debugbar->getCollector('silverstripe')->setController(Controller::curr());
 
@@ -45,7 +43,7 @@ class ControllerExtension extends Extension
 
         $class = get_class($this->owner);
 
-        DebugBar::withDebugBar(function (DebugBar\DebugBar $debugbar) use ($class) {
+        DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugbar) use ($class) {
 
             /** @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugbar['time'];
@@ -66,7 +64,7 @@ class ControllerExtension extends Extension
      * Due to a bug, this could be called twice before 4.0,
      * see https://github.com/silverstripe/silverstripe-framework/pull/5173
      *
-     * @param SS_HTTPRequest $request
+     * @param HTTPRequest $request
      * @param string $action
      */
     public function beforeCallActionHandler($request, $action)
@@ -89,7 +87,7 @@ class ControllerExtension extends Extension
         }
 
         $class = get_class($this->owner);
-        DebugBar::withDebugBar(function (DebugBar\DebugBar $debugbar) use ($class, $action) {
+        DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugbar) use ($class, $action) {
             /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugbar['time'];
             if (!$timeData) {
@@ -108,7 +106,7 @@ class ControllerExtension extends Extension
      * Due to a bug, this is not always called before 4.0,
      * see https://github.com/silverstripe/silverstripe-framework/pull/5173
      *
-     * @param SS_HTTPRequest $request
+     * @param HTTPRequest $request
      * @param string $action
      * @param mixed $result (only in v4.0)
      */
@@ -117,7 +115,7 @@ class ControllerExtension extends Extension
         self::clearBuffer();
 
         $class = get_class($this->owner);
-        DebugBar::withDebugBar(function (DebugBar\DebugBar $debugbar) use ($class, $action) {
+        DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugbar) use ($class, $action) {
             /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugbar['time'];
             if (!$timeData) {
@@ -141,7 +139,7 @@ class ControllerExtension extends Extension
         $buffer = ob_get_clean();
         if (!empty($buffer)) {
             unset($_REQUEST['debug_request']); // Disable further messages that we can't intercept
-            DebugBarSilverStripeCollector::setDebugData($buffer);
+            SilverStripeCollector::setDebugData($buffer);
         }
     }
 }

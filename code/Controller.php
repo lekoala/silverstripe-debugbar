@@ -2,11 +2,9 @@
 
 namespace LeKoala\DebugBar;
 
-
+use LeKoala\DebugBar\DebugBar;
 use SilverStripe\Control\Controller as BaseController;
-use SS_HTTPRequest;
-use DebugBar;
-
+use SilverStripe\Control\HTTPRequest;
 
 /**
  * A open handler controller for DebugBar
@@ -15,8 +13,7 @@ use DebugBar;
  */
 class Controller extends BaseController
 {
-
-    public function index(SS_HTTPRequest $request)
+    public function index(HTTPRequest $request)
     {
         if (!DebugBar::config()->enable_storage) {
             return $this->httpError(404, 'Storage not enabled');

@@ -2,18 +2,19 @@
 
 namespace LeKoala\DebugBar\Test\Proxy;
 
-use FunctionalTest;
-use Injector;
-use TemplateParserProxy;
-
+use LeKoala\DebugBar\Proxy\TemplateParserProxy;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Dev\FunctionalTest;
+use SilverStripe\View\SSTemplateParser;
+use SilverStripe\View\TemplateParser;
 
 class TemplateParserProxyTest extends FunctionalTest
 {
     public function testOverloadsSSTemplateParser()
     {
-        $templateParser = Injector::inst()->get('SSTemplateParser');
-        $this->assertInstanceOf('TemplateParserProxy', $templateParser);
-        $this->assertInstanceOf('TemplateParser', $templateParser);
+        $templateParser = Injector::inst()->get(SSTemplateParser::class);
+        $this->assertInstanceOf(TemplateParserProxy::class, $templateParser);
+        $this->assertInstanceOf(TemplateParser::class, $templateParser);
     }
 
     public function testEmptyTemplatesAndCachedByDefault()
@@ -29,8 +30,8 @@ class TemplateParserProxyTest extends FunctionalTest
         $templates = TemplateParserProxy::getTemplatesUsed();
 
         $this->assertNotEmpty($templates);
-        $this->assertContains('/framework/templates/Includes/Form.ss', $templates);
-        $this->assertContains('/framework/templates/forms/TextField.ss', $templates);
+        $this->assertContains('/framework/templates/SilverStripe/Forms/Includes/Form.ss', $templates);
+        $this->assertContains('/framework/templates/SilverStripe/Forms/TextField.ss', $templates);
 
         $this->assertFalse(TemplateParserProxy::getCached());
     }

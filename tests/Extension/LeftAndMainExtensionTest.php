@@ -2,10 +2,9 @@
 
 namespace LeKoala\DebugBar\Test\Extension;
 
-use SapphireTest;
-use LeftAndMainExtension;
-use DebugBar;
-
+use LeKoala\DebugBar\DebugBar;
+use LeKoala\DebugBar\Extension\LeftAndMainExtension;
+use SilverStripe\Dev\SapphireTest;
 
 class LeftAndMainExtensionTest extends SapphireTest
 {

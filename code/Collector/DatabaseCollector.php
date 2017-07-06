@@ -2,15 +2,13 @@
 
 namespace LeKoala\DebugBar\Collector;
 
-
 use DebugBar\DataCollector\AssetProvider;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 use DebugBar\DataCollector\TimeDataCollector;
-use DB;
-use DebugBar;
-use Config;
-
+use LeKoala\DebugBar\DebugBar;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\ORM\DB;
 
 /**
  * Collects data about SQL statements executed through the DatabaseProxy
@@ -42,7 +40,7 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
         $dbQueryWarningLevel = DebugBar::config()->warn_query_limit;
         if ($dbQueryWarningLevel && $data['nb_statements'] > $dbQueryWarningLevel) {
             DebugBar::getDebugBar()
-                ->getCollector('messages')
+                ->getCollector('monolog')
                 ->addMessage(
                     'This page ran more than ' . $dbQueryWarningLevel . ' database queries. You could reduce this by '
                     . 'implementing caching. For more information, <a href="https://docs.silverstripe.org/en/'
@@ -84,7 +82,7 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
         $queries = $this->db->getQueries();
 
         $limit   = DebugBar::config()->query_limit;
-        $warnDurationThreshold = Config::inst()->get('DebugBar', 'warn_dbqueries_threshold_seconds');
+        $warnDurationThreshold = Config::inst()->get(DebugBar::class, 'warn_dbqueries_threshold_seconds');
 
         $showDb = count(array_unique(array_map(function ($stmt) {
                 return $stmt['database'];
@@ -174,7 +172,7 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
     public function getAssets()
     {
         return array(
-            'base_path' => '/'.DEBUGBAR_DIR.'/javascript',
+            'base_path' => '/' . DEBUGBAR_DIR . '/javascript',
             'base_url' => DEBUGBAR_DIR.'/javascript',
             'css' => 'sqlqueries/widget.css',
             'js' => 'sqlqueries/widget.js'

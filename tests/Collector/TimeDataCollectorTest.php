@@ -2,10 +2,10 @@
 
 namespace LeKoala\DebugBar\Test\Collector;
 
-use SapphireTest;
-use TimeDataCollector;
-use Config;
-
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Dev\SapphireTest;
+use LeKoala\DebugBar\Collector\TimeDataCollector;
+use LeKoala\DebugBar\DebugBar;
 
 class TimeDataCollectorTest extends SapphireTest
 {
@@ -29,21 +29,21 @@ class TimeDataCollectorTest extends SapphireTest
     public function testWarning()
     {
         // Deliberately low threshold
-        Config::inst()->update('DebugBar', 'warn_request_time_seconds', '0.00001');
+        Config::modify()->set(DebugBar::class, 'warn_request_time_seconds', '0.00001');
         $result = $this->collector->getWidgets();
         $this->assertSame('danger', $result['time']['warn']);
         $this->assertContains('>', $result['time']['tooltip']);
 
         // Deliberately high threshold and low ratio
-        Config::inst()->update('DebugBar', 'warn_request_time_seconds', '100');
-        Config::inst()->update('DebugBar', 'warn_warning_ratio', '0.000000001');
+        Config::modify()->set(DebugBar::class, 'warn_request_time_seconds', '100');
+        Config::modify()->set(DebugBar::class, 'warn_warning_ratio', '0.000000001');
         $result = $this->collector->getWidgets();
         $this->assertSame('warning', $result['time']['warn']);
         $this->assertContains('>', $result['time']['tooltip']);
 
         // Deliberately high threshold and high ratio
-        Config::inst()->update('DebugBar', 'warn_request_time_seconds', '100');
-        Config::inst()->update('DebugBar', 'warn_warning_ratio', '1');
+        Config::modify()->set(DebugBar::class, 'warn_request_time_seconds', '100');
+        Config::modify()->set(DebugBar::class, 'warn_warning_ratio', '1');
         $result = $this->collector->getWidgets();
         $this->assertSame('ok', $result['time']['warn']);
         $this->assertContains('<', $result['time']['tooltip']);
@@ -51,7 +51,7 @@ class TimeDataCollectorTest extends SapphireTest
 
     public function testWarningCanBeDisabled()
     {
-        Config::inst()->update('DebugBar', 'warn_request_time_seconds', false);
+        Config::modify()->set(DebugBar::class, 'warn_request_time_seconds', false);
         $result = $this->collector->getWidgets();
         $this->assertArrayNotHasKey('warn', $result['time']);
     }

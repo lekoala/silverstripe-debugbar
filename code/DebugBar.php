@@ -2,28 +2,39 @@
 
 namespace LeKoala\DebugBar;
 
-use Object;
-use Director;
+use DebugBar\Bridge\MonologCollector;
+use DebugBar\DebugBar as BaseDebugBar;
+use DebugBar\DataCollector\MemoryCollector;
+use DebugBar\DataCollector\PDO\PDOCollector;
+use DebugBar\DataCollector\PDO\TraceablePDO;
+use DebugBar\DataCollector\PhpInfoCollector;
+use DebugBar\Storage\FileStorage;
 use Exception;
-use Controller;
-use SS_Log;
-use DebugBarLogWriter;
-use DebugBarTimeDataCollector;
-use DB;
-use PDOConnector;
+use LeKoala\DebugBar\Collector\DatabaseCollector;
+use LeKoala\DebugBar\Collector\SilverStripeCollector;
+use LeKoala\DebugBar\Collector\TimeDataCollector;
+use LeKoala\DebugBar\Extension\ControllerExtension;
+use LeKoala\DebugBar\LogWriter;
+use LeKoala\DebugBar\Proxy\DatabaseProxy;
+use Psr\Log\LoggerInterface;
 use ReflectionObject;
-use DebugBarDatabaseNewProxy;
-use DebugBarDatabaseCollector;
-use DebugBarSilverStripeCollector;
-use Requirements;
-use LeftAndMain;
-
+use SilverStripe\Admin\LeftAndMain;
+use SilverStripe\Control\Controller as BaseController;
+use SilverStripe\Control\Director;
+use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Injector\Injectable;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\ORM\Connect\PDOConnector;
+use SilverStripe\ORM\DB;
+use SilverStripe\View\Requirements;
 
 /**
  * A simple helper
  */
-class DebugBar extends Object
+class DebugBar
 {
+    use Configurable;
+    use Injectable;
 
     /**
      * @var DebugBar\DebugBar
@@ -31,7 +42,6 @@ class DebugBar extends Object
     protected static $debugbar = null;
 
     /**
-     *
      * @var bool
      */
     public static $bufferingEnabled = false;
@@ -42,7 +52,6 @@ class DebugBar extends Object
     protected static $renderer = null;
 
     /**
-     *
      * @var bool
      */
     protected static $showQueries = false;
@@ -90,12 +99,9 @@ class DebugBar extends Object
         }
 
         // Add the controller extension programmaticaly because it might not be added properly through yml
-        Controller::add_extension('DebugBarControllerExtension');
+        Controller::add_extension(ControllerExtension::class);
 
-        // Add a custom logger that logs everything under the Messages tab
-        SS_Log::add_writer(new DebugBarLogWriter(), SS_Log::DEBUG, '<=');
-
-        self::$debugbar = $debugbar = new DebugBar\DebugBar();
+        self::$debugbar = $debugbar = new BaseDebugBar;
 
         if (isset($_REQUEST['showqueries'])) {
             self::setShowQueries(true);
@@ -104,9 +110,9 @@ class DebugBar extends Object
             unset($_REQUEST['showqueries']);
         }
 
-        $debugbar->addCollector(new DebugBar\DataCollector\PhpInfoCollector());
-        $debugbar->addCollector(new DebugBarTimeDataCollector());
-        $debugbar->addCollector(new DebugBar\DataCollector\MemoryCollector());
+        $debugbar->addCollector(new PhpInfoCollector);
+        $debugbar->addCollector(new TimeDataCollector);
+        $debugbar->addCollector(new MemoryCollector);
 
         if (!DB::get_conn()) {
             global $databaseConfig;
@@ -121,24 +127,25 @@ class DebugBar extends Object
             $refObject = new ReflectionObject($connector);
             $refProperty = $refObject->getProperty('pdoConnection');
             $refProperty->setAccessible(true);
-            $traceablePdo = new DebugBar\DataCollector\PDO\TraceablePDO($refProperty->getValue($connector));
+            $traceablePdo = new TraceablePDO($refProperty->getValue($connector));
             $refProperty->setValue($connector, $traceablePdo);
 
-            $debugbar->addCollector(new DebugBar\DataCollector\PDO\PDOCollector($traceablePdo));
+            $debugbar->addCollector(new PDOCollector($traceablePdo));
         } else {
-            DB::set_conn($db = new DebugBarDatabaseNewProxy(DB::get_conn()));
+            DB::set_conn($db = new DatabaseProxy(DB::get_conn()));
             $db->setShowQueries(self::getShowQueries());
-            $debugbar->addCollector(new DebugBarDatabaseCollector);
+            $debugbar->addCollector(new DatabaseCollector);
         }
 
         // Add message collector last so other collectors can send messages to the console using it
-        $debugbar->addCollector(new DebugBar\DataCollector\MessagesCollector());
+        $logger = Injector::inst()->get(LoggerInterface::class);
+        $debugbar->addCollector(new MonologCollector($logger));
 
         // Add some SilverStripe specific infos
-        $debugbar->addCollector(new DebugBarSilverStripeCollector());
+        $debugbar->addCollector(new SilverStripeCollector);
 
         if (self::config()->enable_storage) {
-            $debugbar->setStorage(new DebugBar\Storage\FileStorage(TEMP_FOLDER . '/debugbar'));
+            $debugbar->setStorage(new FileStorage(TEMP_FOLDER . '/debugbar'));
         }
 
         // Since we buffer everything, why not enable all dev options ?
@@ -195,7 +202,7 @@ class DebugBar extends Object
             $includeJquery = false;
         }
         // If jQuery is already included, set to false
-        $js = Requirements::backend()->get_javascript();
+        $js = Requirements::backend()->getJavascript();
         foreach ($js as $url) {
             $name = basename($url);
             if ($name == 'jquery.js' || $name == 'jquery.min.js') {
@@ -233,7 +240,7 @@ class DebugBar extends Object
         }
 
         // Requirements may have been cleared (CMS iframes...) or not set (Security...)
-        $js = Requirements::backend()->get_javascript();
+        $js = Requirements::backend()->getJavascript();
         if (!in_array('debugbar/assets/debugbar.js', $js)) {
             return;
         }

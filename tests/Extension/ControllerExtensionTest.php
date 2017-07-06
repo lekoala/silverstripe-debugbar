@@ -2,17 +2,18 @@
 
 namespace LeKoala\DebugBar\Test\Extension;
 
-use FunctionalTest;
-use Controller;
-use DebugBar;
-use SS_HTTPRequest;
-
+use DebugBar\DataCollector\TimeDataCollector;
+use LeKoala\DebugBar\DebugBar;
+use LeKoala\DebugBar\Extension\ControllerExtension;
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Dev\FunctionalTest;
 
 class ControllerExtensionTest extends FunctionalTest
 {
-    protected $requiredExtensions = array(
-        'Controller' => array('ControllerExtension')
-    );
+    protected static $required_extensions = [
+        Controller::class => [ControllerExtension::class]
+    ];
 
     /**
      * @var Controller
@@ -23,8 +24,8 @@ class ControllerExtensionTest extends FunctionalTest
     {
         parent::setUp();
 
-        $this->controller = new Controller;
-        $this->controller->pushCurrent();
+        $this->controller = Controller::curr();
+        // $this->controller->pushCurrent();
 
         DebugBar::$bufferingEnabled = false;
         DebugBar::initDebugBar();
@@ -35,13 +36,13 @@ class ControllerExtensionTest extends FunctionalTest
         $this->controller->extend('onBeforeInit');
 
         $self = $this;
-        DebugBar::withDebugBar(function (DebugBar\DebugBar $debugbar) use ($self) {
+        DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugbar) use ($self) {
             $controller = $debugbar->getCollector('silverstripe')->getController();
-            $self->assertInstanceOf('Controller', $controller);
+            $self->assertInstanceOf(Controller::class, $controller);
             $self->assertSame(Controller::curr(), $controller);
 
-            $timeData = $debugbar['time'];
-            $self->assertInstanceOf('DebugBar\DataCollector\TimeDataCollector', $timeData);
+            $timeData = $debugbar->getCollector('time');
+            $self->assertInstanceOf(TimeDataCollector::class, $timeData);
 
             $self->assertFalse($timeData->hasStartedMeasure('pre_request'));
             $self->assertTrue($timeData->hasStartedMeasure('init'));
@@ -53,9 +54,9 @@ class ControllerExtensionTest extends FunctionalTest
         $this->controller->extend('onAfterInit');
 
         $self = $this;
-        DebugBar::withDebugBar(function (DebugBar\DebugBar $debugbar) use ($self) {
+        DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugbar) use ($self) {
             $timeData = $debugbar->getCollector('time');
-            $self->assertInstanceOf('DebugBar\DataCollector\TimeDataCollector', $timeData);
+            $self->assertInstanceOf(TimeDataCollector::class, $timeData);
 
             $self->assertFalse($timeData->hasStartedMeasure('cms_init'));
             $self->assertFalse($timeData->hasStartedMeasure('init'));
@@ -65,14 +66,14 @@ class ControllerExtensionTest extends FunctionalTest
 
     public function testBeforeCallActionHandler()
     {
-        $request = new SS_HTTPRequest('GET', '/');
+        $request = new HTTPRequest('GET', '/');
         $action = 'someaction';
         $this->controller->extend('beforeCallActionHandler', $request, $action);
 
         $self = $this;
-        DebugBar::withDebugBar(function (DebugBar\DebugBar $debugbar) use ($self) {
+        DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugbar) use ($self) {
             $timeData = $debugbar->getCollector('time');
-            $self->assertInstanceOf('DebugBar\DataCollector\TimeDataCollector', $timeData);
+            $self->assertInstanceOf(TimeDataCollector::class, $timeData);
 
             $self->assertFalse($timeData->hasStartedMeasure('handle'));
             $self->assertTrue($timeData->hasStartedMeasure('action'));
@@ -83,15 +84,15 @@ class ControllerExtensionTest extends FunctionalTest
 
     public function testAfterCallActionHandler()
     {
-        $request = new SS_HTTPRequest('GET', '/');
+        $request = new HTTPRequest('GET', '/');
         $action = 'someaction';
         $result = null;
         $this->controller->extend('afterCallActionHandler', $request, $action, $result);
 
         $self = $this;
-        DebugBar::withDebugBar(function (DebugBar\DebugBar $debugbar) use ($self) {
+        DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugbar) use ($self) {
             $timeData = $debugbar->getCollector('time');
-            $self->assertInstanceOf('DebugBar\DataCollector\TimeDataCollector', $timeData);
+            $self->assertInstanceOf(TimeDataCollector::class, $timeData);
 
             $self->assertFalse($timeData->hasStartedMeasure('action'));
             $self->assertTrue($timeData->hasStartedMeasure('after_action'));
