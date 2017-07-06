@@ -1,5 +1,11 @@
 <?php
 
+namespace LeKoala\DebugBar;
+
+use DebugBar;
+use Director;
+
+
 /**
  * Custom writer for SS_Log
  */

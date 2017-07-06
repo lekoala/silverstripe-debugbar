@@ -1,5 +1,12 @@
 <?php
 
+namespace LeKoala\DebugBar\Test\Collector;
+
+use SapphireTest;
+use TimeDataCollector;
+use Config;
+
+
 class TimeDataCollectorTest extends SapphireTest
 {
     /**

@@ -1,8 +1,20 @@
 <?php
 
+namespace LeKoala\DebugBar\Collector;
+
+
 use DebugBar\DataCollector\AssetProvider;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
+use i18n;
+use LeftAndMain;
+use Member;
+use DebugBarTemplateParserProxy;
+use Requirements;
+use Cookie;
+use Session;
+use SiteConfig;
+
 
 class SilverStripeCollector extends DataCollector implements Renderable, AssetProvider
 {

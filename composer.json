@@ -28,6 +28,12 @@
             "dev-master": "2.0.x-dev"
         }
     },
+    "autoload": {
+        "psr-4": {
+            "LeKoala\\DebugBar\\": "code/",
+            "LeKoala\\DebugBar\\Test\\": "tests/"
+        }
+    },
     "support": {
         "issues": "https://github.com/lekoala/silverstripe-debugbar/issues"
     }

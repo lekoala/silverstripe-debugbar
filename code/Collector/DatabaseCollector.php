@@ -1,9 +1,16 @@
 <?php
 
+namespace LeKoala\DebugBar\Collector;
+
+
 use DebugBar\DataCollector\AssetProvider;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 use DebugBar\DataCollector\TimeDataCollector;
+use DB;
+use DebugBar;
+use Config;
+
 
 /**
  * Collects data about SQL statements executed through the DatabaseProxy

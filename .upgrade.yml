@@ -1,0 +1,22 @@
+mappings:
+  DebugBarDatabaseCollector: LeKoala\DebugBar\Collector\DatabaseCollector
+  DebugBarSilverStripeCollector: LeKoala\DebugBar\Collector\SilverStripeCollector
+  DebugBarTimeDataCollector: LeKoala\DebugBar\Collector\TimeDataCollector
+  DebugBarControllerExtension: LeKoala\DebugBar\Extension\ControllerExtension
+  DebugBarLeftAndMainExtension: LeKoala\DebugBar\Extension\LeftAndMainExtension
+  DebugBarDatabaseNewProxy: LeKoala\DebugBar\Proxy\DatabaseProxy
+  DebugBarTemplateParserProxy: LeKoala\DebugBar\Proxy\TemplateParserProxy
+  DebugBarController: LeKoala\DebugBar\Controller
+  DebugBar: LeKoala\DebugBar\DebugBar
+  DebugBarLogWriter: LeKoala\DebugBar\LogWriter
+  DebugBarRequestFilter: LeKoala\DebugBar\RequestFilter
+  DebugBarControllerTest: LeKoala\DebugBar\Test\ControllerTest
+  DebugBarDebugBarTest: LeKoala\DebugBar\Test\DebugBarTest
+  DebugBarLogWriterTest: LeKoala\DebugBar\Test\LogWriterTest
+  DebugBarDatabaseCollectorTest: LeKoala\DebugBar\Test\Collector\DatabaseCollectorTest
+  DebugBarSilverStripeCollectorTest: LeKoala\DebugBar\Test\Collector\SilverStripeCollectorTest
+  DebugBarTimeDataCollectorTest: LeKoala\DebugBar\Test\Collector\TimeDataCollectorTest
+  DebugBarControllerExtensionTest: LeKoala\DebugBar\Test\Extension\ControllerExtensionTest
+  DebugBarLeftAndMainExtensionTest: LeKoala\DebugBar\Test\Extension\LeftAndMainExtensionTest
+  DebugBarDatabaseNewProxyTest: LeKoala\DebugBar\Test\Proxy\DatabaseProxyTest
+  DebugBarTemplateParserProxyTest: LeKoala\DebugBar\Test\Proxy\TemplateParserProxyTest

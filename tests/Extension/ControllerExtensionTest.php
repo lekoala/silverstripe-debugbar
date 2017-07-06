@@ -1,5 +1,13 @@
 <?php
 
+namespace LeKoala\DebugBar\Test\Extension;
+
+use FunctionalTest;
+use Controller;
+use DebugBar;
+use SS_HTTPRequest;
+
+
 class ControllerExtensionTest extends FunctionalTest
 {
     protected $requiredExtensions = array(

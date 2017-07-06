@@ -1,5 +1,12 @@
 <?php
 
+namespace LeKoala\DebugBar\Test;
+
+use FunctionalTest;
+use DebugBar;
+use Config;
+
+
 class ControllerTest extends FunctionalTest
 {
     public function tearDown()

@@ -1,5 +1,14 @@
 <?php
 
+namespace LeKoala\DebugBar\Extension;
+
+use Extension;
+use DebugBar;
+use Controller;
+use Security;
+use DebugBarSilverStripeCollector;
+
+
 /**
  * A controller extension to log times and render the Debug Bar
  */

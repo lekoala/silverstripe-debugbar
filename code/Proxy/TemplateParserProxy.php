@@ -1,5 +1,11 @@
 <?php
 
+namespace LeKoala\DebugBar\Proxy;
+
+use SSTemplateParser;
+use DebugBar;
+
+
 /**
  * The template parser proxy will monitor the templates that are used during a page request. Since the
  * use of the template parser is behind cache checks, this will only execute during a cache flush.

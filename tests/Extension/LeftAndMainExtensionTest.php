@@ -1,5 +1,12 @@
 <?php
 
+namespace LeKoala\DebugBar\Test\Extension;
+
+use SapphireTest;
+use LeftAndMainExtension;
+use DebugBar;
+
+
 class LeftAndMainExtensionTest extends SapphireTest
 {
     /**

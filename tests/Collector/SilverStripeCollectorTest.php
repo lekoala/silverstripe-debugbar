@@ -1,5 +1,17 @@
 <?php
 
+namespace LeKoala\DebugBar\Test\Collector;
+
+use SapphireTest;
+use DebugBar;
+use Member;
+use Requirements;
+use Controller;
+use SS_HTTPRequest;
+use DebugBarSilverStripeCollector;
+use Session;
+
+
 class SilverStripeCollectorTest extends SapphireTest
 {
     /**

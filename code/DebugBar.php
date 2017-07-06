@@ -1,5 +1,24 @@
 <?php
 
+namespace LeKoala\DebugBar;
+
+use Object;
+use Director;
+use Exception;
+use Controller;
+use SS_Log;
+use DebugBarLogWriter;
+use DebugBarTimeDataCollector;
+use DB;
+use PDOConnector;
+use ReflectionObject;
+use DebugBarDatabaseNewProxy;
+use DebugBarDatabaseCollector;
+use DebugBarSilverStripeCollector;
+use Requirements;
+use LeftAndMain;
+
+
 /**
  * A simple helper
  */

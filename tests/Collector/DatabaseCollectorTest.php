@@ -1,5 +1,12 @@
 <?php
 
+namespace LeKoala\DebugBar\Test\Collector;
+
+use SapphireTest;
+use DebugBar;
+use Config;
+
+
 class DatabaseCollectorTest extends SapphireTest
 {
     /**

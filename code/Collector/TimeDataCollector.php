@@ -1,6 +1,11 @@
 <?php
 
+namespace LeKoala\DebugBar\Collector;
+
+
 use DebugBar\DataCollector\TimeDataCollector as BaseTimeDataCollector;
+use DebugBar;
+
 
 class TimeDataCollector extends BaseTimeDataCollector
 {

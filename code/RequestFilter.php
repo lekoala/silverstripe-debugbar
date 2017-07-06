@@ -1,6 +1,16 @@
 <?php
 
+namespace LeKoala\DebugBar;
+
+
 use SilverStripe\Control\RequestFilter as BaseRequestFilter;
+use SS_HTTPRequest;
+use Session;
+use DataModel;
+use DebugBar;
+use SS_HTTPResponse;
+use Director;
+
 
 /**
  * A request filter to log pre request time

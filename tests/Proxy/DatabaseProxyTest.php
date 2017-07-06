@@ -1,5 +1,15 @@
 <?php
 
+namespace LeKoala\DebugBar\Test\Proxy;
+
+use SapphireTest;
+use DatabaseProxy;
+use DB;
+use MySQLiConnector;
+use MySQLSchemaManager;
+use MySQLQueryBuilder;
+
+
 class DatabaseProxyTest extends SapphireTest
 {
     /**

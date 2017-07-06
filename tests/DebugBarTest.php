@@ -1,6 +1,16 @@
 <?php
 
+namespace LeKoala\DebugBar\Test;
+
+
 use DebugBar\DataCollector\MessagesCollector;
+use SapphireTest;
+use DebugBar;
+use DB;
+use Director;
+use Config;
+use DatabaseCollector;
+
 
 /**
  * Tests for DebugBar

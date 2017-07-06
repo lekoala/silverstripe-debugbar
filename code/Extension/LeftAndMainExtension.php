@@ -1,6 +1,11 @@
 <?php
 
+namespace LeKoala\DebugBar\Extension;
+
+
 use SilverStripe\Admin\LeftAndMainExtension as BaseLeftAndMainExtension;
+use DebugBar;
+
 
 /**
  * Description of DebugBarLeftAndMainExtension

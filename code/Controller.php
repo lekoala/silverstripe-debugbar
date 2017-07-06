@@ -1,6 +1,12 @@
 <?php
 
+namespace LeKoala\DebugBar;
+
+
 use SilverStripe\Control\Controller as BaseController;
+use SS_HTTPRequest;
+use DebugBar;
+
 
 /**
  * A open handler controller for DebugBar

@@ -1,6 +1,15 @@
 <?php
 
+namespace LeKoala\DebugBar\Test;
+
+
 use Psr\Log\LoggerInterface;
+use SapphireTest;
+use DebugBar;
+use Injector;
+use DebugBarLogWriter;
+use SS_Log;
+
 
 class LogWriterTest extends SapphireTest
 {

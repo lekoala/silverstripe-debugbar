@@ -1,5 +1,12 @@
 <?php
 
+namespace LeKoala\DebugBar\Test\Proxy;
+
+use FunctionalTest;
+use Injector;
+use TemplateParserProxy;
+
+
 class TemplateParserProxyTest extends FunctionalTest
 {
     public function testOverloadsSSTemplateParser()

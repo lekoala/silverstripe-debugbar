@@ -1,6 +1,19 @@
 <?php
 
+namespace LeKoala\DebugBar\Proxy;
+
+
 use SqlFormatter;
+use SS_Database;
+use DB;
+use DebugBar;
+use DBConnector;
+use DBSchemaManager;
+use DBQueryBuilder;
+use Director;
+use Debug;
+use Controller;
+
 
 /**
  * A proxy database to log queries
