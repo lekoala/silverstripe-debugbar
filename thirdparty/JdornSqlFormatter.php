@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * Please note: this file has been copied from the origin repository so its name can be changed as it is
+ * not namespaced. It may be loaded before the framework's SQLFormatter class, but there can be no guarantee.
+ */
+
+/**
  * SQL Formatter is a collection of utilities for debugging SQL queries.
  * It includes methods for formatting, syntax highlighting, removing comments, etc.
  *
