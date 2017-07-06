@@ -23,7 +23,7 @@ The DebugBar is automatically injected into any HTML response through the `Debug
 
 ## Requirements
 
-* SilverStripe ^3.2
+* SilverStripe ^4.0
 * [maximebf/php-debugbar](http://phpdebugbar.com)
 * [jdorn/sql-formatter](https://github.com/jdorn/sql-formatter)
 

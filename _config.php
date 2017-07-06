@@ -1,4 +1,11 @@
 <?php
+
+use JdornSqlFormatter;
+use Monolog\Logger;
+use Psr\Log\LoggerInterface;
+use SilverStripe\Control\Director;
+use SilverStripe\Core\Injector\Injector;
+
 if (!defined('DEBUGBAR_DIR')) {
     define('DEBUGBAR_DIR', basename(__DIR__));
 }
@@ -17,11 +24,8 @@ if (!function_exists('d')) {
     {
         $args = func_get_args();
 
-        // Prevent exit in test session
-        $isTest = SapphireTest::is_running_test();
-
         // Clean buffer that may be in the way
-        if (!$isTest && ob_get_contents()) {
+        if (ob_get_contents()) {
             ob_end_clean();
         }
 
@@ -41,7 +45,7 @@ if (!function_exists('d')) {
 
         // Probably best to avoid using this in live websites...
         if (Director::isLive()) {
-            SS_Log::log("Please remove call to d() in $file:$line", SS_Log::WARN);
+            Injector::inst()->get(LoggerInterface::class)->warning("Please remove call to d() in $file:$line");
             return;
         }
 
@@ -121,21 +125,18 @@ if (!function_exists('d')) {
             }
             $i++;
         }
-
-        if (!$isTest) {
-            exit();
-        }
+        exit();
     }
 }
 
 // Add a simple log helper that provides a default priority
 if (!function_exists('l')) {
 
-    function l($message, $priority = 7, $extras = null)
+    function l($message, $priority = Logger::DEBUG, $extras = null)
     {
         if (!is_string($message)) {
             $message = json_encode((array) $message);
         }
-        SS_Log::log($message, $priority, $extras);
+        Injector::inst()->get(LoggerInterface::class)->log($priority, $message, $extras);
     }
 }
