@@ -197,11 +197,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
         $endtime   = microtime(true);
         $endmemory = memory_get_usage(true);
 
-
         $rawsql = $sql;
-
-        $select = null;
-
 
         // Prepared query are not so readable
         if (!empty($parameters)) {
@@ -298,7 +294,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
                             $template = $key.':'.basename($templates[$key]);
                         }
                     }
-                    if ($template) {
+                    if (!empty($template)) {
                         $sources[] = $template;
                     }
                 }
@@ -411,7 +407,6 @@ class DebugBarDatabaseNewProxy extends SS_Database
      */
     public function __call($name, $arguments)
     {
-        //return call_user_func_array([$this->realConn, __FUNCTION__],            func_get_args());
         return call_user_func_array(array($this->realConn, $name), $arguments);
     }
 

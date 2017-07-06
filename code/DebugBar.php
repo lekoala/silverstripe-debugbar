@@ -7,7 +7,7 @@ class DebugBar extends Object
 {
 
     /**
-     * @var DebugBar\StandardDebugBar
+     * @var DebugBar\DebugBar
      */
     protected static $debugbar = null;
 
@@ -44,7 +44,7 @@ class DebugBar extends Object
             self::notLocalIp() || Director::is_cli() || self::isDevUrl() ||
             (self::isAdminUrl() && !self::config()->enabled_in_admin)
         ) {
-            self::$debugbar = false; // No need to check again
+            self::$debugbar = null; // No need to check again
             return;
         }
 
@@ -138,7 +138,7 @@ class DebugBar extends Object
 
     public static function clearDebugBar()
     {
-        self::$debugbar = false;
+        self::$debugbar = null;
     }
 
     public static function getShowQueries()
