@@ -44,7 +44,7 @@ class DebugBar extends Object
             self::notLocalIp() || Director::is_cli() || self::isDevUrl() ||
             (self::isAdminUrl() && !self::config()->enabled_in_admin)
         ) {
-            self::$debugbar = null; // No need to check again
+            self::$debugbar = false; // no need to check again
             return;
         }
 
