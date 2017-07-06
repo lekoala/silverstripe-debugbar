@@ -6,7 +6,7 @@
 
 ## Introduction
 
-SilverStripe Debug Bar is a wrapper for [PHP DebugBar](http://phpdebugbar.com) which integrates with SilverStripe to provide more useful information about your projects. This can help you to easily identify performance issues, analyse environment settings and discover which parts of your code are being used.
+SilverStripe Debug Bar is a wrapper for [PHP DebugBar](http://phpdebugbar.com) which integrates with SilverStripe to provide more useful information about your projects. The Debug Bar can help you to easily identify performance issues, analyse environment settings and discover which parts of your code are being used.
 
 This module will:
 
@@ -18,6 +18,8 @@ This module will:
 * Show request timing/profiling and memory consumption
 
 The DebugBar is automatically injected into any HTML response through the `DebugBarRequestFilter`, and will only run in "dev" mode.
+
+![Screenshot](docs/en/_images/screenshot.png)
 
 ## Requirements
 

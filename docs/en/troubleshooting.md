@@ -7,14 +7,14 @@ in the admin (which already use jQuery).
 
 If you have added jQuery in your requirements (filename must be jquery.js or jquery.min.js),
 the DebugBar will not load its own jQuery version. You can also set the following
-configuration flag to false to prevent the DebugBar to include its own jQuery.
+configuration flag to false to prevent the DebugBar from including its own jQuery.
 
 ```yaml
 DebugBar:
   include_jquery: false
 ```
 
-If you are including jQuery yourself, it is expected to you include it in Page::init().
+If you are including jQuery yourself, it is expected you include it in `Page::init()`.
 Below is an example of how to the jQuery which ships with the framework:
 
 ```php

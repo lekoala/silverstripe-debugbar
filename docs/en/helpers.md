@@ -4,9 +4,9 @@
 
 The `d()` function helps you to quickly debug code. It will use the [Symfony VarDumper](https://github.com/symfony/var-dumper) to display the data in a "pretty" way.
 
-In an XHR/AJAX context, it will simply display the data is a more simple fashion.
+In an XHR/AJAX context, it will simply display the data in a more simple fashion.
 
-Called without arguments, it will display all objects in the debug backtrace. It will display the variable name before its content to make it easy to identify data amongst multiple values.
+When `d()` is called without arguments, it will display all objects in [the debug backtrace](http://php.net/manual/en/function.debug-backtrace.php). It will display the variable name before its content to make it easy to identify data amongst multiple values.
 
 ```php
 d($myvar, $myothervar);
