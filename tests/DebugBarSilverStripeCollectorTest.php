@@ -142,8 +142,12 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
             'templates' => array(
                 'icon' => 'edit',
                 'widget' => 'PhpDebugBar.Widgets.ListWidget',
-                'map' => "silverstripe.templates",
+                'map' => "silverstripe.templates.templates",
                 'default' => '{}'
+            ),
+            'templates:badge' => array(
+                'map' => 'silverstripe.templates.count',
+                'default' => 0
             )
         );
 
@@ -162,19 +166,18 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
     }
 
     /**
-     * Test that at least one template is returned when visiting the home page
+     * Test that a message is returned when templates are cached. For retrieval of template info, see
+     * {@link DebugBarTemplateParserProxyTest} for examples.
+     *
+     * Note that the template proxy will register as cached by default until it gets used the first time.
      */
     public function testGetTemplateData()
     {
-        $controller = new Controller;
-        $controller->init();
-        $controller->setRequest(
-            new SS_HTTPRequest(
-                'GET',
-                '/'
-            )
+        $result = DebugBarSilverStripeCollector::getTemplateData();
+        $this->assertContains(
+            'NOTE: Rendered templates will not display when cached',
+            array_pop($result['templates'])
         );
-        $this->collector->setController($controller);
-        $this->assertGreaterThan(1, count($this->collector->getTemplateData()));
+        $this->assertSame('-', $result['count']);
     }
 }
