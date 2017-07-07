@@ -17,11 +17,10 @@ There is a variety of other useful information available via various tabs and in
 Hover over indicators to see:
 
 * **Locale:** The locale currently being used in the site
-* **Version:** The current SilverStripe software version
-* **User:** The name of the currently logged in user
+* **Version:** The current SilverStripe software version being used
+* **User:** The name of the user currently logged in
 * **Memory usage:** The amount of memory used to generate a page
 * **Request time:** The total time to generate a page (see below)
-* Toggles include a popup for history, minimize and close
 
 ### Request time
 
@@ -33,4 +32,4 @@ The request time indicator shows you how long it took for the server to render a
 
 The threshold for a dangerously slow page load can be configured with the `DebugBar.warn_request_time_seconds` [configuration](configuration.md) setting.
 
-The threshold for a slower/warning level indicator is defined as a percentage of the dangerous threshold (by default, 50%). This can be adjusted by modifyin the `DebugBar.warn_warning_ratio` configuration setting.
+The threshold for a slower/warning level indicator is defined as a percentage of the dangerous threshold (by default, 50%). This can be adjusted by modifying the `DebugBar.warn_warning_ratio` configuration setting.

@@ -24,6 +24,6 @@ When some queries take a long time to run they will be highlighted in red, with 
 
 ## Large numbers of queries
 
-If a page request performance more than a certain number of queries, a warning message will be sent to the "Messages" tab. You can adjust the threshold for this with the `DebugBar.warn_query_limit` configuration setting.
+If a page request performance is more than a certain number of queries, a warning message will be sent to the "Messages" tab. You can adjust the threshold for this with the `DebugBar.warn_query_limit` configuration setting.
 
 ![Query threshold warning](_images/database-query-threshold.png)
