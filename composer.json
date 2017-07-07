@@ -23,6 +23,9 @@
         "maximebf/debugbar": "^1.13",
         "jdorn/sql-formatter": "1.3.x-dev"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^5.7"
+    },
     "extra": {
         "installer-name": "debugbar",
         "branch-alias": {
@@ -37,5 +40,11 @@
     },
     "support": {
         "issues": "https://github.com/lekoala/silverstripe-debugbar/issues"
-    }
+    },
+    "scripts": {
+        "lint": "vendor/bin/phpcs code/ tests/",
+        "lint-clean": "vendor/bin/phpcbf code/ tests/"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
