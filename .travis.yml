@@ -24,7 +24,7 @@ before_script:
   - composer self-update || true
   - "if [ \"$PHPCS_TEST\" = \"1\" ]; then composer require --dev squizlabs/php_codesniffer; fi"
   - phpenv rehash
-  - phpenv config-rm xdebug.ini
+  - "if [ \"$PHPUNIT_COVERAGE_TEST\" != \"1\" ]; then phpenv config-rm xdebug.ini; fi"
   - composer validate
   - composer require silverstripe/cms 4.0.x-dev
   - composer install --prefer-dist
