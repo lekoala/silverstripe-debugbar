@@ -26,22 +26,34 @@ class TimeDataCollectorTest extends SapphireTest
         $this->assertContains('Request duration', $result['time']['tooltip']);
     }
 
-    public function testWarning()
+    /**
+     * Deliberately low threshold - should return a danger result
+     */
+    public function testDangerOnVerySlowRequest()
     {
-        // Deliberately low threshold
         Config::modify()->set(DebugBar::class, 'warn_request_time_seconds', '0.00001');
         $result = $this->collector->getWidgets();
         $this->assertSame('danger', $result['time']['warn']);
         $this->assertContains('>', $result['time']['tooltip']);
+    }
 
-        // Deliberately high threshold and low ratio
+    /**
+     * Deliberately high threshold and low ratio - should return a warning result
+     */
+    public function testWarningOnSlowRequest()
+    {
         Config::modify()->set(DebugBar::class, 'warn_request_time_seconds', '100');
         Config::modify()->set(DebugBar::class, 'warn_warning_ratio', '0.000000001');
         $result = $this->collector->getWidgets();
         $this->assertSame('warning', $result['time']['warn']);
         $this->assertContains('>', $result['time']['tooltip']);
+    }
 
-        // Deliberately high threshold and high ratio
+    /**
+     * Deliberately high threshold and high ratio - should return an "ok" result
+     */
+    public function testOkOnNormalRequest()
+    {
         Config::modify()->set(DebugBar::class, 'warn_request_time_seconds', '100');
         Config::modify()->set(DebugBar::class, 'warn_warning_ratio', '1');
         $result = $this->collector->getWidgets();
