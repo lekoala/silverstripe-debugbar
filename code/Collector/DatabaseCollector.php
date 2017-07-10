@@ -40,7 +40,7 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
         $dbQueryWarningLevel = DebugBar::config()->warn_query_limit;
         if ($dbQueryWarningLevel && $data['nb_statements'] > $dbQueryWarningLevel) {
             DebugBar::getDebugBar()
-                ->getCollector('monolog')
+                ->getCollector('messages')
                 ->addMessage(
                     'This page ran more than ' . $dbQueryWarningLevel . ' database queries. You could reduce this by '
                     . 'implementing caching. For more information, <a href="https://docs.silverstripe.org/en/'

@@ -363,21 +363,19 @@ class DatabaseProxy extends Database
         }
 
         if (!$this->connector) {
-            $self = $this;
             return $this->benchmarkQuery(
                 $sql,
-                function ($sql) use ($self, $errorLevel) {
-                    return $self->oldQuery($sql, $errorLevel);
+                function ($sql) use ($errorLevel) {
+                    return $this->oldQuery($sql, $errorLevel);
                 }
             );
         }
 
         // Benchmark query
-        $connector = $this->connector;
         return $this->benchmarkQuery(
             $sql,
-            function ($sql) use ($connector, $errorLevel) {
-                return $connector->query($sql, $errorLevel);
+            function ($sql) use ($errorLevel) {
+                return $this->connector->query($sql, $errorLevel);
             }
         );
     }
