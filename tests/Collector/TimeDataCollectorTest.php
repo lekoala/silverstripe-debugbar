@@ -17,7 +17,7 @@ class TimeDataCollectorTest extends SapphireTest
     public function setUp()
     {
         parent::setUp();
-        $this->collector = new TimeDataCollector;
+        $this->collector = new TimeDataCollector(microtime(true));
     }
 
     public function testCollectorTooltip()
