@@ -25,7 +25,7 @@ class TemplateParserProxyTest extends FunctionalTest
 
     public function testTrackTemplatesUsed()
     {
-        $this->get('/Security/login?flush=1');
+        $this->get('/Security/login');
 
         $templates = TemplateParserProxy::getTemplatesUsed();
 

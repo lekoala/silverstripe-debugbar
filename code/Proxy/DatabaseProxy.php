@@ -48,10 +48,6 @@ class DatabaseProxy extends Database
      */
     public function __construct($realConn)
     {
-        // Some service hooks pass $databaseConfig to constructor
-        if (is_array($realConn)) {
-            $realConn = DB::connect($realConn);
-        }
         $this->realConn      = $realConn;
         $this->connector     = $realConn->getConnector();
         $this->schemaManager = $realConn->getSchemaManager();

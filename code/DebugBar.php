@@ -14,13 +14,15 @@ use LeKoala\DebugBar\Collector\DatabaseCollector;
 use LeKoala\DebugBar\Collector\SilverStripeCollector;
 use LeKoala\DebugBar\Collector\TimeDataCollector;
 use LeKoala\DebugBar\Extension\ControllerExtension;
-use LeKoala\DebugBar\LogWriter;
+use LeKoala\DebugBar\Messages\LogFormatter;
 use LeKoala\DebugBar\Proxy\DatabaseProxy;
 use Psr\Log\LoggerInterface;
+use Monolog\Logger;
 use ReflectionObject;
 use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Control\Controller as BaseController;
 use SilverStripe\Control\Director;
+use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
@@ -39,7 +41,7 @@ class DebugBar
     /**
      * @var DebugBar\DebugBar
      */
-    protected static $debugbar = null;
+    protected static $debugbar;
 
     /**
      * @var bool
@@ -49,12 +51,17 @@ class DebugBar
     /**
      * @var DebugBar\JavascriptRenderer
      */
-    protected static $renderer = null;
+    protected static $renderer;
 
     /**
      * @var bool
      */
     protected static $showQueries = false;
+
+    /**
+     * @var HTTPRequest
+     */
+    protected static $request;
 
     /**
      * Get the Debug Bar instance
@@ -98,9 +105,6 @@ class DebugBar
             return self::$debugbar;
         }
 
-        // Add the controller extension programmaticaly because it might not be added properly through yml
-        Controller::add_extension(ControllerExtension::class);
-
         self::$debugbar = $debugbar = new BaseDebugBar;
 
         if (isset($_REQUEST['showqueries'])) {
@@ -113,13 +117,6 @@ class DebugBar
         $debugbar->addCollector(new PhpInfoCollector);
         $debugbar->addCollector(new TimeDataCollector);
         $debugbar->addCollector(new MemoryCollector);
-
-        if (!DB::get_conn()) {
-            global $databaseConfig;
-            if ($databaseConfig) {
-                DB::connect($databaseConfig);
-            }
-        }
 
         $connector = DB::get_connector();
         if (!self::config()->force_proxy && $connector instanceof PDOConnector) {
@@ -139,7 +136,10 @@ class DebugBar
 
         // Add message collector last so other collectors can send messages to the console using it
         $logger = Injector::inst()->get(LoggerInterface::class);
-        $debugbar->addCollector(new MonologCollector($logger));
+        $logCollector = new MonologCollector($logger, Logger::DEBUG, true, 'messages');
+        $logCollector->setFormatter(new LogFormatter);
+
+        $debugbar->addCollector($logCollector);
 
         // Add some SilverStripe specific infos
         $debugbar->addCollector(new SilverStripeCollector);
@@ -241,7 +241,7 @@ class DebugBar
 
         // Requirements may have been cleared (CMS iframes...) or not set (Security...)
         $js = Requirements::backend()->getJavascript();
-        if (!in_array('debugbar/assets/debugbar.js', $js)) {
+        if (!array_key_exists('debugbar/assets/debugbar.js', $js)) {
             return;
         }
         $initialize = true;
@@ -302,7 +302,7 @@ class DebugBar
 
     public static function isDisabled()
     {
-        if ((defined('DEBUGBAR_DISABLE') && DEBUGBAR_DISABLE) || static::config()->disabled) {
+        if (getenv('DEBUGBAR_DISABLE') || static::config()->disabled) {
             return true;
         }
         return false;
@@ -364,6 +364,32 @@ class DebugBar
     {
         if (self::getDebugBar() && !self::isDebugBarRequest()) {
             $callback(self::getDebugBar());
+        }
+    }
+
+    /**
+     * Set the current request. Is provided by the DebugBarMiddleware.
+     *
+     * @param HTTPRequest $request
+     */
+    public static function setRequest(HTTPRequest $request)
+    {
+        self::$request = $request;
+    }
+
+    /**
+     * Get the current request
+     *
+     * @return HTTPRequest
+     */
+    public static function getRequest()
+    {
+        if (self::$request) {
+            return self::$request;
+        }
+        // Fall back to trying from the global state
+        if (Controller::has_curr()) {
+            return Controller::curr()->getRequest();
         }
     }
 }

@@ -10,7 +10,7 @@ the DebugBar will not load its own jQuery version. You can also set the followin
 configuration flag to false to prevent the DebugBar from including its own jQuery.
 
 ```yaml
-DebugBar:
+LeKoala\DebugBar\DebugBar:
   include_jquery: false
 ```
 
@@ -18,10 +18,10 @@ If you are including jQuery yourself, it is expected you include it in `Page::in
 Below is an example of how to the jQuery which ships with the framework:
 
 ```php
-public function init()
+protected function init()
 {
     parent::init();
-    Requirements::javascript(FRAMEWORK_DIR . '/thirdparty/jquery/jquery.min.js');
+    Requirements::javascript('framework/thirdparty/jquery/jquery.min.js');
 }
 ```
 
@@ -30,7 +30,7 @@ public function init()
 `DebugBarControllerExtension` will include for you all the required assets for DebugBar.
 
 This is done using the `onAfterInit` extension hook, however on the `Security` controller the `onAfterInit` is called before your `init()`
-method in the `Page_Controller`.
+method in the `PageController`.
 
 Since you need to add jQuery before DebugBar this may be a problem, and therefore requirements will NOT be included on the `Security` controller.
 

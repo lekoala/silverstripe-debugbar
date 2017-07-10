@@ -5,7 +5,7 @@ namespace LeKoala\DebugBar\Collector;
 use DebugBar\DataCollector\AssetProvider;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
-use DebugBar\DataCollector\TimeDataCollector;
+use DebugBar\DataCollector\TimeDataCollector as BaseTimeDataCollector;
 use LeKoala\DebugBar\DebugBar;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\ORM\DB;

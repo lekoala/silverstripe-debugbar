@@ -5,11 +5,13 @@ namespace LeKoala\DebugBar\Collector;
 use DebugBar\DataCollector\AssetProvider;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
+use LeKoala\DebugBar\DebugBar;
 use LeKoala\DebugBar\Proxy\TemplateParserProxy;
 use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Cookie;
 use SilverStripe\Control\Session;
+use SilverStripe\Core\Convert;
 use SilverStripe\i18n\i18n;
 use SilverStripe\Security\Member;
 use SilverStripe\SiteConfig\SiteConfig;
@@ -17,7 +19,6 @@ use SilverStripe\View\Requirements;
 
 class SilverStripeCollector extends DataCollector implements Renderable, AssetProvider
 {
-
     protected static $debug = [];
     protected static $controller;
 
@@ -64,18 +65,18 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
 
     public static function getRequirementsData()
     {
-        ob_start();
-        Requirements::debug();
-        $requirements = ob_get_clean();
+        $backend = Requirements::backend();
 
-        $matches = null;
+        $requirements = array_merge(
+            $backend->getCSS(),
+            $backend->getJavascript()
+        );
 
-        preg_match_all("/<li>(.*?)<\/li>/s", $requirements, $matches);
-
-        if (!empty($matches[1])) {
-            return $matches[1];
+        $output = [];
+        foreach ($requirements as $asset => $specs) {
+            $output[] = $asset . ': ' . Convert::raw2json($specs);
         }
-        return [];
+        return $output;
     }
 
     public static function getRequestParameters()
@@ -105,7 +106,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
 
     public static function getSessionData()
     {
-        $data = Controller::curr()->getRequest()->getSession()->getAll();
+        $data = DebugBar::getRequest()->getSession()->getAll();
         $filtered = [];
 
         // Filter not useful data
@@ -181,7 +182,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
             $userText = 'Logged in as ' . $memberTag;
 
             // Masquerade integration
-            if (Controller::curr()->getRequest()->getSession()->get('Masquerade.Old.loggedInAs')) {
+            if (DebugBar::getRequest()->getSession()->get('Masquerade.Old.loggedInAs')) {
                 $userIcon = 'user-secret';
                 $userText = 'Masquerading as member ' . $memberTag;
             }

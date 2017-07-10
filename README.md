@@ -17,7 +17,7 @@ This module will:
 * Show current locale, framework/CMS version, current member
 * Show request timing/profiling and memory consumption
 
-The DebugBar is automatically injected into any HTML response through the `DebugBarRequestFilter`, and will only run in "dev" mode.
+The DebugBar is automatically injected into any HTML response through the `DebugBarMiddleware`, and will only run in "dev" mode.
 
 ![Screenshot](docs/en/_images/screenshot.png)
 

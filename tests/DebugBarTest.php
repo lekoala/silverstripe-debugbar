@@ -50,7 +50,7 @@ class DebugBarTest extends SapphireTest
         $debugbar = DebugBar::getDebugBar();
 
         /** @var DebugBar\Bridge\MonologCollector $messagesCollector */
-        $messagesCollector = $debugbar->getCollector('monolog');
+        $messagesCollector = $debugbar->getCollector('messages');
         $messages = $messagesCollector->getMessages();
         $found = false;
         foreach ($messages as $message) {

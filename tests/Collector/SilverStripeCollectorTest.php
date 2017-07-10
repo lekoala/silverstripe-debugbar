@@ -53,7 +53,7 @@ class SilverStripeCollectorTest extends SapphireTest
 
     public function testShowRequirements()
     {
-        Requirements::css('lekoala/silverstripe-debugbar:/assets/debugbar.css');
+        Requirements::css('debugbar/assets/debugbar.css');
         $data = $this->collector->collect();
         $this->assertArrayHasKey('requirements', $data);
         $this->assertNotEmpty($data['requirements']);
@@ -101,6 +101,7 @@ class SilverStripeCollectorTest extends SapphireTest
 
     public function testGetWidgets()
     {
+        $this->collector->collect();
         $result = $this->collector->getWidgets();
         // Stub out the dynamic data
         $result['version']['tooltip'] = 'Stub';

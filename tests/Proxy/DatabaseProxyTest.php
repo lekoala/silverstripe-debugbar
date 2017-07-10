@@ -34,14 +34,6 @@ class DatabaseProxyTest extends SapphireTest
         $this->assertFalse($this->proxy->getShowQueries());
     }
 
-    public function testGetAndSetConnectors()
-    {
-        $this->assertInstanceOf(DBConnector::class, $this->proxy->getConnector());
-        $connector = new MySQLiConnector;
-        $this->proxy->setConnector($connector);
-        $this->assertSame($connector, $this->proxy->getConnector());
-    }
-
     public function testGetAndSetDatabaseSchemaManager()
     {
         $this->assertInstanceOf(DBSchemaManager::class, $this->proxy->getSchemaManager());
@@ -105,15 +97,5 @@ class DatabaseProxyTest extends SapphireTest
             // Pass mock arguments - the large number is in searchEngine
             $proxy->$proxyMethod(null, null, null, null, null, null, null, null);
         }
-    }
-
-    /**
-     * Test whether passing an array to the constructor still produces a DBConnector instance
-     */
-    public function testConstructorArguments()
-    {
-        global $databaseConfig;
-        $newProxy = new DatabaseProxy($databaseConfig);
-        $this->assertInstanceOf(DBConnector::class, $newProxy->getConnector());
     }
 }

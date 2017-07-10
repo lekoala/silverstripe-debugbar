@@ -19,7 +19,6 @@ class ControllerTest extends FunctionalTest
         Config::modify()->set(DebugBar::class, 'enable_storage', false);
         $result = $this->get('/__debugbar');
         $this->assertEquals(404, $result->getStatusCode());
-        $this->assertEquals('Storage not enabled', (string) $result->getBody());
     }
 
     public function testErrorWhenModuleIsDisabled()
@@ -27,6 +26,5 @@ class ControllerTest extends FunctionalTest
         Config::modify()->set(DebugBar::class, 'disabled', true);
         $result = $this->get('/__debugbar');
         $this->assertEquals(404, $result->getStatusCode());
-        $this->assertEquals('DebugBar not enabled', (string) $result->getBody());
     }
 }

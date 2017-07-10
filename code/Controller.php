@@ -2,6 +2,7 @@
 
 namespace LeKoala\DebugBar;
 
+use DebugBar\OpenHandler;
 use LeKoala\DebugBar\DebugBar;
 use SilverStripe\Control\Controller as BaseController;
 use SilverStripe\Control\HTTPRequest;
@@ -22,7 +23,7 @@ class Controller extends BaseController
         if (!$debugbar) {
             return $this->httpError(404, 'DebugBar not enabled');
         }
-        $openHandler = new DebugBar\OpenHandler($debugbar);
+        $openHandler = new OpenHandler($debugbar);
         $openHandler->handle();
         exit(); // Handle will echo and set headers
     }

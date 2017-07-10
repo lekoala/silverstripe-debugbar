@@ -7,7 +7,7 @@ Wherever possible, features and settings have been made configurable. You can se
 ---
 Name: mysitedebugbar
 ---
-DebugBar:
+LeKoala\DebugBar\DebugBar:
   enabled_in_admin: false
   query_limit: 500
 ```
@@ -32,13 +32,13 @@ DebugBar:
 
 ## Disabling the debug bar
 
-You can disable the debug bar with PHP or configuration:
+You can disable the debug bar with an environment variable, or with configuration:
 
 ```php
-define('DEBUGBAR_DISABLE', true);
+putenv('DEBUGBAR_DISABLE=true');
 ```
 
 ```yaml
-DebugBar:
+LeKoala\DebugBar\DebugBar:
   disabled: true
 ```
