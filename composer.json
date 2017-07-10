@@ -23,9 +23,7 @@
     },
     "extra": {
         "installer-name": "debugbar",
-        "branch-alias": {
-            "dev-master": "1.0.x-dev"
-        }
+        "1.x-dev": "1.0.x-dev"
     },
     "support": {
         "issues": "https://github.com/lekoala/silverstripe-debugbar/issues"
