@@ -6,7 +6,7 @@ use SilverStripe\Control\Director;
 use SilverStripe\Core\Injector\Injector;
 
 if (!defined('DEBUGBAR_DIR')) {
-    define('DEBUGBAR_DIR', basename(__DIR__));
+    define('DEBUGBAR_DIR', 'debugbar');
 }
 
 // Add a simple utility that leverages Symfony VarDumper and cleans buffer to avoid debug messages

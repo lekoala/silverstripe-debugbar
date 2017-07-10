@@ -2,7 +2,6 @@
 
 namespace LeKoala\DebugBar\Proxy;
 
-
 use LeKoala\DebugBar\DebugBar;
 use SqlFormatter;
 use SilverStripe\Control\Controller;

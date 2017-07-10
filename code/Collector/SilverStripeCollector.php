@@ -136,9 +136,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
     {
         $matches = null;
 
-        preg_match_all(
-            "/<p class=\"message warning\">\n(.*?)<\/p>/s", $data, $matches
-        );
+        preg_match_all("/<p class=\"message warning\">\n(.*?)<\/p>/s", $data, $matches);
 
         if (!empty($matches[1])) {
             self::$debug = $matches[1];
