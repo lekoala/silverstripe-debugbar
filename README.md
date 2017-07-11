@@ -37,7 +37,7 @@ composer require --dev lekoala/silverstripe-debugbar
 
 ## Documentation
 
-For more information on using and configuring this module please [see the documentation section](docs/en).
+For more information on using and configuring this module please [see the documentation section](docs/en/index.md).
 
 ## Maintainer
 
