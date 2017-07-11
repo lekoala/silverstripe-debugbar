@@ -1,0 +1,9 @@
+{
+  "/mix.js": "/mix.js",
+  "/assets/debugbar.css": "/assets/debugbar.css",
+  "/assets/openhandler.css": "/assets/openhandler.css",
+  "/assets/widgets.css": "/assets/widgets.css",
+  "assets/debugbar.js": "assets/debugbar.js",
+  "assets/openhandler.js": "assets/openhandler.js",
+  "assets/widgets.js": "assets/widgets.js"
+}
