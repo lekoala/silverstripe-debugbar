@@ -145,10 +145,6 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
                 'map' => "silverstripe.templates.templates",
                 'default' => '{}'
             ),
-            'templates:badge' => array(
-                'map' => 'silverstripe.templates.count',
-                'default' => 0
-            )
         );
 
         $this->assertSame($expected, $result);
@@ -178,6 +174,6 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
             'NOTE: Rendered templates will not display when cached',
             array_pop($result['templates'])
         );
-        $this->assertSame('-', $result['count']);
+        $this->assertSame('', $result['count']);
     }
 }
