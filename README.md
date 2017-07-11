@@ -12,7 +12,7 @@ This module will:
 
 * Log framework execution based on available hooks
 * Log and profile database calls
-* Show all `SS_Log` log entries from SilverStripe
+* Show all SilverStripe log entries
 * Show all session, cookie, requirements, SiteConfig and request data
 * Show current locale, framework/CMS version, current member
 * Show request timing/profiling and memory consumption

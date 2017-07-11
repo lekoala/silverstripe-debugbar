@@ -2,7 +2,7 @@
 
 Wherever possible, features and settings have been made configurable. You can see a list of the default configuration settings by looking at `_config/debugbar.yml`. To modify any of these settings you can define a YAML configuration block in your `mysite/_config` folder, for example:
 
-**\_mysite/config/debugbar.yml:**
+**mysite/\_config/debugbar.yml:**
 ```yaml
 ---
 Name: mysitedebugbar

@@ -14,7 +14,7 @@ composer require lekoala/silverstripe-debugbar
 
 The module will be enabled by default (see [configuration](configuration.md)) on every page in your site if you have developer mode enabled. It will not run outside of a local development environment for security reasons. You can access the debug bar by clicking on the SilverStripe logo in the bottom left corner, or one of the tabs at the bottom if it is visible already to expand it.
 
-The DebugBar is automatically injected into any HTML response through the `DebugBarRequestFilter`, and will only run in "dev" mode.
+The DebugBar is automatically injected into any HTML response through the `DebugBarMiddleware`, and will only run in "dev" mode.
 
 
 ## Contents
