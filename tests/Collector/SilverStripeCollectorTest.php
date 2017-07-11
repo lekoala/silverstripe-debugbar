@@ -142,7 +142,7 @@ class SilverStripeCollectorTest extends SapphireTest
                 'map' => 'silverstripe.parameters',
                 'default' => '{}',
             ),
-            'config' => array(
+            'SiteConfig' => array(
                 'icon' => 'gear',
                 'widget' => 'PhpDebugBar.Widgets.VariableListWidget',
                 'map' => 'silverstripe.config',

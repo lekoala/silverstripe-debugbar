@@ -10,20 +10,24 @@ use DebugBar\DataCollector\PDO\TraceablePDO;
 use DebugBar\DataCollector\PhpInfoCollector;
 use DebugBar\Storage\FileStorage;
 use Exception;
+use LeKoala\DebugBar\Collector\ConfigCollector;
 use LeKoala\DebugBar\Collector\DatabaseCollector;
 use LeKoala\DebugBar\Collector\SilverStripeCollector;
 use LeKoala\DebugBar\Collector\TimeDataCollector;
 use LeKoala\DebugBar\Messages\LogFormatter;
+use LeKoala\DebugBar\Proxy\ConfigManifestProxy;
 use LeKoala\DebugBar\Proxy\DatabaseProxy;
 use Psr\Log\LoggerInterface;
 use Monolog\Logger;
 use ReflectionObject;
 use SilverStripe\Admin\LeftAndMain;
+use SilverStripe\Config\Collections\CachedConfigCollection;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Kernel;
 use SilverStripe\ORM\Connect\PDOConnector;
 use SilverStripe\ORM\DB;
 use SilverStripe\View\Requirements;
@@ -116,6 +120,22 @@ class DebugBar
         $debugbar->addCollector(new TimeDataCollector);
         $debugbar->addCollector(new MemoryCollector);
 
+        // Add config proxy replacing the core config manifest
+        /** @var SilverStripe\Core\Config\ConfigLoader $configLoader */
+        $configLoader = Injector::inst()->get(Kernel::class)->getConfigLoader();
+        $configManifest = false;
+        while ($configLoader->hasManifest()) {
+            $eachManifest = $configLoader->popManifest();
+            if ($eachManifest instanceof CachedConfigCollection) {
+                $configManifest = $eachManifest;
+                break;
+            }
+        }
+        if ($configManifest) {
+            $configProxy = new ConfigManifestProxy($configManifest);
+            $configLoader->pushManifest($configProxy);
+        }
+
         $connector = DB::get_connector();
         if (!self::config()->force_proxy && $connector instanceof PDOConnector) {
             // Use a little bit of magic to replace the pdo instance
@@ -144,6 +164,11 @@ class DebugBar
 
         if (self::config()->enable_storage) {
             $debugbar->setStorage(new FileStorage(TEMP_FOLDER . '/debugbar'));
+        }
+
+        if ($configManifest) {
+            // Add the config collector
+            $debugbar->addCollector(new ConfigCollector);
         }
 
         // Since we buffer everything, why not enable all dev options ?
