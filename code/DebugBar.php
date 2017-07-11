@@ -201,7 +201,7 @@ class DebugBar
         }
         // If jQuery is already included, set to false
         $js = Requirements::backend()->getJavascript();
-        foreach ($js as $url) {
+        foreach ($js as $url => $args) {
             $name = basename($url);
             if ($name == 'jquery.js' || $name == 'jquery.min.js') {
                 $includeJquery = false;
