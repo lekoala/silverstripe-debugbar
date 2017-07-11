@@ -1,8 +1,11 @@
 <?php
 
-use DebugBar\DataCollector\TimeDataCollector;
+namespace LeKoala\DebugBar\Collector;
 
-class DebugBarTimeDataCollector extends TimeDataCollector
+use DebugBar\DataCollector\TimeDataCollector as BaseTimeDataCollector;
+use LeKoala\DebugBar\DebugBar;
+
+class TimeDataCollector extends BaseTimeDataCollector
 {
     /**
      * Add in a warning or danger notification if the request time is greater than the configured thresholds

@@ -1,14 +1,19 @@
 <?php
 
+namespace LeKoala\DebugBar\Collector;
+
 use DebugBar\DataCollector\AssetProvider;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
-use DebugBar\DataCollector\TimeDataCollector;
+use DebugBar\DataCollector\TimeDataCollector as BaseTimeDataCollector;
+use LeKoala\DebugBar\DebugBar;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\ORM\DB;
 
 /**
  * Collects data about SQL statements executed through the DatabaseProxy
  */
-class DebugBarDatabaseCollector extends DataCollector implements Renderable, AssetProvider
+class DatabaseCollector extends DataCollector implements Renderable, AssetProvider
 {
     /**
      * @var TimeDataCollector
@@ -77,7 +82,7 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
         $queries = $this->db->getQueries();
 
         $limit   = DebugBar::config()->query_limit;
-        $warnDurationThreshold = Config::inst()->get('DebugBar', 'warn_dbqueries_threshold_seconds');
+        $warnDurationThreshold = Config::inst()->get(DebugBar::class, 'warn_dbqueries_threshold_seconds');
 
         $showDb = count(array_unique(array_map(function ($stmt) {
                 return $stmt['database'];
@@ -167,7 +172,7 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
     public function getAssets()
     {
         return array(
-            'base_path' => '/'.DEBUGBAR_DIR.'/javascript',
+            'base_path' => '/' . DEBUGBAR_DIR . '/javascript',
             'base_url' => DEBUGBAR_DIR.'/javascript',
             'css' => 'sqlqueries/widget.css',
             'js' => 'sqlqueries/widget.js'
