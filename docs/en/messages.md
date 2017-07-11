@@ -1,6 +1,6 @@
 # System logs and messages
 
-The "Messages" tab will show you a list of anything that has been processed by `SS_Log` during a page execution:
+The "Messages" tab will show you a list of anything that has been processed by [a SilverStripe logger](https://docs.silverstripe.org/en/4/developer_guides/debugging/error_handling/) during a page execution:
 
 ![System logs and messages](_images/messages.png)
 

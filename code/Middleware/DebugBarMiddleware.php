@@ -1,53 +1,63 @@
 <?php
 
-/**
- * A request filter to log pre request time
- */
-class DebugBarRequestFilter implements \RequestFilter
+namespace LeKoala\DebugBar\Middleware;
+
+use LeKoala\DebugBar\DebugBar;
+use SilverStripe\Control\Middleware\HTTPMiddleware;
+use SilverStripe\Control\Director;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Control\HTTPResponse;
+
+class DebugBarMiddleware implements HTTPMiddleware
 {
+    public function process(HTTPRequest $request, callable $delegate)
+    {
+        $this->beforeRequest($request);
+        $response = $delegate($request);
+        $this->afterRequest($request, $response);
+        return $response;
+    }
 
     /**
-     * Filter executed before a request processes
+     * Track the start up of the framework boot
      *
-     * @param SS_HTTPRequest $request Request container object
-     * @param Session $session Request session
-     * @param DataModel $model Current DataModel
-     * @return boolean Whether to continue processing other filters. Null or true will continue processing (optional)
+     * @param HTTPRequest $request
      */
-    public function preRequest(SS_HTTPRequest $request, Session $session, DataModel $model)
+    protected function beforeRequest(HTTPRequest $request)
     {
-        DebugBar::withDebugBar(function (DebugBar\DebugBar $debugbar) {
-            /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
-            $timeData = $debugbar['time'];
+        DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugbar) {
+            /** @var DebugBar\DataCollector\TimeDataCollector $timeData */
+            $timeData = $debugbar->getCollector('time');
+
             if (!$timeData) {
                 return;
             }
+
             if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
                 $timeData = $debugbar['time'];
                 $timeData->addMeasure(
-                    "framework boot",
+                    'framework boot',
                     $_SERVER['REQUEST_TIME_FLOAT'],
                     microtime(true)
                 );
             }
-            $timeData->startMeasure("pre_request", "pre request");
+            $timeData->startMeasure('pre_request', 'pre request');
         });
     }
 
     /**
-     * Filter executed AFTER a request
+     * Inject DebugBar requirements for the frontend
      *
-     * @param SS_HTTPRequest $request Request container object
-     * @param SS_HTTPResponse $response Response output object
-     * @param DataModel $model Current DataModel
-     * @return boolean Whether to continue processing other filters. Null or true will continue processing (optional)
+     * @param HTTPRequest  $request
+     * @param HTTPResponse $response
      */
-    public function postRequest(SS_HTTPRequest $request, SS_HTTPResponse $response, DataModel $model)
+    protected function afterRequest(HTTPRequest $request, HTTPResponse $response)
     {
         $debugbar = DebugBar::getDebugBar();
         if (!$debugbar) {
             return;
         }
+        DebugBar::setRequest($request);
 
         // All queries have been displayed
         if (DebugBar::getShowQueries()) {

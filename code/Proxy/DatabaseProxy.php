@@ -1,11 +1,35 @@
 <?php
 
+namespace LeKoala\DebugBar\Proxy;
+
+use LeKoala\DebugBar\DebugBar;
+use SqlFormatter;
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\Director;
+use SilverStripe\Dev\Debug;
+use SilverStripe\ORM\Connect\Database;
+use SilverStripe\ORM\Connect\DBConnector;
+use SilverStripe\ORM\Connect\DBSchemaManager;
+use SilverStripe\ORM\Connect\DBQueryBuilder;
+use SilverStripe\ORM\DataList;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\DataQuery;
+use SilverStripe\ORM\DB;
+use SilverStripe\ORM\ListDecorator;
+use SilverStripe\ORM\Map;
+use SilverStripe\ORM\Queries\SQLExpression;
+use SilverStripe\ORM\Queries\SQLSelect;
+use SilverStripe\View\SSViewer;
+use SilverStripe\View\SSViewer_DataPresenter;
+use SilverStripe\View\SSViewer_Scope;
+use SilverStripe\View\ViewableData;
+
 /**
- * A proxy database to log queries (compatible with 3.2+)
+ * A proxy database to log queries
  *
  * @author Koala
  */
-class DebugBarDatabaseNewProxy extends SS_Database
+class DatabaseProxy extends Database
 {
     /** @var MySQLDatabase */
     protected $realConn;
@@ -19,14 +43,10 @@ class DebugBarDatabaseNewProxy extends SS_Database
     protected $showQueries = false;
 
     /**
-     * @param MySQLDatabase|array $realConn
+     * @param Database|array $realConn
      */
     public function __construct($realConn)
     {
-        // Some service hooks pass $databaseConfig to constructor
-        if (is_array($realConn)) {
-            $realConn = DB::connect($realConn);
-        }
         $this->realConn      = $realConn;
         $this->connector     = $realConn->getConnector();
         $this->schemaManager = $realConn->getSchemaManager();
@@ -155,7 +175,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
             $result    = $callback($sql);
             $endtime   = round(microtime(true) - $starttime, 4);
 
-            $formattedSql = JdornSqlFormatter::format($sql);
+            $formattedSql = SqlFormatter::format($sql);
             $rows         = $result->numRecords();
             echo '<pre>The following query took <b>'.$endtime.'</b>s an returned <b>'.$rows."</b> row(s) \n";
             echo 'Triggered by: <i>'.$this->findSource().'</i></pre>';
@@ -249,13 +269,13 @@ class DebugBarDatabaseNewProxy extends SS_Database
 
         // Not relevant to determine source
         $internalClasses = array(
-            'DB', 'SQLExpression', 'DataList', 'DataObject',
-            'DataQuery', 'SQLSelect', 'SQLQuery', 'SS_Map', 'SS_ListDecorator', 'Object'
+            DB::class, SQLExpression::class, DataList::class, DataObject::class,
+            DataQuery::class, SQLSelect::class, 'SQLQuery', Map::class, ListDecorator::class, 'Object'
         );
 
         $viewerClasses = array(
-            'SSViewer_DataPresenter', 'SSViewer_Scope', 'SSViewer',
-            'ViewableData'
+            SSViewer_DataPresenter::class, SSViewer_Scope::class, SSViewer::class,
+            ViewableData::class
         );
 
         $sources = array();
@@ -274,7 +294,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
             if ($function && $function == '{closure}') {
                 continue;
             }
-            if (strpos($class, 'DebugBar') === 0) {
+            if (strpos($class, DebugBar::class) === 0) {
                 continue;
             }
             if (in_array($class, $internalClasses)) {
@@ -343,21 +363,19 @@ class DebugBarDatabaseNewProxy extends SS_Database
         }
 
         if (!$this->connector) {
-            $self = $this;
             return $this->benchmarkQuery(
                 $sql,
-                function ($sql) use ($self, $errorLevel) {
-                    return $self->oldQuery($sql, $errorLevel);
+                function ($sql) use ($errorLevel) {
+                    return $this->oldQuery($sql, $errorLevel);
                 }
             );
         }
 
         // Benchmark query
-        $connector = $this->connector;
         return $this->benchmarkQuery(
             $sql,
-            function ($sql) use ($connector, $errorLevel) {
-                return $connector->query($sql, $errorLevel);
+            function ($sql) use ($errorLevel) {
+                return $this->connector->query($sql, $errorLevel);
             }
         );
     }

@@ -1,13 +1,25 @@
 <?php
 
+namespace LeKoala\DebugBar\Collector;
+
 use DebugBar\DataCollector\AssetProvider;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
+use LeKoala\DebugBar\DebugBar;
+use LeKoala\DebugBar\Proxy\TemplateParserProxy;
+use SilverStripe\Admin\LeftAndMain;
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\Cookie;
+use SilverStripe\Control\Session;
+use SilverStripe\Core\Convert;
+use SilverStripe\i18n\i18n;
+use SilverStripe\Security\Member;
+use SilverStripe\SiteConfig\SiteConfig;
+use SilverStripe\View\Requirements;
 
-class DebugBarSilverStripeCollector extends DataCollector implements Renderable, AssetProvider
+class SilverStripeCollector extends DataCollector implements Renderable, AssetProvider
 {
-
-    protected static $debug = array();
+    protected static $debug = [];
     protected static $controller;
 
     public function collect()
@@ -35,7 +47,7 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
      */
     public static function getTemplateData()
     {
-        if (DebugBarTemplateParserProxy::getCached()) {
+        if (TemplateParserProxy::getCached()) {
             return array(
                 'templates' => array(
                     'NOTE: Rendered templates will not display when cached, please flush to view the list.'
@@ -44,7 +56,7 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
             );
         }
 
-        $templates = DebugBarTemplateParserProxy::getTemplatesUsed();
+        $templates = TemplateParserProxy::getTemplatesUsed();
         return array(
             'templates' => $templates,
             'count' => count($templates)
@@ -53,28 +65,28 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
 
     public static function getRequirementsData()
     {
-        ob_start();
-        Requirements::debug();
-        $requirements = ob_get_clean();
+        $backend = Requirements::backend();
 
-        $matches = null;
+        $requirements = array_merge(
+            $backend->getCSS(),
+            $backend->getJavascript()
+        );
 
-        preg_match_all("/<li>(.*?)<\/li>/s", $requirements, $matches);
-
-        if (!empty($matches[1])) {
-            return $matches[1];
+        $output = [];
+        foreach ($requirements as $asset => $specs) {
+            $output[] = $asset . ': ' . Convert::raw2json($specs);
         }
-        return array();
+        return $output;
     }
 
     public static function getRequestParameters()
     {
         if (!self::$controller) {
-            return array();
+            return [];
         }
         $request = self::$controller->getRequest();
 
-        $p = array();
+        $p = [];
         foreach ($request->getVars() as $k => $v) {
             $p["GET - $k"] = $v;
         }
@@ -89,17 +101,13 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
 
     public static function getCookieData()
     {
-        // On 3.1, Cookie::get_all does not exist
-        if (!method_exists('Cookie', 'get_all')) {
-            return $_COOKIE;
-        }
         return Cookie::get_all();
     }
 
     public static function getSessionData()
     {
-        $data = Session::get_all();
-        $filtered = array();
+        $data = DebugBar::getRequest()->getSession()->getAll();
+        $filtered = [];
 
         // Filter not useful data
         foreach ($data as $k => $v) {
@@ -108,6 +116,9 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
             }
             if ($k === 'PHPDEBUGBAR_STACK_DATA') {
                 continue;
+            }
+            if (is_array($v)) {
+                $v = json_encode($v, JSON_PRETTY_PRINT);
             }
             $filtered[$k] = $v;
         }
@@ -128,9 +139,7 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
     {
         $matches = null;
 
-        preg_match_all(
-            "/<p class=\"message warning\">\n(.*?)<\/p>/s", $data, $matches
-        );
+        preg_match_all("/<p class=\"message warning\">\n(.*?)<\/p>/s", $data, $matches);
 
         if (!empty($matches[1])) {
             self::$debug = $matches[1];
@@ -174,7 +183,7 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
             $userText = 'Logged in as ' . $memberTag;
 
             // Masquerade integration
-            if (Session::get('Masquerade.Old.loggedInAs')) {
+            if (DebugBar::getRequest()->getSession()->get('Masquerade.Old.loggedInAs')) {
                 $userIcon = 'user-secret';
                 $userText = 'Masquerading as member ' . $memberTag;
             }
@@ -235,7 +244,7 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
         );
 
         // Add badge for number of templates if there are some
-        if (!DebugBarTemplateParserProxy::getCached()) {
+        if (!TemplateParserProxy::getCached()) {
             $widgets['templates:badge'] = array(
                 'map' => "$name.templates.count",
                 'default' => 0
@@ -266,7 +275,7 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
         return array(
             'base_path' => '/' . DEBUGBAR_DIR . '/javascript',
             'base_url' => DEBUGBAR_DIR . '/javascript',
-            'css' => array(),
+            'css' => [],
             'js' => 'widgets.js',
         );
     }

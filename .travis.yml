@@ -1,35 +1,38 @@
 # See https://github.com/silverstripe/silverstripe-travis-support for setup details
 
+sudo: false
+
 language: php
 
-php:
-  - 5.3
-  - 5.4
-  - 5.5
-  - 5.6
-
 env:
-  - DB=MYSQL CORE_RELEASE=3.5
+  global:
+    - COMPOSER_ROOT_VERSION=4.0.x-dev
+    - CORE_RELEASE=master
 
 matrix:
+  fast_finish: true
   include:
-    - php: 7.1
-      env: DB=MYSQL CORE_RELEASE=3.6
-    - php: 7.1
-      env: DB=MYSQL CORE_RELEASE=3 COVERAGE="--coverage-clover=coverage.xml"
+    - php: 5.6
+      env: DB=MYSQL PHPUNIT_TEST=1 PHPCS_TEST=1
+    - php: 7.0
+      env: DB=MYSQL PHPUNIT_TEST=1
+    - php: 7.1.2
+      env: DB=MYSQL PDO=1 PHPUNIT_COVERAGE_TEST=1
 
 before_script:
+  - composer validate
   - composer self-update || true
-  - git clone git://github.com/silverstripe/silverstripe-travis-support.git ~/travis-support
-  - php ~/travis-support/travis_setup.php --source `pwd` --target ~/build/ss
-  - cd ~/build/ss
+  - "if [ \"$PHPCS_TEST\" = \"1\" ]; then composer require --dev squizlabs/php_codesniffer; fi"
+  - phpenv rehash
+  - "if [ \"$PHPUNIT_COVERAGE_TEST\" != \"1\" ]; then phpenv config-rm xdebug.ini; fi"
+  - composer validate
+  - composer require silverstripe/cms 4.0.x-dev
+  - composer install --prefer-dist
 
 script:
-  - vendor/bin/phpunit "$COVERAGE" debugbar/tests
+  - "if [ \"$PHPUNIT_TEST\" = \"1\" ]; then vendor/bin/phpunit; fi"
+  - "if [ \"$PHPCS_TEST\" = \"1\" ]; then composer run-script lint; fi"
+  - "if [ \"$PHPUNIT_COVERAGE_TEST\" = \"1\" ]; then vendor/bin/phpunit --coverage-clover=coverage.xml; fi"
 
 after_success:
-  - >
-    test "$COVERAGE" != ""
-    && mv coverage.xml ~/build/$TRAVIS_REPO_SLUG
-    && cd ~/build/$TRAVIS_REPO_SLUG
-    && bash <(curl -s https://codecov.io/bash)
+  - "if [ \"$PHPUNIT_COVERAGE_TEST\" = \"1\" ]; then bash <(curl -s https://codecov.io/bash) -f coverage.xml; fi"

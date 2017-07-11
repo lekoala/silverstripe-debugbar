@@ -1,6 +1,18 @@
 <?php
 
-class DebugBarSilverStripeCollectorTest extends SapphireTest
+namespace LeKoala\DebugBar\Test\Collector;
+
+use LeKoala\DebugBar\DebugBar;
+use LeKoala\DebugBar\Collector\SilverStripeCollector;
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Control\Session;
+use SilverStripe\Dev\SapphireTest;
+use SilverStripe\Security\Member;
+use SilverStripe\SiteConfig\SiteConfig;
+use SilverStripe\View\Requirements;
+
+class SilverStripeCollectorTest extends SapphireTest
 {
     /**
      * @var DebugBarSilverStripeCollector
@@ -18,7 +30,7 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
 
     public function testCollectorExists()
     {
-        $this->assertInstanceOf('DebugBarSilverStripeCollector', $this->collector);
+        $this->assertInstanceOf(SilverStripeCollector::class, $this->collector);
     }
 
     public function testCollect()
@@ -30,7 +42,7 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
         $this->assertArrayHasKey('parameters', $data);
         $this->assertArrayHasKey('templates', $data);
         $this->assertContains('Framework', $data['version']);
-        $this->assertSame('SiteConfig', $data['config']['ClassName']);
+        $this->assertSame(SiteConfig::class, $data['config']['ClassName']);
         $this->assertSame('User, ADMIN', $data['user']);
         $this->assertCount(0, $data['requirements']);
 
@@ -41,17 +53,19 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
 
     public function testShowRequirements()
     {
-        Requirements::css(DEBUGBAR_DIR . '/assets/debugbar.css');
+        Requirements::css('debugbar/assets/debugbar.css');
         $data = $this->collector->collect();
+        $this->assertArrayHasKey('requirements', $data);
+        $this->assertNotEmpty($data['requirements']);
         $this->assertContains('assets/debugbar.css', $data['requirements'][0]);
     }
 
     public function testShowRequestParameters()
     {
         $controller = new Controller;
-        $controller->init();
+        $controller->doInit();
         $controller->setRequest(
-            new SS_HTTPRequest(
+            new HTTPRequest(
                 'GET',
                 '/',
                 array('getvar' => 'value', 'foo' => 'bar'),
@@ -63,7 +77,7 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
         $this->collector->setController($controller);
         $this->assertSame($controller, $this->collector->getController());
 
-        $result = DebugBarSilverStripeCollector::getRequestParameters();
+        $result = SilverStripeCollector::getRequestParameters();
         $this->assertSame('value', $result['GET - getvar']);
         $this->assertSame('baz', $result['POST - bar']);
         $this->assertSame('here', $result['ROUTE - something']);
@@ -71,15 +85,15 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
 
     public function testGetSessionData()
     {
-        Session::set('DebugBarTesting', 'test value');
-        $result = DebugBarSilverStripeCollector::getSessionData();
+        Controller::curr()->getRequest()->getSession()->set('DebugBarTesting', 'test value');
+        $result = SilverStripeCollector::getSessionData();
         $this->assertSame('test value', $result['DebugBarTesting']);
     }
 
     public function testGetConfigData()
     {
-        $result = DebugBarSilverStripeCollector::getConfigData();
-        $this->assertSame('SiteConfig', $result['ClassName']);
+        $result = SilverStripeCollector::getConfigData();
+        $this->assertSame(SiteConfig::class, $result['ClassName']);
         $this->assertArrayHasKey('Title', $result);
         $this->assertArrayHasKey('ID', $result);
         $this->assertArrayHasKey('Created', $result);
@@ -87,6 +101,7 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
 
     public function testGetWidgets()
     {
+        $this->collector->collect();
         $result = $this->collector->getWidgets();
         // Stub out the dynamic data
         $result['version']['tooltip'] = 'Stub';
@@ -169,7 +184,7 @@ class DebugBarSilverStripeCollectorTest extends SapphireTest
      */
     public function testGetTemplateData()
     {
-        $result = DebugBarSilverStripeCollector::getTemplateData();
+        $result = SilverStripeCollector::getTemplateData();
         $this->assertContains(
             'NOTE: Rendered templates will not display when cached',
             array_pop($result['templates'])

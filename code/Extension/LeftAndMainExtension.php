@@ -1,18 +1,22 @@
 <?php
 
+namespace LeKoala\DebugBar\Extension;
+
+use LeKoala\DebugBar\DebugBar;
+use SilverStripe\Admin\LeftAndMainExtension as BaseLeftAndMainExtension;
+
 /**
  * Description of DebugBarLeftAndMainExtension
  *
  * @author Koala
  */
-class DebugBarLeftAndMainExtension extends LeftAndMainExtension
+class LeftAndMainExtension extends BaseLeftAndMainExtension
 {
-
     public function accessedCMS()
     {
-        DebugBar::withDebugBar(function (DebugBar\DebugBar $debugbar) {
+        DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugbar) {
             /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
-            $timeData = $debugbar['time'];
+            $timeData = $debugbar->getCollector('time');
             if (!$timeData) {
                 return;
             }
@@ -25,9 +29,9 @@ class DebugBarLeftAndMainExtension extends LeftAndMainExtension
 
     public function init()
     {
-        DebugBar::withDebugBar(function (DebugBar\DebugBar $debugbar) {
+        DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugbar) {
             /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
-            $timeData = $debugbar['time'];
+            $timeData = $debugbar->getCollector('time');
             if (!$timeData) {
                 return;
             }
