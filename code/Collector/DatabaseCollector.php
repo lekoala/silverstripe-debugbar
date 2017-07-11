@@ -7,7 +7,9 @@ use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 use DebugBar\DataCollector\TimeDataCollector as BaseTimeDataCollector;
 use LeKoala\DebugBar\DebugBar;
+use Psr\Log\LoggerInterface;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DB;
 
 /**
@@ -39,13 +41,11 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
         // Check for excessive number of queries
         $dbQueryWarningLevel = DebugBar::config()->warn_query_limit;
         if ($dbQueryWarningLevel && $data['nb_statements'] > $dbQueryWarningLevel) {
-            DebugBar::getDebugBar()
-                ->getCollector('messages')
-                ->addMessage(
+            Injector::inst()->get(LoggerInterface::class)
+                ->addWarning(
                     'This page ran more than ' . $dbQueryWarningLevel . ' database queries. You could reduce this by '
                     . 'implementing caching. For more information, <a href="https://docs.silverstripe.org/en/'
-                    . 'developer_guides/performance/" target="_blank">click here.</a>',
-                    'warning'
+                    . 'developer_guides/performance/" target="_blank">click here.</a>'
                 );
         }
 
