@@ -52,7 +52,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
                 'templates' => array(
                     'NOTE: Rendered templates will not display when cached, please flush to view the list.'
                 ),
-                'count' => '-'
+                'count' => ''
             );
         }
 
@@ -238,11 +238,15 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
                 'map' => "$name.templates.templates",
                 'default' => '{}'
             ),
-            'templates:badge' => array(
+        );
+
+        // Add badge for number of templates if there are some
+        if (!TemplateParserProxy::getCached()) {
+            $widgets['templates:badge'] = array(
                 'map' => "$name.templates.count",
                 'default' => 0
-            )
-        );
+            );
+        }
 
         if (!empty(self::$debug)) {
             $widgets["debug"] = array(
