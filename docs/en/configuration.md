@@ -29,6 +29,7 @@ LeKoala\DebugBar\DebugBar:
 | `warn_dbqueries_threshold_seconds` | int | Threshold (seconds) for how long a database query can run for before it will be shown as a warning |
 | `warn_request_time_seconds` | int | Threshold (seconds) for what constitutes a *dangerously* long page request (upper limit) |
 | `warn_warning_ratio` | float | Ratio to divide the warning request time by to get the *warning* level (default 0.5) |
+| `show_namespace` | bool | Show the fully qualified namespace in the Database tab when set to true. Defaults to false |
 
 ## Disabling the debug bar
 
