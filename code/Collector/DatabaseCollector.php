@@ -41,11 +41,12 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
         // Check for excessive number of queries
         $dbQueryWarningLevel = DebugBar::config()->warn_query_limit;
         if ($dbQueryWarningLevel && $data['nb_statements'] > $dbQueryWarningLevel) {
+            $helpLink = DebugBar::config()->performance_guide_link;
             Injector::inst()->get(LoggerInterface::class)
                 ->addWarning(
                     'This page ran more than ' . $dbQueryWarningLevel . ' database queries. You could reduce this by '
-                    . 'implementing caching. For more information, <a href="https://docs.silverstripe.org/en/'
-                    . 'developer_guides/performance/" target="_blank">click here.</a>'
+                    . 'implementing caching. For more information, <a href="' . $helpLink . '" target="_blank">'
+                    . 'click here.</a>'
                 );
         }
 
