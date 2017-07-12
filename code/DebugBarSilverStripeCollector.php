@@ -109,6 +109,9 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
             if ($k === 'PHPDEBUGBAR_STACK_DATA') {
                 continue;
             }
+            if (is_array($v)) {
+                $v = json_encode($v, JSON_PRETTY_PRINT);
+            }
             $filtered[$k] = $v;
         }
         return $filtered;
