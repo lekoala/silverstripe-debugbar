@@ -1,0 +1,333 @@
+/* Hide debugbar when printing a page */
+@media print {
+  div.phpdebugbar {
+    display: none;
+  }
+}
+
+div {
+  &.phpdebugbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    border-top: 0;
+    font-family: arial, sans-serif;
+    background: #fff;
+    z-index: 10000;
+    font-size: 14px;
+    color: #000;
+    text-align: left;
+    line-height: 1;
+    letter-spacing: normal;
+    a {
+      cursor: pointer;
+    }
+  }
+  &.phpdebugbar-openhandler {
+    cursor: pointer;
+  }
+  &.phpdebugbar-drag-capture {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10001;
+    background: none;
+    display: none;
+    cursor: n-resize;
+  }
+  &.phpdebugbar-closed {
+    width: auto;
+  }
+  &.phpdebugbar {
+    * {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      font-weight: normal;
+      text-decoration: none;
+      clear: initial;
+      width: auto;
+      -moz-box-sizing: content-box;
+      box-sizing: content-box;
+    }
+    ol, ul {
+      list-style: none;
+    }
+    table {
+      border-collapse: collapse;
+      border-spacing: 0;
+    }
+    code, pre {
+      background: none;
+      font-family: monospace;
+      font-size: 1em;
+      border: 0;
+      padding: 0;
+      margin: 0;
+    }
+  }
+}
+
+a.phpdebugbar-restore-btn {
+  float: left;
+  padding: 10px 8px;
+  font-size: 14px;
+  color: #555;
+  text-decoration: none;
+  border-right: 1px solid #ddd;
+}
+
+div {
+  &.phpdebugbar-resize-handle {
+    display: none;
+    height: 4px;
+    margin-top: -4px;
+    width: 100%;
+    background: none;
+    border-bottom: 1px solid #ccc;
+    cursor: n-resize;
+  }
+  &.phpdebugbar-closed, &.phpdebugbar-minimized {
+    border-top: 1px solid #ccc;
+  }
+  &.phpdebugbar-header {
+    background: #efefef url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjNweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjMgMjQiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDQ0LjEgKDQxNDU1KSAtIGh0dHA6Ly93d3cuYm9oZW1pYW5jb2RpbmcuY29tL3NrZXRjaCAtLT4KICAgIDx0aXRsZT5zcyBsb2dvPC90aXRsZT4KICAgIDxkZXNjPkNyZWF0ZWQgd2l0aCBTa2V0Y2guPC9kZXNjPgogICAgPGRlZnM+PC9kZWZzPgogICAgPGcgaWQ9IlBhZ2UtMSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9IkRlYnVnLWJhci0tLWhvdmVyLUNNUy12ZXJzaW9uIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMTEuMDAwMDAwLCAtNDguMDAwMDAwKSIgZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSIjMDA1QTkyIj4KICAgICAgICAgICAgPGcgaWQ9InNzLWxvZ28iIHRyYW5zZm9ybT0idHJhbnNsYXRlKDExLjAwMDAwMCwgNDguMDAwMDAwKSI+CiAgICAgICAgICAgICAgICA8cGF0aCBkPSJNOS4xNTk1ODAzOCwxNS4xODAzNTY3IEMxMC45Mzg4MjQyLDEzLjk2MjY0NzMgMTEuMzkzMDk5MiwxMS41MzM1Mzc4IDEwLjE3NTM4OTgsOS43NTQyOTQwMyBMNi45NTc2MDg0NSwxMS45NTYyNjYgTDYuOTU3NjA4NDUsMTEuOTU2MjY2IEM2LjA2Nzk4NjU1LDEyLjU2MTk2NiA0Ljg1MDI3NzE0LDEyLjMzNDgyODUgNC4yNDQ1NzcxMiwxMS40NDUyMDY2IEMzLjYzODg3NzEsMTAuNTU1NTg0NyAzLjg2NjAxNDYxLDkuMzQ0MTg0NjUgNC43NTU2MzY1MSw4LjczMjE3NTI1IEM0Ljc1NTYzNjUxLDguNzMyMTc1MjUgNC43NTU2MzY1MSw4LjczMjE3NTI1IDQuNzU1NjM2NTEsOC43MzIxNzUyNSBMNy42OTU4MDUzNCw2LjcxOTQ4NDU3IEw5LjU4MjMwODUyLDUuNDI2MDYyNjYgQzExLjM2MTU1MjMsNC4yMDgzNTMyNSAxMS44MTU4MjczLDEuNzc5MjQzOCAxMC41OTgxMTc5LDAgTDcuMzgwMzM2NTgsMi4yMDgyODEzMSBMMi41NTM2NjQ1Nyw1LjUwODA4NDUzIEMyLjU1MzY2NDU3LDUuNTA4MDg0NTMgMi41NDczNTUxOSw1LjUxNDM5MzkxIDIuNTQ3MzU1MTksNS41MTQzOTM5MSBDLTAuMTIxNTEwNTA5LDcuMzQ0MTEyNzEgLTAuODAyOTIzMDI4LDEwLjk4NDYyMjIgMS4wMjY3OTU3NywxMy42NTM0ODc5IEMyLjg0Mzg5NTgzLDE2LjMyMjM1MzYgNi40OTA3MTQ2OCwxNy4wMDM3NjYxIDkuMTU5NTgwMzgsMTUuMTgwMzU2NyBMOS4xNTk1ODAzOCwxNS4xODAzNTY3IFoiIGlkPSJYTUxJRF8xNF8iPjwvcGF0aD4KICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik0xMy40NzgzNDM1LDcuOTY2NDIwODEgTDEzLjQ3ODM0MzUsNy45NjY0MjA4MSBMMTMuNDc4MzQzNSw3Ljk2NjQyMDgxIEMxMy40NjU3MjQ3LDcuOTcyNzMwMTggMTMuNDU5NDE1Myw3Ljk3OTAzOTU2IDEzLjQ1MzEwNiw3Ljk4NTM0ODk0IEwxMy40NzgzNDM1LDcuOTY2NDIwODEgQzExLjY5OTA5OTcsOS4xODQxMzAyMiAxMS4yNDQ4MjQ2LDExLjYxMzIzOTcgMTIuNDYyNTM0LDEzLjM5MjQ4MzUgTDE1LjY4MDMxNTQsMTEuMTkwNTExNSBMMTUuNjgwMzE1NCwxMS4xOTA1MTE1IEMxNi41Njk5MzczLDEwLjU3ODUwMjEgMTcuNzg3NjQ2NywxMC44MDU2Mzk2IDE4LjM5MzM0NjcsMTEuNzAxNTcwOSBDMTkuMDA1MzU2MSwxMi41OTExOTI4IDE4Ljc3ODIxODYsMTMuODAyNTkyOSAxNy44ODg1OTY3LDE0LjQxNDYwMjIgTDE0Ljk0ODQyNzksMTYuNDI3MjkyOSBMMTMuMDU1NjE1MywxNy43MjA3MTQ4IEMxMS4yNzYzNzE1LDE4LjkzODQyNDMgMTAuODIyMDk2NSwyMS4zNjc1MzM3IDEyLjAzOTgwNTksMjMuMTQ2Nzc3NSBMMTUuMjU3NTg3MywyMC45NDQ4MDU2IEwyMC4wODQyNTkzLDE3LjYzODY5MyBDMjIuNzUzMTI1LDE1LjgxNTI4MzUgMjMuNDM0NTM3NSwxMi4xNjg0NjQ3IDIxLjYxMTEyODEsOS40OTk1OTg5OCBDMTkuNzg3NzE4Niw2LjgxODExNDUzIDE2LjE0NzIwOTIsNi4xMzY3MDIwMSAxMy40NzgzNDM1LDcuOTY2NDIwODEiIGlkPSJYTUxJRF8xM18iPjwvcGF0aD4KICAgICAgICAgICAgPC9nPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+') no-repeat 10px 8px / 20px 20px;
+  }
+}
+
+/* -------------------------------------- */
+
+a.phpdebugbar-restore-btn {
+  background: #efefef url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMjNweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjMgMjQiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8IS0tIEdlbmVyYXRvcjogU2tldGNoIDQ0LjEgKDQxNDU1KSAtIGh0dHA6Ly93d3cuYm9oZW1pYW5jb2RpbmcuY29tL3NrZXRjaCAtLT4KICAgIDx0aXRsZT5zcyBsb2dvPC90aXRsZT4KICAgIDxkZXNjPkNyZWF0ZWQgd2l0aCBTa2V0Y2guPC9kZXNjPgogICAgPGRlZnM+PC9kZWZzPgogICAgPGcgaWQ9IlBhZ2UtMSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9IkRlYnVnLWJhci0tLWhvdmVyLUNNUy12ZXJzaW9uIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMTEuMDAwMDAwLCAtNDguMDAwMDAwKSIgZmlsbC1ydWxlPSJub256ZXJvIiBmaWxsPSIjMDA1QTkyIj4KICAgICAgICAgICAgPGcgaWQ9InNzLWxvZ28iIHRyYW5zZm9ybT0idHJhbnNsYXRlKDExLjAwMDAwMCwgNDguMDAwMDAwKSI+CiAgICAgICAgICAgICAgICA8cGF0aCBkPSJNOS4xNTk1ODAzOCwxNS4xODAzNTY3IEMxMC45Mzg4MjQyLDEzLjk2MjY0NzMgMTEuMzkzMDk5MiwxMS41MzM1Mzc4IDEwLjE3NTM4OTgsOS43NTQyOTQwMyBMNi45NTc2MDg0NSwxMS45NTYyNjYgTDYuOTU3NjA4NDUsMTEuOTU2MjY2IEM2LjA2Nzk4NjU1LDEyLjU2MTk2NiA0Ljg1MDI3NzE0LDEyLjMzNDgyODUgNC4yNDQ1NzcxMiwxMS40NDUyMDY2IEMzLjYzODg3NzEsMTAuNTU1NTg0NyAzLjg2NjAxNDYxLDkuMzQ0MTg0NjUgNC43NTU2MzY1MSw4LjczMjE3NTI1IEM0Ljc1NTYzNjUxLDguNzMyMTc1MjUgNC43NTU2MzY1MSw4LjczMjE3NTI1IDQuNzU1NjM2NTEsOC43MzIxNzUyNSBMNy42OTU4MDUzNCw2LjcxOTQ4NDU3IEw5LjU4MjMwODUyLDUuNDI2MDYyNjYgQzExLjM2MTU1MjMsNC4yMDgzNTMyNSAxMS44MTU4MjczLDEuNzc5MjQzOCAxMC41OTgxMTc5LDAgTDcuMzgwMzM2NTgsMi4yMDgyODEzMSBMMi41NTM2NjQ1Nyw1LjUwODA4NDUzIEMyLjU1MzY2NDU3LDUuNTA4MDg0NTMgMi41NDczNTUxOSw1LjUxNDM5MzkxIDIuNTQ3MzU1MTksNS41MTQzOTM5MSBDLTAuMTIxNTEwNTA5LDcuMzQ0MTEyNzEgLTAuODAyOTIzMDI4LDEwLjk4NDYyMjIgMS4wMjY3OTU3NywxMy42NTM0ODc5IEMyLjg0Mzg5NTgzLDE2LjMyMjM1MzYgNi40OTA3MTQ2OCwxNy4wMDM3NjYxIDkuMTU5NTgwMzgsMTUuMTgwMzU2NyBMOS4xNTk1ODAzOCwxNS4xODAzNTY3IFoiIGlkPSJYTUxJRF8xNF8iPjwvcGF0aD4KICAgICAgICAgICAgICAgIDxwYXRoIGQ9Ik0xMy40NzgzNDM1LDcuOTY2NDIwODEgTDEzLjQ3ODM0MzUsNy45NjY0MjA4MSBMMTMuNDc4MzQzNSw3Ljk2NjQyMDgxIEMxMy40NjU3MjQ3LDcuOTcyNzMwMTggMTMuNDU5NDE1Myw3Ljk3OTAzOTU2IDEzLjQ1MzEwNiw3Ljk4NTM0ODk0IEwxMy40NzgzNDM1LDcuOTY2NDIwODEgQzExLjY5OTA5OTcsOS4xODQxMzAyMiAxMS4yNDQ4MjQ2LDExLjYxMzIzOTcgMTIuNDYyNTM0LDEzLjM5MjQ4MzUgTDE1LjY4MDMxNTQsMTEuMTkwNTExNSBMMTUuNjgwMzE1NCwxMS4xOTA1MTE1IEMxNi41Njk5MzczLDEwLjU3ODUwMjEgMTcuNzg3NjQ2NywxMC44MDU2Mzk2IDE4LjM5MzM0NjcsMTEuNzAxNTcwOSBDMTkuMDA1MzU2MSwxMi41OTExOTI4IDE4Ljc3ODIxODYsMTMuODAyNTkyOSAxNy44ODg1OTY3LDE0LjQxNDYwMjIgTDE0Ljk0ODQyNzksMTYuNDI3MjkyOSBMMTMuMDU1NjE1MywxNy43MjA3MTQ4IEMxMS4yNzYzNzE1LDE4LjkzODQyNDMgMTAuODIyMDk2NSwyMS4zNjc1MzM3IDEyLjAzOTgwNTksMjMuMTQ2Nzc3NSBMMTUuMjU3NTg3MywyMC45NDQ4MDU2IEwyMC4wODQyNTkzLDE3LjYzODY5MyBDMjIuNzUzMTI1LDE1LjgxNTI4MzUgMjMuNDM0NTM3NSwxMi4xNjg0NjQ3IDIxLjYxMTEyODEsOS40OTk1OTg5OCBDMTkuNzg3NzE4Niw2LjgxODExNDUzIDE2LjE0NzIwOTIsNi4xMzY3MDIwMSAxMy40NzgzNDM1LDcuOTY2NDIwODEiIGlkPSJYTUxJRF8xM18iPjwvcGF0aD4KICAgICAgICAgICAgPC9nPgogICAgICAgIDwvZz4KICAgIDwvZz4KPC9zdmc+') no-repeat 10px 8px / 20px 20px;
+}
+
+div {
+  &.phpdebugbar-header {
+    padding-left: 40px;
+    min-height: 26px;
+    line-height: 16px;
+    &:before {
+      display: table;
+      line-height: 0;
+      content: "";
+    }
+    &:after {
+      display: table;
+      line-height: 0;
+      content: "";
+      clear: both;
+    }
+  }
+  &.phpdebugbar-header-left {
+    float: left;
+  }
+  &.phpdebugbar-header-right {
+    float: right;
+  }
+  &.phpdebugbar-header > div > * {
+    padding: 10px 10px;
+    font-size: 14px;
+    color: #555;
+    text-decoration: none;
+  }
+  &.phpdebugbar-header-left > * {
+    float: left;
+  }
+  &.phpdebugbar-header-right > {
+    * {
+      float: right;
+    }
+    select {
+      padding: 0;
+    }
+  }
+}
+
+/* -------------------------------------- */
+
+span.phpdebugbar-indicator {
+  border-right: 1px solid #ddd;
+}
+
+a {
+  &.phpdebugbar-indicator, &.phpdebugbar-close-btn {
+    border-right: 1px solid #ddd;
+  }
+  &.phpdebugbar-tab {
+    &.phpdebugbar-active {
+      background: #005A92;
+      color: #fff;
+      span.phpdebugbar-badge {
+        background: #fff;
+        color: #005A92;
+      }
+    }
+    span.phpdebugbar-badge {
+      display: none;
+      margin-left: 5px;
+      font-size: 11px;
+      line-height: 14px;
+      padding: 1px 7px;
+      background: #005A92;
+      border-radius: 4px;
+      color: #fff;
+      font-weight: normal;
+      text-shadow: none;
+      vertical-align: middle;
+      float: right;
+    }
+    i {
+      display: none;
+      vertical-align: middle;
+    }
+    span.phpdebugbar-badge.phpdebugbar-important {
+      background: #ed6868;
+      color: white;
+    }
+  }
+  &.phpdebugbar-close-btn, &.phpdebugbar-open-btn, &.phpdebugbar-minimize-btn, &.phpdebugbar-maximize-btn {
+    width: 10px;
+    height: 16px;
+  }
+  &.phpdebugbar-restore-btn {
+    width: 26px;
+    height: 16px;
+  }
+  &.phpdebugbar-maximize-btn {
+    display: none;
+  }
+  &.phpdebugbar-minimize-btn {
+    display: block;
+  }
+}
+
+div.phpdebugbar-minimized a {
+  &.phpdebugbar-maximize-btn {
+    display: block;
+  }
+  &.phpdebugbar-minimize-btn {
+    display: none;
+  }
+}
+
+a {
+  &.phpdebugbar-minimize-btn {
+    background:url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201792%201792%22%20id%3D%22chevron-down%22%3E%3Cpath%20d%3D%22M1683%20808l-742%20741q-19%2019-45%2019t-45-19l-742-741q-19-19-19-45.5t19-45.5l166-165q19-19%2045-19t45%2019l531%20531%20531-531q19-19%2045-19t45%2019l166%20165q19%2019%2019%2045.5t-19%2045.5z%22%2F%3E%3C%2Fsvg%3E) no-repeat 10px 10px / 14px 14px;
+  }
+  &.phpdebugbar-maximize-btn {
+    background:url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201792%201792%22%20id%3D%22chevron-up%22%3E%3Cpath%20d%3D%22M1683%201331l-166%20165q-19%2019-45%2019t-45-19l-531-531-531%20531q-19%2019-45%2019t-45-19l-166-165q-19-19-19-45.5t19-45.5l742-741q19-19%2045-19t45%2019l742%20741q19%2019%2019%2045.5t-19%2045.5z%22%2F%3E%3C%2Fsvg%3E) no-repeat 10px 10px / 14px 14px;
+  }
+  &.phpdebugbar-close-btn {
+    background: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201792%201792%22%20id%3D%22close%22%3E%3Cpath%20d%3D%22M1490%201322q0%2040-28%2068l-136%20136q-28%2028-68%2028t-68-28l-294-294-294%20294q-28%2028-68%2028t-68-28l-136-136q-28-28-28-68t28-68l294-294-294-294q-28-28-28-68t28-68l136-136q28-28%2068-28t68%2028l294%20294%20294-294q28-28%2068-28t68%2028l136%20136q28%2028%2028%2068t-28%2068l-294%20294%20294%20294q28%2028%2028%2068z%22%2F%3E%3C%2Fsvg%3E) no-repeat 10px 10px / 14px 14px;
+  }
+  &.phpdebugbar-open-btn {
+    background: url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201792%201792%22%20id%3D%22folder-open%22%3E%3Cpath%20d%3D%22M1815%20952q0%2031-31%2066l-336%20396q-43%2051-120.5%2086.5t-143.5%2035.5h-1088q-34%200-60.5-13t-26.5-43q0-31%2031-66l336-396q43-51%20120.5-86.5t143.5-35.5h1088q34%200%2060.5%2013t26.5%2043zm-343-344v160h-832q-94%200-197%2047.5t-164%20119.5l-337%20396-5%206q0-4-.5-12.5t-.5-12.5v-960q0-92%2066-158t158-66h320q92%200%20158%2066t66%20158v32h544q92%200%20158%2066t66%20158z%22%2F%3E%3C%2Fsvg%3E) no-repeat 10px 10px / 14px 14px;
+  }
+}
+
+.phpdebugbar-indicator {
+  position: relative;
+  cursor: pointer;
+  span {
+    &.phpdebugbar-text {
+      margin-left: 5px;
+    }
+    &.phpdebugbar-tooltip {
+      display: none;
+      position: absolute;
+      top: -30px;
+      background: #efefef;
+      opacity: .7;
+      border: 1px solid #ccc;
+      color: #555;
+      font-size: 11px;
+      padding: 2px 3px;
+      z-index: 1000;
+      text-align: center;
+      width: 400%;
+      right: 0;
+    }
+  }
+  &:hover span.phpdebugbar-tooltip:not(.phpdebugbar-disabled) {
+    display: block;
+  }
+}
+
+select.phpdebugbar-datasets-switcher {
+  float: right;
+  display: none;
+  margin: 8px 0 0 7px;
+  max-width: 200px;
+  max-height: 23px;
+  padding: 0;
+}
+
+
+div {
+  &.phpdebugbar-body {
+    border-top: 1px solid #ccc;
+    display: none;
+    position: relative;
+    height: 300px;
+  }
+  &.phpdebugbar-panel {
+    display: none;
+    height: 100%;
+    overflow: auto;
+    width: 100%;
+    &.phpdebugbar-active {
+      display: block;
+    }
+  }
+  &.phpdebugbar-mini-design a.phpdebugbar-tab {
+    position: relative;
+    border-right: 1px solid #ddd;
+    span.phpdebugbar-text {
+      display: none;
+    }
+    &:hover span.phpdebugbar-text {
+      display: block;
+      position: absolute;
+      top: -30px;
+      background: #efefef;
+      opacity: .7;
+      border: 1px solid #ccc;
+      color: #555;
+      font-size: 11px;
+      padding: 2px 3px;
+      z-index: 1000;
+      text-align: center;
+      right: 0;
+    }
+    i {
+      display: inline-block;
+    }
+  }
+  &.phpdebugbar {
+    .phpdebugbar-indicator {
+      &.phpdebugbar-requesttime-ok:after, &.phpdebugbar-requesttime-warning:after, &.phpdebugbar-requesttime-danger:after {
+        content: '';
+        height: 5px;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+      }
+      &.phpdebugbar-requesttime-ok:after {
+        background-color: #05a805;
+      }
+      &.phpdebugbar-requesttime-warning:after {
+        background-color: #F6932E;
+      }
+      &.phpdebugbar-requesttime-danger:after {
+        background-color: #ED0000;
+      }
+    }
+    .phpdebugbar-widgets-value a {
+      text-decoration: underline;
+    }
+  }
+}

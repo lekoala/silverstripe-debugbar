@@ -1,0 +1,23 @@
+{
+  "name": "lekoala-silverstripe-debugbar",
+  "scripts": {
+    "watch": "webpack --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js --watch",
+    "build": "webpack --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "package": "NODE_ENV=production webpack --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "lint": "node_modules/.bin/eslint assets/vendor/debugbar/js"
+  },
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "jquery": "^3.1.1",
+    "laravel-mix": "^0.8.8",
+    "webpack": "^2.5.1"
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.1.1",
+    "eslint": "^3.13.1",
+    "eslint-config-airbnb": "^14.0.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^3.0.2",
+    "eslint-plugin-react": "^6.9.0"
+  }
+}

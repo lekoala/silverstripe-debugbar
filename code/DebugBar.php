@@ -279,7 +279,7 @@ class DebugBar
         if (self::isAdminUrl() && !self::config()->enabled_in_admin) {
             return 'In admin';
         }
-        return "I don't know why";
+        return "I don't know why ¯\_(ツ)_/¯";
     }
 
     public static function vendorNotInstalled()
