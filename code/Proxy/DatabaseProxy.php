@@ -322,6 +322,10 @@ class DatabaseProxy extends Database
             }
 
             $name = $class;
+            if ($class && !DebugBar::config()->get('show_namespaces')) {
+                $nameArray = explode("\\", $class);
+                $name = array_pop($nameArray);
+            }
             if ($function) {
                 $name .= $type.$function;
             }

@@ -26,6 +26,8 @@ LeKoala\DebugBar\DebugBar:
   warn_request_time_seconds: 5.0
   # Ratio to divide the warning request time by to get the *warning* level
   warn_warning_ratio: 0.5
+  # Hide FQN in the database profiling tab
+  show_namespaces: false
 
 SilverStripe\Control\Director:
   rules:

@@ -42,7 +42,7 @@ class DatabaseCollectorTest extends SapphireTest
         $statement = array_shift($result['statements']);
         $this->assertNotEmpty($statement['sql']);
         $this->assertEquals(1, $statement['is_success']);
-        $this->assertContains('SilverStripe\Dev\SapphireTest', $statement['source']);
+        $this->assertContains('SapphireTest', $statement['source']);
         $this->assertFalse($statement['warn']);
 
         // Deliberately low warning threshold
