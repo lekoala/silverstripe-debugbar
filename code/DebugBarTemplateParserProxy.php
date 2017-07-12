@@ -29,7 +29,7 @@ class DebugBarTemplateParserProxy extends SSTemplateParser
     {
         static::$cached = false;
 
-        if (DebugBar::config()->force_proxy) {
+        if (DebugBar::config()->get('force_proxy')) {
             static::trackTemplateUsed($templateName);
         }
 
