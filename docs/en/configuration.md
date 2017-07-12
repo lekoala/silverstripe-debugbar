@@ -26,6 +26,7 @@ DebugBar:
 | `include_jquery` | bool | Let DebugBar include jQuery. Set this to false to include your own jQuery version |
 | `query_limit` | int | Maximum number of database queries to display (200 by default for performance reasons) |
 | `warn_query_limit` | int | Number of database queries before a warning will be displayed |
+| `performance_guide_link` | string | When a warning is shown for a high number of DB queries, the following link will be used for a performance guide |
 | `warn_dbqueries_threshold_seconds` | int | Threshold (seconds) for how long a database query can run for before it will be shown as a warning |
 | `warn_request_time_seconds` | int | Threshold (seconds) for what constitutes a *dangerously* long page request (upper limit) |
 | `warn_warning_ratio` | float | Ratio to divide the warning request time by to get the *warning* level (default 0.5) |
