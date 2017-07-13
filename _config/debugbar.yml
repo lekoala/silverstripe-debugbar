@@ -9,12 +9,21 @@ Only:
   environment: 'dev'
 ---
 DebugBar:
+  # Auto inject the debug bar into request body
+  auto_inject: true
+  # Store requests data
   enable_storage: true
+  # Automatically set debug and debug_request to improve data collection
   auto_debug: false
+  # Enable for ajax requests
   ajax: false
+  # Use our own DB proxy instead of DebugBar default proxy
   force_proxy: true
+  # Check IP to run only locally
   check_local_ip: true
+  # Show query source
   find_source: true
+  # Enable DebugBar in the CMS
   enabled_in_admin: true
   # Let DebugBar include jQuery. Set this to false to include your own jQuery version
   include_jquery: true
@@ -28,7 +37,6 @@ DebugBar:
   warn_request_time_seconds: 5.0
   # Ratio to divide the warning request time by to get the *warning* level
   warn_warning_ratio: 0.5
-
 Director:
   rules:
     '__debugbar': 'DebugBarController'
