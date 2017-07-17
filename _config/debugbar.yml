@@ -37,8 +37,8 @@ SilverStripe\Control\Director:
     '__debugbar': 'LeKoala\DebugBar\Controller'
 
 SilverStripe\Core\Injector\Injector:
-  SilverStripe\View\SSTemplateParser:
-    class: LeKoala\DebugBar\Proxy\TemplateParserProxy
+  SilverStripe\View\SSViewer:
+    class: LeKoala\DebugBar\Proxy\SSViewerProxy
   DebugBarMiddleware:
     class: LeKoala\DebugBar\Middleware\DebugBarMiddleware
   # Disable the default SilverStripe log handler which sends everything to the browser

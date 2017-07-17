@@ -3,13 +3,13 @@
 namespace LeKoala\DebugBar\Proxy;
 
 use LeKoala\DebugBar\DebugBar;
-use SilverStripe\View\SSTemplateParser;
+use SilverStripe\View\SSViewer;
 
 /**
  * The template parser proxy will monitor the templates that are used during a page request. Since the
  * use of the template parser is behind cache checks, this will only execute during a cache flush.
  */
-class TemplateParserProxy extends SSTemplateParser
+class SSViewerProxy extends SSViewer
 {
     /**
      * Tracks all templates used in the current request
@@ -30,15 +30,10 @@ class TemplateParserProxy extends SSTemplateParser
      *
      * {@inheritDoc}
      */
-    public function compileString($string, $templateName = '', $includeDebuggingComments = false, $topTemplate = true)
+    public function process($item, $arguments = null, $inheritedScope = null)
     {
-        static::$cached = false;
-
-        if (DebugBar::config()->force_proxy) {
-            static::trackTemplateUsed($templateName);
-        }
-
-        return parent::compileString($string, $templateName, $includeDebuggingComments, $topTemplate);
+        self::trackTemplateUsed($this->chosen);
+        return parent::process($item, $arguments, $inheritedScope);
     }
 
     /**
@@ -49,17 +44,6 @@ class TemplateParserProxy extends SSTemplateParser
     public static function getTemplatesUsed()
     {
         return static::$allTemplates;
-    }
-
-    /**
-     * Determines whether the template rendering is cached or not based on whether the compileString method has been
-     * called at any point.
-     *
-     * @return bool
-     */
-    public static function getCached()
-    {
-        return static::$cached;
     }
 
     /**
