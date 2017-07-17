@@ -26,7 +26,7 @@ before_script:
   - phpenv rehash
   - phpenv config-rm xdebug.ini
   - composer validate
-  - composer require silverstripe/cms 4.0.x-dev
+  - composer require silverstripe/framework:4.0.x-dev silverstripe/cms:4.0.x-dev
   - composer install --prefer-dist
 
 script:
