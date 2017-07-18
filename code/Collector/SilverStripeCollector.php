@@ -21,6 +21,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
 {
     protected static $debug = [];
     protected static $controller;
+    protected static $template_cache_info = [];
 
     public function collect()
     {
@@ -36,6 +37,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
             'requirements' => self::getRequirementsData(),
             'user' => Member::currentUserID() ? Member::currentUser()->Title : 'Not logged in',
             'templates' => self::getTemplateData(),
+            'templateCache' => self::getTemplateCacheInfo()
         );
         return $data;
     }
@@ -236,6 +238,16 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
                 'map' => "$name.templates.count",
                 'default' => 0
             ),
+            'templateCache' => array(
+                'icon' => 'asterisk',
+                'widget' => 'PhpDebugBar.Widgets.ListWidget',
+                'map' => "$name.templateCache.cache",
+                'default' => '{}'
+            ),
+            'templateCache:badge' => array(
+                'map' => "$name.templateCache.count",
+                'default' => 0
+            )
         );
 
         if (!empty(self::$debug)) {
@@ -265,5 +277,28 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
             'css' => [],
             'js' => 'widgets.js',
         );
+    }
+
+    /**
+     * Returns a list of partial cache hits and misses as well as the total items contained in the array
+     * @return array
+     */
+    public static function getTemplateCacheInfo()
+    {
+        return array(
+            'count' => count(self::$template_cache_info),
+            'cache' => self::$template_cache_info
+        );
+    }
+
+    /**
+     * Adds a cache outcome item to the $template_cache_info collection
+     * @param $value
+     */
+    public static function addTemplateCacheInfo($value)
+    {
+        if (!in_array($value, self::$template_cache_info)) {
+            self::$template_cache_info[] = $value;
+        }
     }
 }

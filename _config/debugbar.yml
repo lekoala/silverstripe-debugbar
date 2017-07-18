@@ -45,6 +45,21 @@ SilverStripe\Core\Injector\Injector:
     properties:
       Middlewares:
         DebugBarMiddleware: %$DebugBarMiddleware
+  CacheAfterCallAspect:
+    class: LeKoala\DebugBar\Aspect\CacheAfterCallAspect
+  Psr\SimpleCache\CacheInterface.backend:
+    factory: SilverStripe\Core\Cache\CacheFactory
+    constructor:
+      namespace: "cacheblock"
+      defaultLifetime: 600
+  Psr\SimpleCache\CacheInterface.cacheblock: %$Psr\SimpleCache\CacheInterface.proxied
+  Psr\SimpleCache\CacheInterface.proxied:
+    class: SilverStripe\Core\Injector\AopProxyService
+    properties:
+      proxied: %$Psr\SimpleCache\CacheInterface.backend
+      afterCall:
+        get:
+          - %$CacheAfterCallAspect
 
 SilverStripe\Admin\LeftAndMain:
   extensions:

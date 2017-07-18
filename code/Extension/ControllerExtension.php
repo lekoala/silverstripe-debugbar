@@ -132,6 +132,7 @@ class ControllerExtension extends Extension
         if (!empty($buffer)) {
             unset($_REQUEST['debug_request']); // Disable further messages that we can't intercept
             SilverStripeCollector::setDebugData($buffer);
+
         }
     }
 }
