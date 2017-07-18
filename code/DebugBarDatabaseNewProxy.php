@@ -17,6 +17,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
     protected $schemaManager;
     protected $queryBuilder;
     protected $showQueries = false;
+    protected $showQueriesTime = 0;
 
     /**
      * @param MySQLDatabase|array $realConn
@@ -44,6 +45,11 @@ class DebugBarDatabaseNewProxy extends SS_Database
     {
         $this->showQueries = $showQueries;
         return $this;
+    }
+
+    public function getShowQueriesTime()
+    {
+        return $this->showQueriesTime;
     }
 
     /**
@@ -159,6 +165,8 @@ class DebugBarDatabaseNewProxy extends SS_Database
             if (isset($_REQUEST['showqueries_threshold']) && $endtime < $_REQUEST['showqueries_threshold']) {
                 return $result;
             }
+
+            $this->showQueriesTime += $endtime;
 
             $formattedSql = JdornSqlFormatter::format($sql);
             $rows         = $result->numRecords();
