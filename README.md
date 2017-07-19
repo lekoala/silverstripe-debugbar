@@ -27,7 +27,7 @@ composer require --dev lekoala/silverstripe-debugbar
 * [Database profiling](#database-profiling)
 * [System logs and messages](#system-logs-and-messages)
 * [Template use](#template-use)
-* [Template partial caching hits and misses](#template-partial-caching-hits-and-misses)
+* [Partial caching hits and misses](#partial-caching-hits-and-misses)
 * [Environment and other information](#environment-and-other-information)
 * [Helper methods](#helper-methods)
 * [Configuration options](#configuration-options)
@@ -108,11 +108,11 @@ This will only be populated when you are flushing your cache (`?flush=1`). When 
 
 ![Templates](docs/_images/templates.png)
 
-### Template partial caching hits and misses
+### Partial caching hits and misses
 The "TemplateCache" tab shows how effective your chosen partial cache key is (e.g. `<% cached 'navigation', $LastEdited %>...<% end_cached %>`). It does
 this by indicating whether a key has hit a cache or not.
 
-![Template partial caching](docs/_images/templateCaching.png)
+![Partial caching](docs/_images/templateCache.png)
 
 
 ### Environment and other information
