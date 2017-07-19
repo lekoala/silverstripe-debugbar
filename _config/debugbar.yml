@@ -41,9 +41,6 @@ SilverStripe\Core\Injector\Injector:
     class: LeKoala\DebugBar\Proxy\SSViewerProxy
   DebugBarMiddleware:
     class: LeKoala\DebugBar\Middleware\DebugBarMiddleware
-  # Disable the default SilverStripe log handler which sends everything to the browser
-  Monolog\Handler\HandlerInterface:
-    class: Monolog\Handler\NullHandler
   SilverStripe\Control\Director:
     properties:
       Middlewares:
