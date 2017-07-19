@@ -21,6 +21,7 @@ use Psr\Log\LoggerInterface;
 use Monolog\Logger;
 use ReflectionObject;
 use SilverStripe\Admin\LeftAndMain;
+use SilverStripe\Admin\AdminRootController;
 use SilverStripe\Config\Collections\CachedConfigCollection;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
@@ -338,7 +339,10 @@ class DebugBar
 
     public static function isAdminUrl()
     {
-        return strpos(self::getRequestUrl(), '/admin/') === 0;
+        $baseUrl = rtrim(BASE_URL, '/');
+        $adminUrl = AdminRootController::config()->get('url_base');
+
+        return strpos(self::getRequestUrl(), $baseUrl . '/' . $adminUrl . '/') === 0;
     }
 
     public static function isAdminController()
