@@ -51,7 +51,7 @@ class ConfigManifestProxy extends CachedConfigCollection
     }
 
     /**
-     * Return a lsit of all config calls made during the request, including how many times they were called
+     * Return a list of all config calls made during the request, including how many times they were called
      * and the result
      *
      * @return array
