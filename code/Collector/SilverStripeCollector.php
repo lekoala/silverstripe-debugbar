@@ -223,7 +223,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
                 "map" => "$name.parameters",
                 "default" => "{}"
             ),
-            "config" => array(
+            "SiteConfig" => array(
                 "icon" => "gear",
                 "widget" => "PhpDebugBar.Widgets.VariableListWidget",
                 "map" => "$name.config",

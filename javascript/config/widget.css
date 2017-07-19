@@ -1,0 +1,42 @@
+.phpdebugbar .phpdebugbar-widgets-config {
+    font-family: monospace;
+}
+
+.phpdebugbar-widgets-config .phpdebugbar-widgets-container {
+    padding: 8px 8px 8px 16px;
+}
+
+.phpdebugbar-widgets-config .phpdebugbar-widgets-container:hover {
+    background-color: #fafafa;
+}
+
+.phpdebugbar-widgets-config .phpdebugbar-widgets-container:first-child {
+    margin-top: 8px;
+}
+
+.phpdebugbar-widgets-config .phpdebugbar-widgets-item {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.phpdebugbar-widgets-config .phpdebugbar-widgets-classname {
+    text-decoration: underline;
+}
+
+.phpdebugbar-widgets-config .phpdebugbar-widgets-value {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    margin-top: 8px;
+    padding: 7px;
+}
+
+.phpdebugbar-widgets-config .phpdebugbar-badge {
+    margin-left: 5px;
+    font-size: 11px;
+    line-height: 14px;
+    padding: 1px 7px;
+    background: #005A92;
+    border-radius: 4px;
+    color: #fff;
+    float: right;
+}
