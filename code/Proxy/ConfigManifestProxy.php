@@ -17,7 +17,7 @@ class ConfigManifestProxy extends CachedConfigCollection
     protected static $configCalls = [];
 
     /**
-     * @param ConfigCollectionInterface $parent
+     * @param CachedConfigCollection $parent
      */
     public function __construct(CachedConfigCollection $parent)
     {
