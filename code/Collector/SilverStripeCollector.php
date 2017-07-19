@@ -6,7 +6,7 @@ use DebugBar\DataCollector\AssetProvider;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 use LeKoala\DebugBar\DebugBar;
-use LeKoala\DebugBar\Proxy\TemplateParserProxy;
+use LeKoala\DebugBar\Proxy\SSViewerProxy;
 use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Cookie;
@@ -47,16 +47,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
      */
     public static function getTemplateData()
     {
-        if (TemplateParserProxy::getCached()) {
-            return array(
-                'templates' => array(
-                    'NOTE: Rendered templates will not display when cached, please flush to view the list.'
-                ),
-                'count' => ''
-            );
-        }
-
-        $templates = TemplateParserProxy::getTemplatesUsed();
+        $templates = SSViewerProxy::getTemplatesUsed();
         return array(
             'templates' => $templates,
             'count' => count($templates)
@@ -241,15 +232,11 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
                 'map' => "$name.templates.templates",
                 'default' => '{}'
             ),
-        );
-
-        // Add badge for number of templates if there are some
-        if (!TemplateParserProxy::getCached()) {
-            $widgets['templates:badge'] = array(
+            'templates:badge' => array(
                 'map' => "$name.templates.count",
                 'default' => 0
-            );
-        }
+            ),
+        );
 
         if (!empty(self::$debug)) {
             $widgets["debug"] = array(

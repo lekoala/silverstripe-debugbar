@@ -160,6 +160,10 @@ class SilverStripeCollectorTest extends SapphireTest
                 'map' => "silverstripe.templates.templates",
                 'default' => '{}'
             ),
+            'templates:badge' => array(
+                'map' => 'silverstripe.templates.count',
+                'default' => 0
+            )
         );
 
         $this->assertSame($expected, $result);
@@ -174,21 +178,5 @@ class SilverStripeCollectorTest extends SapphireTest
             'js' => 'widgets.js',
         );
         $this->assertSame($expected, $this->collector->getAssets());
-    }
-
-    /**
-     * Test that a message is returned when templates are cached. For retrieval of template info, see
-     * {@link DebugBarTemplateParserProxyTest} for examples.
-     *
-     * Note that the template proxy will register as cached by default until it gets used the first time.
-     */
-    public function testGetTemplateData()
-    {
-        $result = SilverStripeCollector::getTemplateData();
-        $this->assertContains(
-            'NOTE: Rendered templates will not display when cached',
-            array_pop($result['templates'])
-        );
-        $this->assertSame('', $result['count']);
     }
 }
