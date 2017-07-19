@@ -10,7 +10,7 @@ class DebugBarController extends Controller
 
     public function index(SS_HTTPRequest $request)
     {
-        if (!DebugBar::config()->enable_storage) {
+        if (!DebugBar::config()->get('enable_storage')) {
             return $this->httpError(404, 'Storage not enabled');
         }
         $debugbar = DebugBar::getDebugBar();

@@ -32,7 +32,7 @@ class DebugBarDatabaseNewProxy extends SS_Database
         $this->schemaManager = $realConn->getSchemaManager();
         $this->queryBuilder  = $realConn->getQueryBuilder();
         $this->queries       = array();
-        $this->findSource    = DebugBar::config()->find_source;
+        $this->findSource    = DebugBar::config()->get('find_source');
     }
 
     public function getShowQueries()
