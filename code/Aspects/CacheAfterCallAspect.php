@@ -17,7 +17,7 @@ class CacheAfterCallAspect implements AfterCallAspect
     public function afterCall($proxied, $method, $args, $result)
     {
         $message = "Your partial cache named {$args[0]} ";
-        $message .= (empty($result)) ? 'didn’t find any existing caches' : $message .= 'found an existing cache';
+        $message .= (empty($result)) ? 'didn’t find any existing caches' : 'found an existing cache';
         SilverStripeCollector::addTemplateCacheInfo($message);
     }
 }
