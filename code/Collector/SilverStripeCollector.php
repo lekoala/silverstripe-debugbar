@@ -7,13 +7,10 @@ use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 use LeKoala\DebugBar\DebugBar;
 use LeKoala\DebugBar\Proxy\SSViewerProxy;
-use Psr\SimpleCache\CacheInterface;
 use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Cookie;
-use SilverStripe\Control\Session;
 use SilverStripe\Core\Convert;
-use SilverStripe\Core\Injector\Injector;
 use SilverStripe\i18n\i18n;
 use SilverStripe\Security\Member;
 use SilverStripe\SiteConfig\SiteConfig;
@@ -38,7 +35,6 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
             'requirements' => self::getRequirementsData(),
             'user' => Member::currentUserID() ? Member::currentUser()->Title : 'Not logged in',
             'templates' => self::getTemplateData(),
-            'partialCache' => self::getPartialCacheInfo()
         );
         return $data;
     }
@@ -238,16 +234,6 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
             'templates:badge' => array(
                 'map' => "$name.templates.count",
                 'default' => 0
-            ),
-            'partialCache' => array(
-                'icon' => 'asterisk',
-                'widget' => 'PhpDebugBar.Widgets.ConfigWidget',
-                'map' => "$name.partialCache.calls",
-                'default' => '{}'
-            ),
-            'partialCache:badge' => array(
-                'map' => "$name.partialCache.count",
-                'default' => 0
             )
         );
 
@@ -277,19 +263,6 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
             'base_url' => DEBUGBAR_DIR . '/javascript',
             'css' => [],
             'js' => 'widgets.js',
-        );
-    }
-
-    /**
-     * Returns a list of partial cache hits and misses as well as the total items contained in the array
-     * @return array
-     */
-    public static function getPartialCacheInfo()
-    {
-        $templates = (Injector::inst()->get(CacheInterface::class . '.backend')->templateCache) ?: array();
-        return array(
-            'count' => count($templates),
-            'calls' => $templates,
         );
     }
 }

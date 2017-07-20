@@ -12,6 +12,7 @@ use DebugBar\Storage\FileStorage;
 use Exception;
 use LeKoala\DebugBar\Collector\ConfigCollector;
 use LeKoala\DebugBar\Collector\DatabaseCollector;
+use LeKoala\DebugBar\Collector\PartialCacheCollector;
 use LeKoala\DebugBar\Collector\SilverStripeCollector;
 use LeKoala\DebugBar\Collector\TimeDataCollector;
 use LeKoala\DebugBar\Messages\LogFormatter;
@@ -171,6 +172,7 @@ class DebugBar
             // Add the config collector
             $debugbar->addCollector(new ConfigCollector);
         }
+        $debugbar->addCollector(new PartialCacheCollector);
 
         // Since we buffer everything, why not enable all dev options ?
         if (self::config()->auto_debug) {

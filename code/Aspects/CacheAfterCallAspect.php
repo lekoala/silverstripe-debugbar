@@ -2,9 +2,9 @@
 
 namespace LeKoala\DebugBar\Aspect;
 
-use Psr\SimpleCache\CacheInterface;
+use LeKoala\DebugBar\Collector\PartialCacheCollector;
+use SilverStripe\Core\Convert;
 use SilverStripe\Core\Injector\AfterCallAspect;
-use SilverStripe\Core\Injector\Injector;
 
 class CacheAfterCallAspect implements AfterCallAspect
 {
@@ -16,8 +16,14 @@ class CacheAfterCallAspect implements AfterCallAspect
     public function afterCall($proxied, $method, $args, $result)
     {
         $message = (empty($result)) ? "Missed: {$args[0]}" : "Hit: {$args[0]}";
-        if ($cache = Injector::inst()->get(CacheInterface::class . '.backend')) {
-            $cache->templateCache[$message] = array('cache_result' => array('result' => $result));
-        }
+        $result = preg_replace('/\s+/', ' ', trim($result));
+        $result = Convert::raw2att($result);
+        PartialCacheCollector::addTemplateCache(
+            $message,
+            array(
+                'cache_result' =>
+                    array('result' => $result)
+            )
+        );
     }
 }

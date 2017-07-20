@@ -163,16 +163,6 @@ class SilverStripeCollectorTest extends SapphireTest
             'templates:badge' => array(
                 'map' => 'silverstripe.templates.count',
                 'default' => 0
-            ),
-            'partialCache' => array(
-                'icon' => 'asterisk',
-                'widget' => 'PhpDebugBar.Widgets.ConfigWidget',
-                'map' => "silverstripe.partialCache.calls",
-                'default' => '{}'
-            ),
-            'partialCache:badge' => array(
-                'map' => 'silverstripe.partialCache.count',
-                'default' => 0
             )
         );
 

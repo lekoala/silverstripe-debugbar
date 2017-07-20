@@ -52,8 +52,6 @@ SilverStripe\Core\Injector\Injector:
     constructor:
       namespace: "cacheblock"
       defaultLifetime: 600
-    properties:
-      templateCache: [] # Holds the cached templates
   Psr\SimpleCache\CacheInterface.cacheblock: %$Psr\SimpleCache\CacheInterface.proxied
   Psr\SimpleCache\CacheInterface.proxied:
     class: SilverStripe\Core\Injector\AopProxyService
