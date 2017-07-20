@@ -35,6 +35,11 @@
 
                     $.each(args, function(key, result) {
                         var heading = key;
+
+                        if (result === null) {
+                            return true;
+                        }
+
                         if (parseInt(result.calls) > 1) {
                             heading += ' <span class="phpdebugbar-badge">' + result.calls + '</span>';
                         }

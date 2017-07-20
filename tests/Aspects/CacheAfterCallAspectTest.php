@@ -21,10 +21,10 @@ class CacheAfterCallAspectTest extends SapphireTest
         $proxy->afterCall = array(
             'get' => $aspect
         );
-        $count = count(SilverStripeCollector::getTemplateCacheInfo()['cache']);
+        $count = count(SilverStripeCollector::getPartialCacheInfo()['cache']);
         $proxy->proxied = Injector::inst()->get(CacheInterface::class . '.backend');
         $cacheKey = 'myCacheKey';
         $proxy->get($cacheKey);
-        $this->assertCount($count + 1, SilverStripeCollector::getTemplateCacheInfo()['cache']);
+        $this->assertCount($count + 1, SilverStripeCollector::getPartialCacheInfo()['cache']);
     }
 }

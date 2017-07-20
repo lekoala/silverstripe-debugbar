@@ -7,11 +7,13 @@ use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 use LeKoala\DebugBar\DebugBar;
 use LeKoala\DebugBar\Proxy\SSViewerProxy;
+use Psr\SimpleCache\CacheInterface;
 use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Cookie;
 use SilverStripe\Control\Session;
 use SilverStripe\Core\Convert;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\i18n\i18n;
 use SilverStripe\Security\Member;
 use SilverStripe\SiteConfig\SiteConfig;
@@ -21,7 +23,6 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
 {
     protected static $debug = [];
     protected static $controller;
-    protected static $template_cache_info = [];
 
     public function collect()
     {
@@ -37,7 +38,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
             'requirements' => self::getRequirementsData(),
             'user' => Member::currentUserID() ? Member::currentUser()->Title : 'Not logged in',
             'templates' => self::getTemplateData(),
-            'templateCache' => self::getTemplateCacheInfo()
+            'partialCache' => self::getPartialCacheInfo()
         );
         return $data;
     }
@@ -238,14 +239,14 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
                 'map' => "$name.templates.count",
                 'default' => 0
             ),
-            'templateCache' => array(
+            'partialCache' => array(
                 'icon' => 'asterisk',
-                'widget' => 'PhpDebugBar.Widgets.ListWidget',
-                'map' => "$name.templateCache.cache",
+                'widget' => 'PhpDebugBar.Widgets.ConfigWidget',
+                'map' => "$name.partialCache.calls",
                 'default' => '{}'
             ),
-            'templateCache:badge' => array(
-                'map' => "$name.templateCache.count",
+            'partialCache:badge' => array(
+                'map' => "$name.partialCache.count",
                 'default' => 0
             )
         );
@@ -283,22 +284,12 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
      * Returns a list of partial cache hits and misses as well as the total items contained in the array
      * @return array
      */
-    public static function getTemplateCacheInfo()
+    public static function getPartialCacheInfo()
     {
+        $templates = (Injector::inst()->get(CacheInterface::class . '.backend')->templateCache) ?: array();
         return array(
-            'count' => count(self::$template_cache_info),
-            'cache' => self::$template_cache_info
+            'count' => count($templates),
+            'calls' => $templates,
         );
-    }
-
-    /**
-     * Adds a cache outcome item to the $template_cache_info collection
-     * @param $value
-     */
-    public static function addTemplateCacheInfo($value)
-    {
-        if (!in_array($value, self::$template_cache_info)) {
-            self::$template_cache_info[] = $value;
-        }
     }
 }

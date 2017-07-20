@@ -2,8 +2,7 @@
 
 namespace LeKoala\DebugBar\Aspect;
 
-use LeKoala\DebugBar\Collector\SilverStripeCollector;
-use Monolog\Logger;
+use Psr\SimpleCache\CacheInterface;
 use SilverStripe\Core\Injector\AfterCallAspect;
 use SilverStripe\Core\Injector\Injector;
 
@@ -16,8 +15,9 @@ class CacheAfterCallAspect implements AfterCallAspect
      */
     public function afterCall($proxied, $method, $args, $result)
     {
-        $message = "Your partial cache named {$args[0]} ";
-        $message .= (empty($result)) ? 'didn’t find any existing caches' : 'found an existing cache';
-        SilverStripeCollector::addTemplateCacheInfo($message);
+        $message = (empty($result)) ? "Missed: {$args[0]}" : "Hit: {$args[0]}";
+        if ($cache = Injector::inst()->get(CacheInterface::class . '.backend')) {
+            $cache->templateCache[$message] = array('cache_result' => array('result' => $result));
+        }
     }
 }
