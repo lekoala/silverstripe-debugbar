@@ -10,7 +10,6 @@ use LeKoala\DebugBar\Proxy\SSViewerProxy;
 use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Cookie;
-use SilverStripe\Control\Session;
 use SilverStripe\Core\Convert;
 use SilverStripe\i18n\i18n;
 use SilverStripe\Security\Member;
@@ -235,7 +234,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
             'templates:badge' => array(
                 'map' => "$name.templates.count",
                 'default' => 0
-            ),
+            )
         );
 
         if (!empty(self::$debug)) {
