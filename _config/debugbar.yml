@@ -45,8 +45,6 @@ SilverStripe\Core\Injector\Injector:
     properties:
       Middlewares:
         DebugBarMiddleware: %$DebugBarMiddleware
-  CacheAfterCallAspect:
-    class: LeKoala\DebugBar\Aspect\CacheAfterCallAspect
   Psr\SimpleCache\CacheInterface.backend:
     factory: SilverStripe\Core\Cache\CacheFactory
     constructor:
@@ -59,7 +57,7 @@ SilverStripe\Core\Injector\Injector:
       proxied: %$Psr\SimpleCache\CacheInterface.backend
       afterCall:
         get:
-          - %$CacheAfterCallAspect
+          - %$LeKoala\DebugBar\Aspect\CacheAfterCallAspect
 
 SilverStripe\Admin\LeftAndMain:
   extensions:
