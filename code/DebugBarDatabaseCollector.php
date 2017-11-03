@@ -32,9 +32,9 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
         $data = $this->collectData($this->timeCollector);
 
         // Check for excessive number of queries
-        $dbQueryWarningLevel = DebugBar::config()->warn_query_limit;
+        $dbQueryWarningLevel = DebugBar::config()->get('warn_query_limit');
         if ($dbQueryWarningLevel && $data['nb_statements'] > $dbQueryWarningLevel) {
-            $helpLink = DebugBar::config()->performance_guide_link;
+            $helpLink = DebugBar::config()->get('performance_guide_link');
             DebugBar::getDebugBar()
                 ->getCollector('messages')
                 ->addMessage(
@@ -77,8 +77,8 @@ class DebugBarDatabaseCollector extends DataCollector implements Renderable, Ass
         $i       = 0;
         $queries = $this->db->getQueries();
 
-        $limit   = DebugBar::config()->query_limit;
-        $warnDurationThreshold = Config::inst()->get('DebugBar', 'warn_dbqueries_threshold_seconds');
+        $limit   = DebugBar::config()->get('query_limit');
+        $warnDurationThreshold = DebugBar::config()->get('warn_dbqueries_threshold_seconds');
 
         $showDb = count(array_unique(array_map(function ($stmt) {
                 return $stmt['database'];
