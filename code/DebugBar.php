@@ -33,6 +33,7 @@ use SilverStripe\Core\Kernel;
 use SilverStripe\ORM\Connect\PDOConnector;
 use SilverStripe\ORM\DB;
 use SilverStripe\View\Requirements;
+use SilverStripe\Core\Environment;
 
 /**
  * A simple helper
@@ -328,7 +329,7 @@ class DebugBar
 
     public static function isDisabled()
     {
-        if (getenv('DEBUGBAR_DISABLE') || static::config()->get('disabled')) {
+        if (Environment::getEnv('DEBUGBAR_DISABLE') || static::config()->get('disabled')) {
             return true;
         }
         return false;
