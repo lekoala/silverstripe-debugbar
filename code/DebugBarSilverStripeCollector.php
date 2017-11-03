@@ -169,8 +169,7 @@ class DebugBarSilverStripeCollector extends DataCollector implements Renderable,
 
         $userIcon = 'user-times';
         $userText = 'Not logged in';
-        if (Member::currentUserID()) {
-            $member = Member::currentUser();
+        if ($member = Member::currentUser()) {
             $memberTag = $member->getTitle() . ' (#' . $member->ID . ')';
 
             $userIcon = 'user';
