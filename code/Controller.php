@@ -16,7 +16,7 @@ class Controller extends BaseController
 {
     public function index(HTTPRequest $request)
     {
-        if (!DebugBar::config()->enable_storage) {
+        if (!DebugBar::config()->get('enable_storage')) {
             return $this->httpError(404, 'Storage not enabled');
         }
         $debugbar = DebugBar::getDebugBar();

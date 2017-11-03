@@ -12,7 +12,7 @@ use SilverStripe\Control\Controller;
 use SilverStripe\Control\Cookie;
 use SilverStripe\Core\Convert;
 use SilverStripe\i18n\i18n;
-use SilverStripe\Security\Member;
+use SilverStripe\Security\Security;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\View\Requirements;
 
@@ -33,7 +33,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
             'cookies' => self::getCookieData(),
             'parameters' => self::getRequestParameters(),
             'requirements' => self::getRequirementsData(),
-            'user' => Member::currentUserID() ? Member::currentUser()->Title : 'Not logged in',
+            'user' => Security::getCurrentUser() ? Security::getCurrentUser()->Title : 'Not logged in',
             'templates' => self::getTemplateData(),
         );
         return $data;
@@ -165,8 +165,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
 
         $userIcon = 'user-times';
         $userText = 'Not logged in';
-        if (Member::currentUserID()) {
-            $member = Member::currentUser();
+        if ($member = Security::getCurrentUser()) {
             $memberTag = $member->getTitle() . ' (#' . $member->ID . ')';
 
             $userIcon = 'user';

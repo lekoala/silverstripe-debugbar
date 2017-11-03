@@ -81,7 +81,7 @@ class DebugBar
 
         if (!Director::isDev() || self::isDisabled() || self::vendorNotInstalled() ||
             self::notLocalIp() || Director::is_cli() || self::isDevUrl() ||
-            (self::isAdminUrl() && !self::config()->enabled_in_admin)
+            (self::isAdminUrl() && !self::config()->get('enabled_in_admin'))
         ) {
             self::$debugbar = false; // no need to check again
             return;
@@ -139,7 +139,7 @@ class DebugBar
         }
 
         $connector = DB::get_connector();
-        if (!self::config()->force_proxy && $connector instanceof PDOConnector) {
+        if (!self::config()->get('force_proxy') && $connector instanceof PDOConnector) {
             // Use a little bit of magic to replace the pdo instance
             $refObject = new ReflectionObject($connector);
             $refProperty = $refObject->getProperty('pdoConnection');
@@ -164,7 +164,7 @@ class DebugBar
         // Add some SilverStripe specific infos
         $debugbar->addCollector(new SilverStripeCollector);
 
-        if (self::config()->enable_storage) {
+        if (self::config()->get('enable_storage')) {
             $debugbar->setStorage(new FileStorage(TEMP_FOLDER . '/debugbar'));
         }
 
@@ -175,7 +175,7 @@ class DebugBar
         $debugbar->addCollector(new PartialCacheCollector);
 
         // Since we buffer everything, why not enable all dev options ?
-        if (self::config()->auto_debug) {
+        if (self::config()->get('auto_debug')) {
             $_REQUEST['debug'] = true;
             $_REQUEST['debug_request'] = true;
         }
@@ -222,7 +222,7 @@ class DebugBar
         $renderer->setBasePath(DEBUGBAR_DIR . '/assets');
         $renderer->setBaseUrl(DEBUGBAR_DIR . '/assets');
 
-        $includeJquery = self::config()->include_jquery;
+        $includeJquery = self::config()->get('include_jquery');
         // In CMS, jQuery is already included
         if (self::isAdminController()) {
             $includeJquery = false;
@@ -244,7 +244,7 @@ class DebugBar
             $renderer->setEnableJqueryNoConflict(false);
         }
 
-        if (DebugBar::config()->enable_storage) {
+        if (DebugBar::config()->get('enable_storage')) {
             $renderer->setOpenHandlerUrl('__debugbar');
         }
 
@@ -304,7 +304,7 @@ class DebugBar
         if (self::isDevUrl()) {
             return 'Dev tools';
         }
-        if (self::isAdminUrl() && !self::config()->enabled_in_admin) {
+        if (self::isAdminUrl() && !self::config()->get('enabled_in_admin')) {
             return 'In admin';
         }
         return "I don't know why";
@@ -317,7 +317,7 @@ class DebugBar
 
     public static function notLocalIp()
     {
-        if (!self::config()->check_local_ip) {
+        if (!self::config()->get('check_local_ip')) {
             return false;
         }
         if (isset($_SERVER['REMOTE_ADDR'])) {
@@ -328,7 +328,7 @@ class DebugBar
 
     public static function isDisabled()
     {
-        if (getenv('DEBUGBAR_DISABLE') || static::config()->disabled) {
+        if (getenv('DEBUGBAR_DISABLE') || static::config()->get('disabled')) {
             return true;
         }
         return false;

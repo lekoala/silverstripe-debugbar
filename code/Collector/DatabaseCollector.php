@@ -39,9 +39,9 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
         $data = $this->collectData($this->timeCollector);
 
         // Check for excessive number of queries
-        $dbQueryWarningLevel = DebugBar::config()->warn_query_limit;
+        $dbQueryWarningLevel = DebugBar::config()->get('warn_query_limit');
         if ($dbQueryWarningLevel && $data['nb_statements'] > $dbQueryWarningLevel) {
-            $helpLink = DebugBar::config()->performance_guide_link;
+            $helpLink = DebugBar::config()->get('performance_guide_link');
             Injector::inst()->get(LoggerInterface::class)
                 ->info(
                     'This page ran more than ' . $dbQueryWarningLevel . ' database queries. You could reduce this by '
@@ -82,8 +82,8 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
         $i       = 0;
         $queries = $this->db->getQueries();
 
-        $limit   = DebugBar::config()->query_limit;
-        $warnDurationThreshold = Config::inst()->get(DebugBar::class, 'warn_dbqueries_threshold_seconds');
+        $limit   = DebugBar::config()->get('query_limit');
+        $warnDurationThreshold = DebugBar::config()->get('warn_dbqueries_threshold_seconds');
 
         $showDb = count(array_unique(array_map(function ($stmt) {
                 return $stmt['database'];

@@ -80,7 +80,7 @@ class DebugBarMiddleware implements HTTPMiddleware
 
         // Ajax support
         if (Director::is_ajax() && !headers_sent()) {
-            if (DebugBar::isAdminUrl() && !DebugBar::config()->enabled_in_admin) {
+            if (DebugBar::isAdminUrl() && !DebugBar::config()->get('enabled_in_admin')) {
                 return;
             }
             // Skip anything that is not a GET request
@@ -88,7 +88,7 @@ class DebugBarMiddleware implements HTTPMiddleware
                 return;
             }
             // Always enable in admin because everything is mostly loaded through ajax
-            if (DebugBar::config()->ajax || DebugBar::isAdminUrl()) {
+            if (DebugBar::config()->get('ajax') || DebugBar::isAdminUrl()) {
                 $headers = $debugbar->getDataAsHeaders();
 
                 // Prevent throwing js errors in case header size is too large
