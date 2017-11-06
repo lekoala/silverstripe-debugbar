@@ -269,7 +269,7 @@ class DatabaseProxy extends Database
 
         // Not relevant to determine source
         $internalClasses = array(
-            DB::class, SQLExpression::class, DataList::class, DataObject::class,
+            __CLASS__, DB::class, SQLExpression::class, DataList::class, DataObject::class,
             DataQuery::class, SQLSelect::class, 'SQLQuery', Map::class, ListDecorator::class, 'Object'
         );
 
