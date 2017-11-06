@@ -24,7 +24,13 @@ class SSViewerProxyTest extends FunctionalTest
         $templates = SSViewerProxy::getTemplatesUsed();
 
         $this->assertNotEmpty($templates);
-        $this->assertContains('/framework/templates/SilverStripe/Forms/Includes/Form.ss', $templates);
-        $this->assertContains('/framework/templates/SilverStripe/Forms/TextField.ss', $templates);
+        $this->assertContains(
+            '/vendor/silverstripe/framework/templates/SilverStripe/Forms/Includes/Form.ss',
+            $templates
+        );
+        $this->assertContains(
+            '/vendor/silverstripe/framework/templates/SilverStripe/Forms/TextField.ss',
+            $templates
+        );
     }
 }
