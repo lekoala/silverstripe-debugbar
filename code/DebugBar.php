@@ -2,38 +2,43 @@
 
 namespace LeKoala\DebugBar;
 
+use Exception;
+use Monolog\Logger;
+use ReflectionObject;
+use SilverStripe\ORM\DB;
+use Psr\Log\LoggerInterface;
+use SilverStripe\Core\Kernel;
+use DebugBar\Storage\FileStorage;
+use SilverStripe\Core\Environment;
+use SilverStripe\Control\Director;
+use SilverStripe\View\Requirements;
+use SilverStripe\Admin\LeftAndMain;
+use SilverStripe\Control\HTTPRequest;
 use DebugBar\Bridge\MonologCollector;
+use SilverStripe\Control\Email\Mailer;
 use DebugBar\DebugBar as BaseDebugBar;
+use SilverStripe\Core\Injector\Injector;
+use LeKoala\DebugBar\Proxy\DatabaseProxy;
+use SilverStripe\ORM\Connect\PDOConnector;
+use SilverStripe\Core\Injector\Injectable;
+use SilverStripe\Core\Config\Configurable;
 use DebugBar\DataCollector\MemoryCollector;
+use SilverStripe\Admin\AdminRootController;
+use LeKoala\DebugBar\Messages\LogFormatter;
 use DebugBar\DataCollector\PDO\PDOCollector;
 use DebugBar\DataCollector\PDO\TraceablePDO;
 use DebugBar\DataCollector\PhpInfoCollector;
-use DebugBar\Storage\FileStorage;
-use Exception;
 use LeKoala\DebugBar\Collector\ConfigCollector;
+use LeKoala\DebugBar\Proxy\ConfigManifestProxy;
+use LeKoala\DebugBar\Collector\TimeDataCollector;
 use LeKoala\DebugBar\Collector\DatabaseCollector;
+use DebugBar\Bridge\SwiftMailer\SwiftLogCollector;
+use DebugBar\Bridge\SwiftMailer\SwiftMailCollector;
 use LeKoala\DebugBar\Collector\PartialCacheCollector;
 use LeKoala\DebugBar\Collector\SilverStripeCollector;
-use LeKoala\DebugBar\Collector\TimeDataCollector;
-use LeKoala\DebugBar\Messages\LogFormatter;
-use LeKoala\DebugBar\Proxy\ConfigManifestProxy;
-use LeKoala\DebugBar\Proxy\DatabaseProxy;
-use Psr\Log\LoggerInterface;
-use Monolog\Logger;
-use ReflectionObject;
-use SilverStripe\Admin\LeftAndMain;
-use SilverStripe\Admin\AdminRootController;
 use SilverStripe\Config\Collections\CachedConfigCollection;
-use SilverStripe\Control\Director;
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Core\Config\Configurable;
-use SilverStripe\Core\Injector\Injectable;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Core\Kernel;
-use SilverStripe\ORM\Connect\PDOConnector;
-use SilverStripe\ORM\DB;
-use SilverStripe\View\Requirements;
-use SilverStripe\Core\Environment;
+use SilverStripe\Control\Email\SwiftMailer;
+use DebugBar\DataCollector\MessagesCollector;
 
 /**
  * A simple helper
@@ -156,11 +161,15 @@ class DebugBar
         }
 
         // Add message collector last so other collectors can send messages to the console using it
-        $logger = Injector::inst()->get(LoggerInterface::class);
-        $logCollector = new MonologCollector($logger, Logger::DEBUG, true, 'messages');
-        $logCollector->setFormatter(new LogFormatter);
+        $debugbar->addCollector(new MessagesCollector());
 
-        $debugbar->addCollector($logCollector);
+        // Aggregate monolog into messages
+        $logger = Injector::inst()->get(LoggerInterface::class);
+        if($logger instanceof Logger) {
+            $logCollector = new MonologCollector($logger);
+            $logCollector->setFormatter(new LogFormatter);
+            $debugbar['messages']->aggregate($logCollector);
+        }
 
         // Add some SilverStripe specific infos
         $debugbar->addCollector(new SilverStripeCollector);
@@ -174,6 +183,14 @@ class DebugBar
             $debugbar->addCollector(new ConfigCollector);
         }
         $debugbar->addCollector(new PartialCacheCollector);
+
+        // Email logging
+        $mailer = Injector::inst()->get(Mailer::class);
+        if($mailer instanceof SwiftMailer) {
+            $swiftInst = $mailer->getSwiftMailer();
+            $debugbar['messages']->aggregate(new SwiftLogCollector($swiftInst));
+            $debugbar->addCollector(new SwiftMailCollector($swiftInst));
+        }
 
         // Since we buffer everything, why not enable all dev options ?
         if (self::config()->get('auto_debug')) {
