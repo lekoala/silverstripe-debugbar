@@ -1,5 +1,4 @@
 <?php
-
 namespace LeKoala\DebugBar\Test\Proxy;
 
 use LeKoala\DebugBar\Proxy\DatabaseProxy;
@@ -31,10 +30,10 @@ class DatabaseProxyTest extends SapphireTest
         $this->realConnection = DB::get_conn();
 
         // TODO: improve testing on other databases
-        if(!$this->realConnection instanceof MySQLDatabase) {
+        if (!$this->realConnection instanceof MySQLDatabase) {
             $this->markTestIncomplete();
         }
-            
+
         $this->proxy = new DatabaseProxy($this->realConnection);
     }
 

@@ -1,5 +1,4 @@
 <?php
-
 namespace LeKoala\DebugBar;
 
 use Exception;
@@ -86,9 +85,7 @@ class DebugBar
         }
 
         if (!Director::isDev() || self::isDisabled() || self::vendorNotInstalled() ||
-            self::notLocalIp() || Director::is_cli() || self::isDevUrl() ||
-            (self::isAdminUrl() && !self::config()->get('enabled_in_admin'))
-        ) {
+            self::notLocalIp() || Director::is_cli() || self::isDevUrl() || (self::isAdminUrl() && !self::config()->get('enabled_in_admin'))) {
             self::$debugbar = false; // no need to check again
             return;
         }
@@ -165,7 +162,7 @@ class DebugBar
 
         // Aggregate monolog into messages
         $logger = Injector::inst()->get(LoggerInterface::class);
-        if($logger instanceof Logger) {
+        if ($logger instanceof Logger) {
             $logCollector = new MonologCollector($logger);
             $logCollector->setFormatter(new LogFormatter);
             $debugbar['messages']->aggregate($logCollector);
@@ -186,7 +183,7 @@ class DebugBar
 
         // Email logging
         $mailer = Injector::inst()->get(Mailer::class);
-        if($mailer instanceof SwiftMailer) {
+        if ($mailer instanceof SwiftMailer) {
             $swiftInst = $mailer->getSwiftMailer();
             $debugbar['messages']->aggregate(new SwiftLogCollector($swiftInst));
             $debugbar->addCollector(new SwiftMailCollector($swiftInst));
