@@ -20,10 +20,22 @@ class DatabaseProxyTest extends SapphireTest
      */
     protected $proxy;
 
+    /**
+     * @var SilverStripe\ORM\Connect\Database
+     */
+    protected $realConnection;
+
     public function setUp()
     {
         parent::setUp();
-        $this->proxy = new DatabaseProxy(DB::get_conn());
+        $this->realConnection = DB::get_conn();
+
+        // TODO: improve testing on other databases
+        if(!$this->realConnection instanceof MySQLDatabase) {
+            $this->markTestIncomplete();
+        }
+            
+        $this->proxy = new DatabaseProxy($this->realConnection);
     }
 
     public function testGetAndSetShowQueries()
