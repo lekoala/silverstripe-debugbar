@@ -6,16 +6,16 @@ use LeKoala\DebugBar\DebugBar;
 use LeKoala\DebugBar\Collector\SilverStripeCollector;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Control\Session;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Manifest\VersionProvider;
 use SilverStripe\Dev\SapphireTest;
-use SilverStripe\Security\Member;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\View\Requirements;
 
 class SilverStripeCollectorTest extends SapphireTest
 {
     /**
-     * @var DebugBarSilverStripeCollector
+     * @var SilverStripeCollector
      */
     protected $collector;
 
@@ -35,8 +35,12 @@ class SilverStripeCollectorTest extends SapphireTest
 
     public function testCollect()
     {
+        $this->logInWithPermission('ADMIN');
+        Config::modify()->set(VersionProvider::class, 'modules', [
+            'silverstripe/framework' => 'Framework',
+            'silverstripe/cms' => 'CMS',
+        ]);
         $data = $this->collector->collect();
-
         $this->assertArrayHasKey('debug', $data);
         $this->assertArrayHasKey('locale', $data);
         $this->assertArrayHasKey('parameters', $data);
@@ -46,7 +50,8 @@ class SilverStripeCollectorTest extends SapphireTest
         $this->assertSame('User, ADMIN', $data['user']);
         $this->assertCount(0, $data['requirements']);
 
-        Member::currentUser()->logOut();
+        $this->logOut();
+
         $data = $this->collector->collect();
         $this->assertSame('Not logged in', $data['user']);
     }
@@ -101,6 +106,7 @@ class SilverStripeCollectorTest extends SapphireTest
 
     public function testGetWidgets()
     {
+        $this->logInWithPermission('ADMIN');
         $this->collector->collect();
         $result = $this->collector->getWidgets();
         // Stub out the dynamic data
@@ -167,16 +173,18 @@ class SilverStripeCollectorTest extends SapphireTest
         );
 
         $this->assertSame($expected, $result);
+        $this->logOut();
     }
 
     public function testGetAssets()
     {
-        $expected = array(
-            'base_path' => '/debugbar/javascript',
-            'base_url' => 'debugbar/javascript',
-            'css' => array(),
-            'js' => 'widgets.js',
-        );
-        $this->assertSame($expected, $this->collector->getAssets());
+        $config = $this->collector->getAssets();
+
+        $this->assertArrayHasKey('base_path', $config);
+        $this->assertArrayHasKey('base_url', $config);
+        $this->assertArrayHasKey('css', $config);
+        $this->assertArrayHasKey('js', $config);
+        // No CSS for this one
+        $this->assertFileExists(implode(DIRECTORY_SEPARATOR, [BASE_PATH, $config['base_path'], $config['js']]));
     }
 }

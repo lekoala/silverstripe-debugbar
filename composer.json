@@ -1,7 +1,7 @@
 {
     "name": "lekoala/silverstripe-debugbar",
     "description": "DebugBar for SilverStripe CMS",
-    "type": "silverstripe-module",
+    "type": "silverstripe-vendormodule",
     "keywords": [
         "silverstripe",
         "debugbar",
@@ -31,7 +31,11 @@
         "installer-name": "debugbar",
         "branch-alias": {
             "dev-master": "2.0.x-dev"
-        }
+        },
+        "expose": [
+            "assets",
+            "javascript"
+        ]
     },
     "autoload": {
         "psr-4": {

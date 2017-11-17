@@ -5,11 +5,11 @@ namespace LeKoala\DebugBar\Collector;
 use DebugBar\DataCollector\AssetProvider;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
-use DebugBar\DataCollector\TimeDataCollector as BaseTimeDataCollector;
 use LeKoala\DebugBar\DebugBar;
 use Psr\Log\LoggerInterface;
-use SilverStripe\Core\Config\Config;
+use SilverStripe\Control\Director;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\ORM\DB;
 
 /**
@@ -173,8 +173,8 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
     public function getAssets()
     {
         return array(
-            'base_path' => '/' . DEBUGBAR_DIR . '/javascript',
-            'base_url' => DEBUGBAR_DIR.'/javascript',
+            'base_path' => '/' . ModuleLoader::getModule('lekoala/silverstripe-debugbar')->getResource('javascript')->getRelativePath(),
+            'base_url' => Director::makeRelative(ModuleLoader::getModule('lekoala/silverstripe-debugbar')->getResource('javascript')->getURL()),
             'css' => 'sqlqueries/widget.css',
             'js' => 'sqlqueries/widget.js'
         );

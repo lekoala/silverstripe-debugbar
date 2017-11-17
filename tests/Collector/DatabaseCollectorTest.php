@@ -10,7 +10,7 @@ use SilverStripe\Dev\SapphireTest;
 class DatabaseCollectorTest extends SapphireTest
 {
     /**
-     * @var DebugBarSilverStripeCollector
+     * @var DatabaseCollector
      */
     protected $collector;
 
@@ -74,13 +74,14 @@ class DatabaseCollectorTest extends SapphireTest
 
     public function testGetAssets()
     {
-        $expected = array(
-            'base_path' => '/debugbar/javascript',
-            'base_url' => 'debugbar/javascript',
-            'css' => 'sqlqueries/widget.css',
-            'js' => 'sqlqueries/widget.js'
-        );
+        $config = $this->collector->getAssets();
 
-        $this->assertSame($expected, $this->collector->getAssets());
+        $this->assertArrayHasKey('base_path', $config);
+        $this->assertArrayHasKey('base_url', $config);
+        $this->assertArrayHasKey('css', $config);
+        $this->assertArrayHasKey('js', $config);
+
+        $this->assertFileExists(implode(DIRECTORY_SEPARATOR, [BASE_PATH, $config['base_path'], $config['css']]));
+        $this->assertFileExists(implode(DIRECTORY_SEPARATOR, [BASE_PATH, $config['base_path'], $config['js']]));
     }
 }

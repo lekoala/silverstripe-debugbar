@@ -10,7 +10,9 @@ use LeKoala\DebugBar\Proxy\SSViewerProxy;
 use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Cookie;
+use SilverStripe\Control\Director;
 use SilverStripe\Core\Convert;
+use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\i18n\i18n;
 use SilverStripe\Security\Security;
 use SilverStripe\SiteConfig\SiteConfig;
@@ -258,8 +260,8 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
     public function getAssets()
     {
         return array(
-            'base_path' => '/' . DEBUGBAR_DIR . '/javascript',
-            'base_url' => DEBUGBAR_DIR . '/javascript',
+            'base_path' => '/' . ModuleLoader::getModule('lekoala/silverstripe-debugbar')->getResource('javascript')->getRelativePath(),
+            'base_url' => Director::makeRelative(ModuleLoader::getModule('lekoala/silverstripe-debugbar')->getResource('javascript')->getURL()),
             'css' => [],
             'js' => 'widgets.js',
         );

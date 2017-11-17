@@ -21,6 +21,7 @@ use LeKoala\DebugBar\Proxy\DatabaseProxy;
 use SilverStripe\ORM\Connect\PDOConnector;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Manifest\ModuleLoader;
 use DebugBar\DataCollector\MemoryCollector;
 use SilverStripe\Admin\AdminRootController;
 use LeKoala\DebugBar\Messages\LogFormatter;
@@ -234,8 +235,8 @@ class DebugBar
         $renderer = $debugbar->getJavascriptRenderer();
 
         // We don't need the true path since we are going to use Requirements API that appends the BASE_PATH
-        $renderer->setBasePath(DEBUGBAR_DIR . '/assets');
-        $renderer->setBaseUrl(DEBUGBAR_DIR . '/assets');
+        $renderer->setBasePath(ModuleLoader::getModule('lekoala/silverstripe-debugbar')->getResource('assets')->getRelativePath());
+        $renderer->setBaseUrl(Director::makeRelative(ModuleLoader::getModule('lekoala/silverstripe-debugbar')->getResource('assets')->getURL()));
 
         $includeJquery = self::config()->get('include_jquery');
         // In CMS, jQuery is already included
@@ -264,11 +265,11 @@ class DebugBar
         }
 
         foreach ($renderer->getAssets('css') as $cssFile) {
-            Requirements::css(ltrim($cssFile, '/'));
+            Requirements::css(Director::makeRelative(ltrim($cssFile, '/')));
         }
 
         foreach ($renderer->getAssets('js') as $jsFile) {
-            Requirements::javascript(ltrim($jsFile, '/'));
+            Requirements::javascript(Director::makeRelative(ltrim($jsFile, '/')));
         }
 
         self::$renderer = $renderer;
@@ -282,7 +283,7 @@ class DebugBar
 
         // Requirements may have been cleared (CMS iframes...) or not set (Security...)
         $js = Requirements::backend()->getJavascript();
-        if (!array_key_exists('debugbar/assets/debugbar.js', $js)) {
+        if (!array_key_exists(ModuleLoader::getModule('lekoala/silverstripe-debugbar')->getResource('assets/debugbar.js')->getRelativePath(), $js)) {
             return;
         }
         $initialize = true;
