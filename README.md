@@ -230,6 +230,12 @@ LeKoala\DebugBar\DebugBar:
 
 ### Troubleshooting
 
+#### Using Vagrant
+
+If you are using Vagrant (or presumably Docker or other virtualisation) and the DebugBar 
+isn't showing up, make sure you have the `check_local_ip` config option set to `false`. This
+is due to the way Vagrant and Virtualbox configure networking by default.
+
 #### Managing jQuery
 
 The DebugBar will include its own version of jQuery by default. It will only be disabled
