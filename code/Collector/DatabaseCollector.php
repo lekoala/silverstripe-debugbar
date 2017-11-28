@@ -42,8 +42,8 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
         $dbQueryWarningLevel = DebugBar::config()->get('warn_query_limit');
         if ($dbQueryWarningLevel && $data['nb_statements'] > $dbQueryWarningLevel) {
             $helpLink = DebugBar::config()->get('performance_guide_link');
-            Injector::inst()->get(LoggerInterface::class)
-                ->info(
+            $messages = DebugBar::getDebugBar()->getCollector('messages');
+            $messages->info(
                     'This page ran more than ' . $dbQueryWarningLevel . ' database queries. You could reduce this by '
                     . 'implementing caching. For more information, <a href="' . $helpLink . '" target="_blank">'
                     . 'click here.</a>'
