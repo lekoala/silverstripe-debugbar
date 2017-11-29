@@ -44,10 +44,10 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
             $helpLink = DebugBar::config()->get('performance_guide_link');
             $messages = DebugBar::getDebugBar()->getCollector('messages');
             $messages->info(
-                    'This page ran more than ' . $dbQueryWarningLevel . ' database queries. You could reduce this by '
+                'This page ran more than ' . $dbQueryWarningLevel . ' database queries. You could reduce this by '
                     . 'implementing caching. For more information, <a href="' . $helpLink . '" target="_blank">'
                     . 'click here.</a>'
-                );
+            );
         }
 
         return $data;
