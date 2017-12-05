@@ -5,10 +5,6 @@ use Psr\Log\LoggerInterface;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Injector\Injector;
 
-if (!defined('DEBUGBAR_DIR')) {
-    define('DEBUGBAR_DIR', 'debugbar');
-}
-
 // Add a simple utility that leverages Symfony VarDumper and cleans buffer to avoid debug messages
 if (!function_exists('d')) {
 
