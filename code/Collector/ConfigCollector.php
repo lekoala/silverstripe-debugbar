@@ -2,11 +2,11 @@
 
 namespace LeKoala\DebugBar\Collector;
 
+use LeKoala\DebugBar\DebugBar;
+use SilverStripe\Control\Director;
+use DebugBar\DataCollector\Renderable;
 use DebugBar\DataCollector\AssetProvider;
 use DebugBar\DataCollector\DataCollector;
-use DebugBar\DataCollector\Renderable;
-use SilverStripe\Control\Director;
-use SilverStripe\Core\Manifest\ModuleLoader;
 use LeKoala\DebugBar\Proxy\ConfigManifestProxy;
 
 /**
@@ -54,8 +54,8 @@ class ConfigCollector extends DataCollector implements Renderable, AssetProvider
         $name = $this->getName();
 
         return [
-            'base_path' => '/' . ModuleLoader::getModule('lekoala/silverstripe-debugbar')->getResource('javascript')->getRelativePath(),
-            'base_url' => Director::makeRelative(ModuleLoader::getModule('lekoala/silverstripe-debugbar')->getResource('javascript')->getURL()),
+            'base_path' => '/' . DebugBar::moduleResource('javascript')->getRelativePath(),
+            'base_url' => Director::makeRelative(DebugBar::moduleResource('javascript')->getURL()),
             'css' => $name . '/widget.css',
             'js' => $name . '/widget.js'
         ];

@@ -21,24 +21,25 @@ use LeKoala\DebugBar\Proxy\DatabaseProxy;
 use SilverStripe\ORM\Connect\PDOConnector;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Config\Configurable;
-use SilverStripe\Core\Manifest\ModuleLoader;
-use DebugBar\DataCollector\MemoryCollector;
 use SilverStripe\Admin\AdminRootController;
 use LeKoala\DebugBar\Messages\LogFormatter;
+use SilverStripe\Control\Email\SwiftMailer;
+use DebugBar\DataCollector\MemoryCollector;
+use SilverStripe\Core\Manifest\ModuleLoader;
 use DebugBar\DataCollector\PDO\PDOCollector;
 use DebugBar\DataCollector\PDO\TraceablePDO;
 use DebugBar\DataCollector\PhpInfoCollector;
-use LeKoala\DebugBar\Collector\ConfigCollector;
+use DebugBar\DataCollector\MessagesCollector;
+use SilverStripe\Core\Manifest\ModuleResource;
 use LeKoala\DebugBar\Proxy\ConfigManifestProxy;
-use LeKoala\DebugBar\Collector\TimeDataCollector;
+use LeKoala\DebugBar\Collector\ConfigCollector;
 use LeKoala\DebugBar\Collector\DatabaseCollector;
+use LeKoala\DebugBar\Collector\TimeDataCollector;
 use DebugBar\Bridge\SwiftMailer\SwiftLogCollector;
 use DebugBar\Bridge\SwiftMailer\SwiftMailCollector;
 use LeKoala\DebugBar\Collector\PartialCacheCollector;
 use LeKoala\DebugBar\Collector\SilverStripeCollector;
 use SilverStripe\Config\Collections\CachedConfigCollection;
-use SilverStripe\Control\Email\SwiftMailer;
-use DebugBar\DataCollector\MessagesCollector;
 
 /**
  * A simple helper
@@ -219,6 +220,17 @@ class DebugBar
         self::$showQueries = $showQueries;
     }
 
+    /**
+     * Helper to access this module resources
+     *
+     * @param string $name
+     * @return ModuleResource
+     */
+    public static function moduleResource($path)
+    {
+        return ModuleLoader::getModule('lekoala/silverstripe-debugbar')->getResource($path);
+    }
+
     public static function includeRequirements()
     {
         $debugbar = self::getDebugBar();
@@ -235,8 +247,9 @@ class DebugBar
         $renderer = $debugbar->getJavascriptRenderer();
 
         // We don't need the true path since we are going to use Requirements API that appends the BASE_PATH
-        $renderer->setBasePath(ModuleLoader::getModule('lekoala/silverstripe-debugbar')->getResource('assets')->getRelativePath());
-        $renderer->setBaseUrl(Director::makeRelative(ModuleLoader::getModule('lekoala/silverstripe-debugbar')->getResource('assets')->getURL()));
+        $assetsResource = self::moduleResource('assets');
+        $renderer->setBasePath($assetsResource->getRelativePath());
+        $renderer->setBaseUrl(Director::makeRelative($assetsResource->getURL()));
 
         $includeJquery = self::config()->get('include_jquery');
         // In CMS, jQuery is already included
@@ -283,7 +296,12 @@ class DebugBar
 
         // Requirements may have been cleared (CMS iframes...) or not set (Security...)
         $js = Requirements::backend()->getJavascript();
-        if (!array_key_exists(ModuleLoader::getModule('lekoala/silverstripe-debugbar')->getResource('assets/debugbar.js')->getRelativePath(), $js)) {
+        $debugBarResource = self::moduleResource('assets/debugbar.js');
+        $path = $debugBarResource->getRelativePath();
+
+        // Url in getJavascript has a / slash, so fix if necessary
+        $path = str_replace("assets\\debugbar.js", "assets/debugbar.js", $path);
+        if (!array_key_exists($path, $js)) {
             return;
         }
         $initialize = true;

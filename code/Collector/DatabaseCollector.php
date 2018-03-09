@@ -9,7 +9,6 @@ use LeKoala\DebugBar\DebugBar;
 use Psr\Log\LoggerInterface;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\ORM\DB;
 
 /**
@@ -173,8 +172,8 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
     public function getAssets()
     {
         return array(
-            'base_path' => '/' . ModuleLoader::getModule('lekoala/silverstripe-debugbar')->getResource('javascript')->getRelativePath(),
-            'base_url' => Director::makeRelative(ModuleLoader::getModule('lekoala/silverstripe-debugbar')->getResource('javascript')->getURL()),
+            'base_path' => '/' . DebugBar::moduleResource('javascript')->getRelativePath(),
+            'base_url' => Director::makeRelative(DebugBar::moduleResource('javascript')->getURL()),
             'css' => 'sqlqueries/widget.css',
             'js' => 'sqlqueries/widget.js'
         );
