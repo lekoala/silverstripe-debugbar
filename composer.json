@@ -47,8 +47,8 @@
         "issues": "https://github.com/lekoala/silverstripe-debugbar/issues"
     },
     "scripts": {
-        "lint": "vendor/bin/phpcs code/ tests/",
-        "lint-clean": "vendor/bin/phpcbf code/ tests/"
+        "lint": "phpcs code/ tests/",
+        "lint-clean": "phpcbf code/ tests/"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
