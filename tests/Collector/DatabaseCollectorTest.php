@@ -31,18 +31,24 @@ class DatabaseCollectorTest extends SapphireTest
 
     public function testCollect()
     {
+        // Update the limit
+        Config::modify()->set(DebugBar::class, 'query_limit', 500);
+
         // Deliberately high warning threshold
         Config::modify()->set(DebugBar::class, 'warn_dbqueries_threshold_seconds', 200);
         $result = $this->collector->collect();
 
         $this->assertGreaterThan(1, $result['nb_statements']);
         $this->assertEquals(0, $result['nb_failed_statements']);
+
+        // This should be equal if below the limit
         $this->assertCount($result['nb_statements'], $result['statements']);
 
+        // Make sure each statement has all its required details
         $statement = array_shift($result['statements']);
         $this->assertNotEmpty($statement['sql']);
         $this->assertEquals(1, $statement['is_success']);
-        $this->assertContains('SapphireTest', $statement['source']);
+        $this->assertNotEmpty($statement['source']);
         $this->assertFalse($statement['warn']);
 
         // Deliberately low warning threshold

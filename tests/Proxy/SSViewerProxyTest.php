@@ -23,14 +23,15 @@ class SSViewerProxyTest extends FunctionalTest
 
         $templates = SSViewerProxy::getTemplatesUsed();
 
+        $formPath = '/vendor/silverstripe/framework/templates/SilverStripe/Forms/Includes/Form.ss';
+        $textfieldPath = '/vendor/silverstripe/framework/templates/SilverStripe/Forms/TextField.ss';
+
+        // Normalize path based on OS
+        $formPath = str_replace('/', DIRECTORY_SEPARATOR, $formPath);
+        $textfieldPath = str_replace('/', DIRECTORY_SEPARATOR, $textfieldPath);
+
         $this->assertNotEmpty($templates);
-        $this->assertContains(
-            '/vendor/silverstripe/framework/templates/SilverStripe/Forms/Includes/Form.ss',
-            $templates
-        );
-        $this->assertContains(
-            '/vendor/silverstripe/framework/templates/SilverStripe/Forms/TextField.ss',
-            $templates
-        );
+        $this->assertContains($formPath,$templates);
+        $this->assertContains($textfieldPath,$templates);
     }
 }

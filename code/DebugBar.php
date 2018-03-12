@@ -138,6 +138,7 @@ class DebugBar
                 break;
             }
         }
+        // We can display a CachedConfigCollection
         if ($configManifest) {
             $configProxy = new ConfigManifestProxy($configManifest);
             $configLoader->pushManifest($configProxy);
