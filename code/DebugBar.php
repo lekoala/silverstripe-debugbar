@@ -129,10 +129,12 @@ class DebugBar
         /** @var SilverStripe\Core\Config\ConfigLoader $configLoader */
         $configLoader = Injector::inst()->get(Kernel::class)->getConfigLoader();
         $configManifest = false;
-        while ($configLoader->hasManifest()) {
-            $eachManifest = $configLoader->popManifest();
-            if ($eachManifest instanceof CachedConfigCollection) {
-                $configManifest = $eachManifest;
+
+        // Let's safely access the manifest value without popping things
+        $manifests = self::getProtectedValue($configLoader, 'manifests');
+        foreach ($manifests as $manifest) {
+            if ($manifest instanceof CachedConfigCollection) {
+                $configManifest = $manifest;
                 break;
             }
         }
@@ -143,11 +145,7 @@ class DebugBar
 
         $connector = DB::get_connector();
         if (!self::config()->get('force_proxy') && $connector instanceof PDOConnector) {
-            // Use a little bit of magic to replace the pdo instance
-            $refObject = new ReflectionObject($connector);
-            $refProperty = $refObject->getProperty('pdoConnection');
-            $refProperty->setAccessible(true);
-            $traceablePdo = new TraceablePDO($refProperty->getValue($connector));
+            $traceablePdo = new TraceablePDO(self::getProtectedValue($connector, 'pdoConnection'));
             $refProperty->setValue($connector, $traceablePdo);
 
             $debugbar->addCollector(new PDOCollector($traceablePdo));
@@ -199,6 +197,21 @@ class DebugBar
         }
 
         return $debugbar;
+    }
+
+    /**
+     * Access a protected property when the api does not allow access
+     *
+     * @param object $object
+     * @param string $property
+     * @return mixed
+     */
+    protected static function getProtectedValue($object, $property)
+    {
+        $refObject = new ReflectionObject($object);
+        $refProperty = $refObject->getProperty($property);
+        $refProperty->setAccessible(true);
+        return $refProperty->getValue($object);
     }
 
     /**
