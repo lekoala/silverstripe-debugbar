@@ -66,3 +66,7 @@ SilverStripe\Admin\LeftAndMain:
 SilverStripe\Control\Controller:
   extensions:
     - LeKoala\DebugBar\Extension\ControllerExtension
+
+TractorCow\SilverStripeProxyDB\ProxyDBFactory:
+  extensions:
+    - LeKoala\DebugBar\Extension\ProxyDBExtension

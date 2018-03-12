@@ -105,7 +105,7 @@ class DebugBar
      * Init the debugbar instance
      *
      * @global array $databaseConfig
-     * @return DebugBar\StandardDebugBar
+     * @return DebugBar\DebugBar|null
      */
     public static function initDebugBar()
     {
@@ -116,10 +116,8 @@ class DebugBar
 
         self::$debugbar = $debugbar = new BaseDebugBar;
 
-        if (isset($_REQUEST['showqueries'])) {
+        if (isset($_REQUEST['showqueries']) && Director::isDev()) {
             self::setShowQueries(true);
-            echo "The queries above have been run before we started DebugBar";
-            echo '<hr>';
             unset($_REQUEST['showqueries']);
         }
 
@@ -154,8 +152,6 @@ class DebugBar
 
             $debugbar->addCollector(new PDOCollector($traceablePdo));
         } else {
-            DB::set_conn($db = new DatabaseProxy(DB::get_conn()));
-            $db->setShowQueries(self::getShowQueries());
             $debugbar->addCollector(new DatabaseCollector);
         }
 
@@ -205,16 +201,30 @@ class DebugBar
         return $debugbar;
     }
 
+    /**
+     * Clear the current instance of DebugBar
+     *
+     * @return void
+     */
     public static function clearDebugBar()
     {
         self::$debugbar = null;
     }
 
+    /**
+     * @return boolean
+     */
     public static function getShowQueries()
     {
         return self::$showQueries;
     }
 
+    /**
+     * Override default showQueries mode
+     *
+     * @param boolean $showQueries
+     * @return void
+     */
     public static function setShowQueries($showQueries)
     {
         self::$showQueries = $showQueries;
@@ -223,7 +233,7 @@ class DebugBar
     /**
      * Helper to access this module resources
      *
-     * @param string $name
+     * @param string $path
      * @return ModuleResource
      */
     public static function moduleResource($path)

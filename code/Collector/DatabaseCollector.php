@@ -2,14 +2,13 @@
 
 namespace LeKoala\DebugBar\Collector;
 
+use SilverStripe\ORM\DB;
+use LeKoala\DebugBar\DebugBar;
+use SilverStripe\Control\Director;
+use DebugBar\DataCollector\Renderable;
 use DebugBar\DataCollector\AssetProvider;
 use DebugBar\DataCollector\DataCollector;
-use DebugBar\DataCollector\Renderable;
-use LeKoala\DebugBar\DebugBar;
-use Psr\Log\LoggerInterface;
-use SilverStripe\Control\Director;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\ORM\DB;
+use LeKoala\DebugBar\Extension\ProxyDBExtension;
 
 /**
  * Collects data about SQL statements executed through the DatabaseProxy
@@ -22,17 +21,10 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
     protected $timeCollector;
 
     /**
-     * @var SS_Database
-     */
-    protected $db;
-
-    /**
      * @return array
      */
     public function collect()
     {
-        // Gather the database connector at the last minute in case it has been replaced by other modules
-        $this->db = DB::get_conn();
         $this->timeCollector = DebugBar::getDebugBar()->getCollector('time');
 
         $data = $this->collectData($this->timeCollector);
@@ -79,7 +71,9 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
         $failed = 0;
 
         $i       = 0;
-        $queries = $this->db->getQueries();
+
+        // Get queries gathered by proxy
+        $queries = ProxyDBExtension::getQueries();
 
         $limit   = DebugBar::config()->get('query_limit');
         $warnDurationThreshold = DebugBar::config()->get('warn_dbqueries_threshold_seconds');
