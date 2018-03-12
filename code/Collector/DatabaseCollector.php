@@ -11,7 +11,7 @@ use DebugBar\DataCollector\DataCollector;
 use LeKoala\DebugBar\Extension\ProxyDBExtension;
 
 /**
- * Collects data about SQL statements executed through the DatabaseProxy
+ * Collects data about SQL statements executed through the proxied behaviour
  */
 class DatabaseCollector extends DataCollector implements Renderable, AssetProvider
 {

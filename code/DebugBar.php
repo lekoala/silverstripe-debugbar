@@ -17,7 +17,6 @@ use DebugBar\Bridge\MonologCollector;
 use SilverStripe\Control\Email\Mailer;
 use DebugBar\DebugBar as BaseDebugBar;
 use SilverStripe\Core\Injector\Injector;
-use LeKoala\DebugBar\Proxy\DatabaseProxy;
 use SilverStripe\ORM\Connect\PDOConnector;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Config\Configurable;

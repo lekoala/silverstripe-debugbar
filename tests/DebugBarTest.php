@@ -5,7 +5,6 @@ namespace LeKoala\DebugBar\Test;
 use DebugBar\DataCollector\MessagesCollector;
 use LeKoala\DebugBar\Collector\DatabaseCollector;
 use LeKoala\DebugBar\DebugBar;
-use LeKoala\DebugBar\Proxy\DatabaseProxy;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
@@ -37,9 +36,6 @@ class DebugBarTest extends SapphireTest
     {
         // De we have a debugbar instance
         $this->assertNotEmpty(DebugBar::getDebugBar());
-
-        $conn = DB::get_conn();
-        $this->assertInstanceOf(DatabaseProxy::class, $conn);
     }
 
     public function testLHelper()
