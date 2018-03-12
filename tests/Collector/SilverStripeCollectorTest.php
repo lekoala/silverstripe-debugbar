@@ -122,7 +122,7 @@ class SilverStripeCollectorTest extends SapphireTest
                 'default' => '',
             ),
             'version' => array(
-                'icon' => 'desktop',
+                'icon' => 'hashtag',
                 'tooltip' => 'Stub',
                 'default' => '',
             ),
@@ -150,19 +150,19 @@ class SilverStripeCollectorTest extends SapphireTest
                 'default' => '{}',
             ),
             'SiteConfig' => array(
-                'icon' => 'gear',
+                'icon' => 'sliders',
                 'widget' => 'PhpDebugBar.Widgets.VariableListWidget',
                 'map' => 'silverstripe.config',
                 'default' => '{}',
             ),
             'requirements' => array(
-                'icon' => 'file-o ',
+                'icon' => 'file-text-o',
                 'widget' => 'PhpDebugBar.Widgets.ListWidget',
                 'map' => 'silverstripe.requirements',
                 'default' => '{}',
             ),
             'templates' => array(
-                'icon' => 'edit',
+                'icon' => 'file-code-o',
                 'widget' => 'PhpDebugBar.Widgets.ListWidget',
                 'map' => "silverstripe.templates.templates",
                 'default' => '{}'

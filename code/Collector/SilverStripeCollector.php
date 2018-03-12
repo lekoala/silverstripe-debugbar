@@ -186,7 +186,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
                 "default" => "",
             ),
             "version" => array(
-                "icon" => "desktop",
+                "icon" => "hashtag",
                 "tooltip" => LeftAndMain::create()->CMSVersion(),
                 "default" => ""
             ),
@@ -214,19 +214,19 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
                 "default" => "{}"
             ),
             "SiteConfig" => array(
-                "icon" => "gear",
+                "icon" => "sliders",
                 "widget" => "PhpDebugBar.Widgets.VariableListWidget",
                 "map" => "$name.config",
                 "default" => "{}"
             ),
             "requirements" => array(
-                "icon" => "file-o ",
+                "icon" => "file-text-o",
                 "widget" => "PhpDebugBar.Widgets.ListWidget",
                 "map" => "$name.requirements",
                 "default" => "{}"
             ),
             'templates' => array(
-                'icon' => 'edit',
+                'icon' => 'file-code-o',
                 'widget' => 'PhpDebugBar.Widgets.ListWidget',
                 'map' => "$name.templates.templates",
                 'default' => '{}'

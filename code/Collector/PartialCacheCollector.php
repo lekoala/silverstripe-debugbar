@@ -48,7 +48,7 @@ class PartialCacheCollector extends DataCollector implements Renderable, AssetPr
     {
         $widgets = [
             'Partial Cache' => [
-                'icon' => 'asterisk',
+                'icon' => 'cube',
                 'widget' => 'PhpDebugBar.Widgets.ConfigWidget',
                 'map' => 'partial-cache.calls',
                 'default' => '{}'

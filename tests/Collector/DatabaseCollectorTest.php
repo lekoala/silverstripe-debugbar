@@ -64,7 +64,7 @@ class DatabaseCollectorTest extends SapphireTest
     {
         $expected = array(
             'database' => array(
-                'icon' => 'inbox',
+                'icon' => 'database',
                 'widget' => 'PhpDebugBar.Widgets.SQLQueriesWidget',
                 'map' => 'db',
                 'default' => '[]'
