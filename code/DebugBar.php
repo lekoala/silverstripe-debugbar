@@ -125,23 +125,24 @@ class DebugBar
         $debugbar->addCollector(new MemoryCollector);
 
         // Add config proxy replacing the core config manifest
-
-        /** @var SilverStripe\Core\Config\ConfigLoader $configLoader */
-        $configLoader = Injector::inst()->get(Kernel::class)->getConfigLoader();
         $configManifest = false;
 
-        // Let's safely access the manifest value without popping things
-        $manifests = self::getProtectedValue($configLoader, 'manifests');
-        foreach ($manifests as $manifest) {
-            if ($manifest instanceof CachedConfigCollection) {
-                $configManifest = $manifest;
-                break;
+        if (self::config()->config_collector) {
+            /** @var SilverStripe\Core\Config\ConfigLoader $configLoader */
+            $configLoader = Injector::inst()->get(Kernel::class)->getConfigLoader();
+            // Let's safely access the manifest value without popping things
+            $manifests = self::getProtectedValue($configLoader, 'manifests');
+            foreach ($manifests as $manifest) {
+                if ($manifest instanceof CachedConfigCollection) {
+                    $configManifest = $manifest;
+                    break;
+                }
             }
-        }
-        // We can display a CachedConfigCollection
-        if ($configManifest) {
-            $configProxy = new ConfigManifestProxy($configManifest);
-            $configLoader->pushManifest($configProxy);
+            // We can display a CachedConfigCollection
+            if ($configManifest) {
+                $configProxy = new ConfigManifestProxy($configManifest);
+                $configLoader->pushManifest($configProxy);
+            }
         }
 
         $connector = DB::get_connector();
@@ -176,14 +177,20 @@ class DebugBar
             // Add the config collector
             $debugbar->addCollector(new ConfigCollector);
         }
-        $debugbar->addCollector(new PartialCacheCollector);
+
+        // Partial cache
+        if (self::config()->partial_cache_collector) {
+            $debugbar->addCollector(new PartialCacheCollector);
+        }
 
         // Email logging
-        $mailer = Injector::inst()->get(Mailer::class);
-        if ($mailer instanceof SwiftMailer) {
-            $swiftInst = $mailer->getSwiftMailer();
-            $debugbar['messages']->aggregate(new SwiftLogCollector($swiftInst));
-            $debugbar->addCollector(new SwiftMailCollector($swiftInst));
+        if (self::config()->email_collector) {
+            $mailer = Injector::inst()->get(Mailer::class);
+            if ($mailer instanceof SwiftMailer) {
+                $swiftInst = $mailer->getSwiftMailer();
+                $debugbar['messages']->aggregate(new SwiftLogCollector($swiftInst));
+                $debugbar->addCollector(new SwiftMailCollector($swiftInst));
+            }
         }
 
         // Since we buffer everything, why not enable all dev options ?

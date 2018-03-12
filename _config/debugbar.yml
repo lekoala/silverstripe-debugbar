@@ -31,6 +31,10 @@ LeKoala\DebugBar\DebugBar:
   warn_warning_ratio: 0.5
   # Hide FQN in the database profiling tab
   show_namespaces: false
+  # Enable or disable collectors below
+  config_collector: true
+  partial_cache_collector: true
+  email_collector: true
 
 SilverStripe\Control\Director:
   rules:
