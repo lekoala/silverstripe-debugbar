@@ -125,6 +125,7 @@ class DebugBar
         $debugbar->addCollector(new MemoryCollector);
 
         // Add config proxy replacing the core config manifest
+
         /** @var SilverStripe\Core\Config\ConfigLoader $configLoader */
         $configLoader = Injector::inst()->get(Kernel::class)->getConfigLoader();
         $configManifest = false;

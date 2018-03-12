@@ -2,13 +2,16 @@
 
 namespace LeKoala\DebugBar\Collector;
 
-use DebugBar\DataCollector\DataCollector;
+use LeKoala\DebugBar\DebugBar;
+use SilverStripe\Control\Director;
 use DebugBar\DataCollector\Renderable;
+use DebugBar\DataCollector\DataCollector;
+use DebugBar\DataCollector\AssetProvider;
 
 /**
  * Collects data about the partial cache hits and misses during a SilverStripe request
  */
-class PartialCacheCollector extends DataCollector implements Renderable
+class PartialCacheCollector extends DataCollector implements Renderable, AssetProvider
 {
     /**
      * Contains a list of all partial caches found.
@@ -19,6 +22,17 @@ class PartialCacheCollector extends DataCollector implements Renderable
     public function getName()
     {
         return 'partial-cache';
+    }
+
+    public function getAssets()
+    {
+        // This depends on ConfigCollector assets
+        return [
+            'base_path' => '/' . DebugBar::moduleResource('javascript')->getRelativePath(),
+            'base_url' => Director::makeRelative(DebugBar::moduleResource('javascript')->getURL()),
+            'css' => 'config/widget.css',
+            'js' => 'config/widget.js'
+        ];
     }
 
     public function collect()
