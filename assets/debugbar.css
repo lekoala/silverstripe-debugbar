@@ -144,7 +144,7 @@ a.phpdebugbar-close-btn {
   border-right: 1px solid #ddd;
 }
 
-a.phpdebugbar-tab.phpdebugbar-active {
+.phpdebugbar a.phpdebugbar-tab.phpdebugbar-active {
   background: #005A92;
   color: #fff;
 }
