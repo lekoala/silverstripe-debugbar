@@ -85,8 +85,8 @@ class DebugBar
             return self::$debugbar;
         }
 
-        if (!Director::isDev() || self::isDisabled() || self::vendorNotInstalled() ||
-            self::notLocalIp() || Director::is_cli() || self::isDevUrl() || (self::isAdminUrl() && !self::config()->get('enabled_in_admin'))) {
+        $reasons = self::disabledCriteria();
+        if (!empty($reasons)) {
             self::$debugbar = false; // no need to check again
             return;
         }
@@ -345,32 +345,51 @@ class DebugBar
     }
 
     /**
+     * Get all criteria why the DebugBar could be disabled
+     *
+     * @return array
+     */
+    public static function disabledCriteria() {
+        $reasons = array();
+        if (!Director::isDev()) {
+            $reasons[] = 'Not in dev mode';
+        }
+        if (self::isDisabled()) {
+            $reasons[] = 'Disabled by a constant or configuration';
+        }
+        if (self::vendorNotInstalled()) {
+            $reasons[] = 'DebugBar is not installed in vendors';
+        }
+        if (self::notLocalIp()) {
+            $reasons[] = 'Not a local ip';
+        }
+        if (Director::is_cli()) {
+            $reasons[] = 'In CLI mode';
+        }
+        if (self::isDevUrl()) {
+            $reasons[] = 'Dev tools';
+        }
+        if (self::isAdminUrl() && !self::config()->get('enabled_in_admin')) {
+            $reasons[] = 'In admin';
+        }
+        if(isset($_GET['CMSPreview'])) {
+            $reasons[] = 'CMS Preview';
+        }
+        return $reasons;
+    }
+
+    /**
      * Determine why DebugBar is disabled
+     *
+     * Deprecated in favor of disabledCriteria
      *
      * @return string
      */
     public static function whyDisabled()
     {
-        if (!Director::isDev()) {
-            return 'Not in dev mode';
-        }
-        if (self::isDisabled()) {
-            return 'Disabled by a constant or configuration';
-        }
-        if (self::vendorNotInstalled()) {
-            return 'DebugBar is not installed in vendors';
-        }
-        if (self::notLocalIp()) {
-            return 'Not a local ip';
-        }
-        if (Director::is_cli()) {
-            return 'In CLI mode';
-        }
-        if (self::isDevUrl()) {
-            return 'Dev tools';
-        }
-        if (self::isAdminUrl() && !self::config()->get('enabled_in_admin')) {
-            return 'In admin';
+        $reasons = self::disabledCriteria();
+        if(!empty($reasons)) {
+            return $reasons[0];
         }
         return "I don't know why";
     }
