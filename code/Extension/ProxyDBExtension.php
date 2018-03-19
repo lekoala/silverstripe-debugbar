@@ -243,5 +243,4 @@ class ProxyDBExtension extends Extension
         }
         return implode(' > ', $sources);
     }
-
 }

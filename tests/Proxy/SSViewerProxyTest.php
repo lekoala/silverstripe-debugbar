@@ -31,7 +31,7 @@ class SSViewerProxyTest extends FunctionalTest
         $textfieldPath = str_replace('/', DIRECTORY_SEPARATOR, $textfieldPath);
 
         $this->assertNotEmpty($templates);
-        $this->assertContains($formPath,$templates);
-        $this->assertContains($textfieldPath,$templates);
+        $this->assertContains($formPath, $templates);
+        $this->assertContains($textfieldPath, $templates);
     }
 }

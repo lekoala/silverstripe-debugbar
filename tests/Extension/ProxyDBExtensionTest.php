@@ -25,7 +25,8 @@ class ProxyDBExtensionTest extends SapphireTest
         $this->conn = DB::get_conn();
     }
 
-    public function testQueriesAreCollected() {
+    public function testQueriesAreCollected()
+    {
         $this->assertNotEmpty(ProxyDBExtension::getQueries());
     }
 }
