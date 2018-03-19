@@ -349,7 +349,8 @@ class DebugBar
      *
      * @return array
      */
-    public static function disabledCriteria() {
+    public static function disabledCriteria()
+    {
         $reasons = array();
         if (!Director::isDev()) {
             $reasons[] = 'Not in dev mode';
@@ -372,7 +373,7 @@ class DebugBar
         if (self::isAdminUrl() && !self::config()->get('enabled_in_admin')) {
             $reasons[] = 'In admin';
         }
-        if(isset($_GET['CMSPreview'])) {
+        if (isset($_GET['CMSPreview'])) {
             $reasons[] = 'CMS Preview';
         }
         return $reasons;
@@ -388,7 +389,7 @@ class DebugBar
     public static function whyDisabled()
     {
         $reasons = self::disabledCriteria();
-        if(!empty($reasons)) {
+        if (!empty($reasons)) {
             return $reasons[0];
         }
         return "I don't know why";
