@@ -170,7 +170,10 @@ class DebugBar
         $debugbar->addCollector(new SilverStripeCollector);
 
         if (self::config()->get('enable_storage')) {
-            $debugbar->setStorage(new FileStorage(TEMP_FOLDER . '/debugbar'));
+            $debugbar->setStorage($fileStorage = new FileStorage(TEMP_FOLDER . '/debugbar'));
+            if (isset($_GET['flush'])) {
+                $fileStorage->clear();
+            }
         }
 
         if ($configManifest) {
