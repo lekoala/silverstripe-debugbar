@@ -132,6 +132,10 @@ if (!function_exists('l')) {
         if (!is_string($message)) {
             $message = json_encode((array) $message);
         }
+        if(is_array($priority)) {
+            $extras = $priority;
+            $priority = Logger::DEBUG;
+        }
         Injector::inst()->get(LoggerInterface::class)->log($priority, $message, $extras);
     }
 }
