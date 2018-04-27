@@ -147,7 +147,11 @@ class DebugBar
 
         $connector = DB::get_connector();
         if (!self::config()->get('force_proxy') && $connector instanceof PDOConnector) {
-            $traceablePdo = new TraceablePDO(self::getProtectedValue($connector, 'pdoConnection'));
+            // Use a little bit of magic to replace the pdo instance
+            $refObject = new ReflectionObject($connector);
+            $refProperty = $refObject->getProperty('pdoConnection');
+            $refProperty->setAccessible(true);
+            $traceablePdo = new TraceablePDO($refProperty->getValue($connector));
             $refProperty->setValue($connector, $traceablePdo);
 
             $debugbar->addCollector(new PDOCollector($traceablePdo));
