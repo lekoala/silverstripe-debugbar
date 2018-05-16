@@ -55,7 +55,7 @@ if (!function_exists('d')) {
             $arguments_name = array_map('trim', preg_split("/(?![^(]*\)),/", $matches[1]));
         }
 
-        $isAjax = Director::is_ajax();
+        $isAjax = Director::is_ajax() || Director::is_cli();
 
         // Display data nicely according to context
         $print = function () use ($isAjax) {
@@ -65,6 +65,7 @@ if (!function_exists('d')) {
             }
             foreach ($args as $arg) {
                 if (!$arg) {
+                    echo "(no value)";
                     continue;
                 }
                 if (is_string($arg)) {
