@@ -19,6 +19,15 @@ if (!function_exists('d')) {
     {
         $args = func_get_args();
 
+        $doExit = true;
+        $isPlain = Director::is_ajax() || Director::is_cli();
+
+        // Allow testing the helper
+        if (isset($args[0]) && $args[0] instanceof \SilverStripe\Dev\SapphireTest) {
+            $doExit = false;
+            array_shift($args);
+        }
+
         // Clean buffer that may be in the way
         if (ob_get_contents()) {
             ob_end_clean();
@@ -55,17 +64,17 @@ if (!function_exists('d')) {
             $arguments_name = array_map('trim', preg_split("/(?![^(]*\)),/", $matches[1]));
         }
 
-        $isAjax = Director::is_ajax() || Director::is_cli();
-
         // Display data nicely according to context
-        $print = function () use ($isAjax) {
+        $print = function () use ($isPlain) {
             $args = func_get_args();
-            if (!$isAjax) {
+            if (!$isPlain) {
                 echo '<pre>';
             }
             foreach ($args as $arg) {
                 if (!$arg) {
-                    echo "(no value)";
+                    if ($isPlain) {
+                        echo "(no value)";
+                    }
                     continue;
                 }
                 if (is_string($arg)) {
@@ -75,7 +84,7 @@ if (!function_exists('d')) {
                 }
                 echo "\n";
             }
-            if (!$isAjax) {
+            if (!$isPlain) {
                 echo '</pre>';
             }
         };
@@ -105,8 +114,8 @@ if (!function_exists('d')) {
                 $print('Value for: ' . $varname);
                 $len = strlen($varname);
             }
-            // For ajax requests, a good old print_r is much better
-            if ($isAjax || !function_exists('dump')) {
+            // For ajax and cli requests, a good old print_r is much better
+            if ($isPlain || !function_exists('dump')) {
                 $print($arg);
                 // Make a nice line between variables for readability
                 if (count($args) > 1) {
@@ -121,19 +130,20 @@ if (!function_exists('d')) {
             }
             $i++;
         }
-        exit();
+        if ($doExit) {
+            exit();
+        }
     }
 }
 
 // Add a simple log helper that provides a default priority
 if (!function_exists('l')) {
-
     function l($message, $priority = Logger::DEBUG, $extras = [])
     {
         if (!is_string($message)) {
             $message = json_encode((array) $message);
         }
-        if(is_array($priority)) {
+        if (is_array($priority)) {
             $extras = $priority;
             $priority = Logger::DEBUG;
         }

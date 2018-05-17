@@ -60,20 +60,11 @@ class DebugBarTest extends SapphireTest
 
     public function testDHelper()
     {
-        $this->markTestSkipped(
-            'This test needs to be looked at again, the output buffering is not capturing the result'
-        );
         $sql = 'SELECT * FROM Member';
         ob_start();
-        // Passing a SapphireTest as first arg prevent exit
         d($this, 'test', $sql);
         $content = ob_get_clean();
-        $this->assertTrue((bool) strpos($content, "Value for: 'test'"), "Value for test not found");
-        $this->assertTrue((bool) strpos($content, 'sf-dump'), "Symfony dumper not found");
-        $this->assertTrue(
-            (bool)strpos($content, '<span style="font-weight:bold;">SELECT</span>'),
-            "Sql formatted query not found"
-        );
+        $this->assertContains("Value for: 'test'", $content, "Value for test not found");
     }
 
     /**
