@@ -17,6 +17,11 @@ class ConfigManifestProxy extends CachedConfigCollection
     protected static $configCalls = [];
 
     /**
+     * @var boolean
+     */
+    protected $trackEmpty = false;
+
+    /**
      * @param CachedConfigCollection $parent
      */
     public function __construct(CachedConfigCollection $parent)
@@ -38,14 +43,17 @@ class ConfigManifestProxy extends CachedConfigCollection
     {
         $result = parent::get($class, $name, $excludeMiddleware);
 
-        if (!isset(self::$configCalls[$class][$name])) {
-            self::$configCalls[$class][$name] = [
-                'calls' => 0,
-                'result' => null
-            ];
+        // Only track not empty values by default
+        if ($result || $this->trackEmpty) {
+            if (!isset(self::$configCalls[$class][$name])) {
+                self::$configCalls[$class][$name] = [
+                    'calls' => 0,
+                    'result' => null
+                ];
+            }
+            self::$configCalls[$class][$name]['calls']++;
+            self::$configCalls[$class][$name]['result'] = $result;
         }
-        self::$configCalls[$class][$name]['calls']++;
-        self::$configCalls[$class][$name]['result'] = $result;
 
         return $result;
     }
@@ -59,5 +67,28 @@ class ConfigManifestProxy extends CachedConfigCollection
     public static function getConfigCalls()
     {
         return self::$configCalls;
+    }
+
+    /**
+     * Get the value of trackEmpty
+     *
+     * @return boolean
+     */
+    public function getTrackEmpty()
+    {
+        return $this->trackEmpty;
+    }
+
+    /**
+     * Set the value of trackEmpty
+     *
+     * @param boolean $trackEmpty
+     *
+     * @return self
+     */
+    public function setTrackEmpty($trackEmpty)
+    {
+        $this->trackEmpty = $trackEmpty;
+        return $this;
     }
 }
