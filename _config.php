@@ -49,7 +49,7 @@ if (!function_exists('d')) {
 
         // Probably best to avoid using this in live websites...
         if (Director::isLive()) {
-            Injector::inst()->get(LoggerInterface::class)->warning("Please remove call to d() in $file:$line");
+            Injector::inst()->get(LoggerInterface::class)->info("Please remove call to d() in $file:$line");
             return;
         }
 
