@@ -14,7 +14,7 @@ class DebugBarMiddleware implements HTTPMiddleware
     {
         $this->beforeRequest($request);
         $response = $delegate($request);
-        if($response) {
+        if ($response) {
             $this->afterRequest($request, $response);
         }
         return $response;
