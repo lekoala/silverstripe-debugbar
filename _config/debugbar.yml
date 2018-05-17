@@ -35,11 +35,9 @@ LeKoala\DebugBar\DebugBar:
   config_collector: true
   partial_cache_collector: true
   email_collector: true
-
 SilverStripe\Control\Director:
   rules:
     '__debugbar': 'LeKoala\DebugBar\Controller'
-
 SilverStripe\Core\Injector\Injector:
   SilverStripe\View\SSViewer:
     class: LeKoala\DebugBar\Proxy\SSViewerProxy
@@ -49,28 +47,12 @@ SilverStripe\Core\Injector\Injector:
     properties:
       Middlewares:
         DebugBarMiddleware: %$DebugBarMiddleware
-  Psr\SimpleCache\CacheInterface.backend:
-    factory: SilverStripe\Core\Cache\CacheFactory
-    constructor:
-      namespace: "cacheblock"
-      defaultLifetime: 600
-  Psr\SimpleCache\CacheInterface.cacheblock: %$Psr\SimpleCache\CacheInterface.proxied
-  Psr\SimpleCache\CacheInterface.proxied:
-    class: SilverStripe\Core\Injector\AopProxyService
-    properties:
-      proxied: %$Psr\SimpleCache\CacheInterface.backend
-      afterCall:
-        get:
-          - %$LeKoala\DebugBar\Aspect\CacheAfterCallAspect
-
 SilverStripe\Admin\LeftAndMain:
   extensions:
     - LeKoala\DebugBar\Extension\LeftAndMainExtension
-
 SilverStripe\Control\Controller:
   extensions:
     - LeKoala\DebugBar\Extension\ControllerExtension
-
 TractorCow\SilverStripeProxyDB\ProxyDBFactory:
   extensions:
     - LeKoala\DebugBar\Extension\ProxyDBExtension
