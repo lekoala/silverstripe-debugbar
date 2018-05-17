@@ -23,6 +23,7 @@ class ConfigManifestProxyTest extends SapphireTest
         $configLoader = Injector::inst()->get(Kernel::class)->getConfigLoader();
 
         // Check top level manifest is our proxy
+        // TODO: in tests, we have a DeltaConfigCollection which is not working with the proxy
         if (!($configLoader->getManifest() instanceof ConfigManifestProxy)) {
             $this->markTestSkipped("ConfigManifestProxy is not initialized");
         }
