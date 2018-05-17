@@ -51,7 +51,7 @@ class DebugBarMiddleware implements HTTPMiddleware
      * @param HTTPRequest  $request
      * @param HTTPResponse $response
      */
-    protected function afterRequest(HTTPRequest $request, HTTPResponse $response)
+    protected function afterRequest(HTTPRequest $request, HTTPResponse $response = null)
     {
         $debugbar = DebugBar::getDebugBar();
         if (!$debugbar) {
