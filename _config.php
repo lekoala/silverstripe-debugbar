@@ -80,7 +80,11 @@ if (!function_exists('d')) {
                 if (is_string($arg)) {
                     echo $arg;
                 } else {
-                    print_r($arg);
+                    // Avoid print_r on object as it can cause massive recursion
+                    if (is_object($arg)) {
+                        echo get_class($arg) . "\n";
+                    }
+                    echo json_encode($arg, JSON_PRETTY_PRINT, 5);
                 }
                 echo "\n";
             }
