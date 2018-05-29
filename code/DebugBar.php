@@ -75,9 +75,9 @@ class DebugBar
 
     /**
      * Get the Debug Bar instance
-     * @return \DebugBar\StandardDebugBar
      * @throws Exception
      * @global array $databaseConfig
+     * @return BaseDebugBar
      */
     public static function getDebugBar()
     {
@@ -326,6 +326,11 @@ class DebugBar
         self::$renderer = $renderer;
     }
 
+    /**
+     * Returns the script to display the DebugBar
+     *
+     * @return string
+     */
     public static function renderDebugBar()
     {
         if (!self::$renderer) {

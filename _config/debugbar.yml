@@ -10,6 +10,7 @@ LeKoala\DebugBar\DebugBar:
   enable_storage: true
   auto_debug: false
   ajax: false
+  max_header_length: 2048
   force_proxy: true
   check_local_ip: true
   find_source: true

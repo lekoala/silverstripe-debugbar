@@ -95,7 +95,8 @@ class DebugBarMiddleware implements HTTPMiddleware
 
                 // Prevent throwing js errors in case header size is too large
                 if (is_array($headers)) {
-                    $debugbar->sendDataInHeaders();
+                    $maxHeaderLength = DebugBar::config()->get('max_header_length');
+                    $debugbar->sendDataInHeaders(null, 'phpdebugbar', $maxHeaderLength);
                 }
             }
         }
