@@ -4,7 +4,7 @@ namespace LeKoala\DebugBar;
 
 use DebugBar\OpenHandler;
 use LeKoala\DebugBar\DebugBar;
-use SilverStripe\Control\Controller as BaseController;
+use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 
 /**
@@ -12,7 +12,7 @@ use SilverStripe\Control\HTTPRequest;
  *
  * @author Koala
  */
-class Controller extends BaseController
+class DebugBarController extends Controller
 {
     public function index(HTTPRequest $request)
     {

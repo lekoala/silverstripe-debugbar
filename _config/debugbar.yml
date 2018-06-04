@@ -38,7 +38,7 @@ LeKoala\DebugBar\DebugBar:
   email_collector: true
 SilverStripe\Control\Director:
   rules:
-    '__debugbar': 'LeKoala\DebugBar\Controller'
+    '__debugbar': 'LeKoala\DebugBar\DebugBarController'
 SilverStripe\Core\Injector\Injector:
   SilverStripe\View\SSViewer:
     class: LeKoala\DebugBar\Proxy\SSViewerProxy

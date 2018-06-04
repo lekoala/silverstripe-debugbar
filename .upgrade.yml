@@ -5,7 +5,7 @@ mappings:
   DebugBarControllerExtension: LeKoala\DebugBar\Extension\ControllerExtension
   DebugBarLeftAndMainExtension: LeKoala\DebugBar\Extension\LeftAndMainExtension
   DebugBarTemplateParserProxy: LeKoala\DebugBar\Proxy\TemplateParserProxy
-  DebugBarController: LeKoala\DebugBar\Controller
+  DebugBarController: LeKoala\DebugBar\DebugBarController
   DebugBar: LeKoala\DebugBar\DebugBar
   DebugBarRequestFilter: LeKoala\DebugBar\RequestFilter
   DebugBarControllerTest: LeKoala\DebugBar\Test\ControllerTest
