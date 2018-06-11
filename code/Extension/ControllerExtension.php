@@ -56,15 +56,13 @@ class ControllerExtension extends Extension
     }
 
     /**
-     * Due to a bug, this could be called twice before 4.0,
-     * see https://github.com/silverstripe/silverstripe-framework/pull/5173
-     *
      * @param HTTPRequest $request
      * @param string $action
      */
     public function beforeCallActionHandler($request, $action)
     {
         // This could be called twice
+        // TODO: check if we can remove this safely
         if ($this->owner->beforeCallActionHandlerCalled) {
             return;
         }
@@ -96,12 +94,9 @@ class ControllerExtension extends Extension
     }
 
     /**
-     * Due to a bug, this is not always called before 4.0,
-     * see https://github.com/silverstripe/silverstripe-framework/pull/5173
-     *
      * @param HTTPRequest $request
      * @param string $action
-     * @param mixed $result (only in v4.0)
+     * @param mixed $result
      */
     public function afterCallActionHandler($request, $action, $result)
     {

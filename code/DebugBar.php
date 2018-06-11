@@ -270,6 +270,11 @@ class DebugBar
         return ModuleLoader::getModule('lekoala/silverstripe-debugbar')->getResource($path);
     }
 
+    /**
+     * Include DebugBar assets using Requirements API
+     *
+     * @return void
+     */
     public static function includeRequirements()
     {
         $debugbar = self::getDebugBar();

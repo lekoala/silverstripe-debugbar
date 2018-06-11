@@ -7,6 +7,7 @@ use SilverStripe\Control\Middleware\HTTPMiddleware;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
+use SilverStripe\View\Requirements;
 
 class DebugBarMiddleware implements HTTPMiddleware
 {
@@ -76,7 +77,15 @@ class DebugBarMiddleware implements HTTPMiddleware
         // Inject init script into the HTML response
         $body = $response->getBody();
         if (strpos($body, '</body>') !== false) {
-            $body = str_replace('</body>', $script . '</body>', $body);
+            if (Requirements::get_write_js_to_body()) {
+                $body = str_replace('</body>', $script . '</body>', $body);
+            } else {
+                // Ensure every js script is properly loaded before firing custom script
+                $script = strip_tags($script);
+                $script = "window.addEventListener('DOMContentLoaded', function() { $script });";
+                $script = '<script type="application/javascript">//<![CDATA[' . "\n" . $script . "\n</script>";
+                $body = str_replace('</head>', $script . '</head>', $body);
+            }
             $response->setBody($body);
         }
 
