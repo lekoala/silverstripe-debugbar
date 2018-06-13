@@ -71,10 +71,12 @@ if (!function_exists('d')) {
                 echo '<pre>';
             }
             foreach ($args as $arg) {
-                if (!$arg) {
-                    if ($isPlain) {
-                        echo "(no value)";
-                    }
+                if ($isPlain && $arg === "") {
+                        echo "(empty)";
+                    continue;
+                }
+                if ($isPlain && $arg === null) {
+                        echo "(null)";
                     continue;
                 }
                 if (is_string($arg)) {
