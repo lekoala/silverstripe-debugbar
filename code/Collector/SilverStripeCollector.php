@@ -98,6 +98,11 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
     public static function getSessionData()
     {
         $data = DebugBar::getRequest()->getSession()->getAll();
+
+        if (empty($data)) {
+            return [];
+        }
+
         $filtered = [];
 
         // Filter not useful data
