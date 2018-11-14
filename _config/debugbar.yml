@@ -1,6 +1,8 @@
 ---
 Name: debugbar
-Before: 'mysite'
+Before:
+  - 'mysite'
+  - 'app'
 After:
   - 'framework'
 Only:
