@@ -175,8 +175,10 @@ class DebugBar
         $debugbar->addCollector(new SilverStripeCollector);
 
         if (self::config()->get('enable_storage')) {
-            $debugbar->setStorage($fileStorage = new FileStorage(TEMP_FOLDER . '/debugbar'));
-            if (isset($_GET['flush'])) {
+            $debugBarTempFolder = TEMP_FOLDER . '/debugbar';
+            $debugbar->setStorage($fileStorage = new FileStorage($debugBarTempFolder));
+            if (isset($_GET['flush']) && is_dir($debugBarTempFolder)) {
+                // FileStorage::clear() is implemented with \DirectoryIterator which throws UnexpectedValueException if dir can not be opened
                 $fileStorage->clear();
             }
         }
