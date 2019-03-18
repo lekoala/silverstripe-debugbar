@@ -3,7 +3,7 @@
 /**
  * A simple helper
  */
-class DebugBar extends Object
+class DebugBar extends SS_Object
 {
 
     /**
