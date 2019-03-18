@@ -124,11 +124,6 @@ class DebugBarControllerExtension extends Extension
         });
     }
 
-    /**
-     * If we are buffering debug data, clear the buffer and collect it
-     * 
-     * @return void
-     */
     protected static function clearBuffer()
     {
         if (!DebugBar::$bufferingEnabled) {
@@ -139,15 +134,5 @@ class DebugBarControllerExtension extends Extension
             unset($_REQUEST['debug_request']); // Disable further messages that we can't intercept
             DebugBarSilverStripeCollector::setDebugData($buffer);
         }
-    }
-
-    /**
-     * Include this in your template before </body> in you have set the auto_inject flag to false
-     * 
-     * @return string
-     */
-    public function ShowDebugBar()
-    {
-        return DebugBar::renderDebugBar();
     }
 }

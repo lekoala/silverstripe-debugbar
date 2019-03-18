@@ -51,15 +51,7 @@ class DebugBarRequestFilter implements \RequestFilter
 
         // All queries have been displayed
         if (DebugBar::getShowQueries()) {
-            $conn = DB::get_conn();
-            if (method_exists($conn, 'getShowQueriesTime')) {
-                echo '<pre>Total time for displayed queries is <b>' . $conn->getShowQueriesTime() . '</b>s</pre>';
-            }
             exit();
-        }
-
-        if (!DebugBar::config()->auto_inject) {
-            return;
         }
 
         $script = DebugBar::renderDebugBar();
