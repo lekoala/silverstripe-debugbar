@@ -54,10 +54,6 @@ class DebugBarRequestFilter implements \RequestFilter
             exit();
         }
 
-        if (!DebugBar::config()->auto_inject) {
-            return;
-        }
-
         $script = DebugBar::renderDebugBar();
 
         // If the bar is not renderable, return early
