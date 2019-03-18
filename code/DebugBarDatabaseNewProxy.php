@@ -152,13 +152,8 @@ class DebugBarDatabaseNewProxy extends SS_Database
 
         if ($this->showQueries && Director::isDev()) {
             $starttime = microtime(true);
-            $result = $callback($sql);
-            $endtime = round(microtime(true) - $starttime, 4);
-
-            // Skip irrelevant results
-            if (isset($_REQUEST['showqueries_threshold']) && $endtime < $_REQUEST['showqueries_threshold']) {
-                return $result;
-            }
+            $result    = $callback($sql);
+            $endtime   = round(microtime(true) - $starttime, 4);
 
             $formattedSql = JdornSqlFormatter::format($sql);
             $rows         = $result->numRecords();
