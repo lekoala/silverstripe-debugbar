@@ -9,16 +9,16 @@ php:
   - 5.4
   - 5.5
   - 5.6
+  - 7.1
+  - 7.2
 
 env:
-  - DB=MYSQL CORE_RELEASE=3.5
+  - DB=MYSQL CORE_RELEASE=3.7
 
 matrix:
   include:
     - php: 7.1
-      env: DB=MYSQL CORE_RELEASE=3.6
-    - php: 7.1
-      env: DB=MYSQL CORE_RELEASE=3 COVERAGE="--coverage-clover=coverage.xml"
+      env: DB=MYSQL CORE_RELEASE=3.7 COVERAGE="--coverage-clover=coverage.xml"
 
 before_script:
   - composer self-update || true
