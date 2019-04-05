@@ -23,7 +23,7 @@ class PhpInfoCollector extends \DebugBar\DataCollector\PhpInfoCollector
      */
     protected function trimVersion($version)
     {
-        preg_match('/^(\d+\.\d+\.\d+)/', $version, $matches);
+        preg_match('/^\d+\.\d+\.\d+/', $version, $matches);
         return !empty($matches[0]) ? $matches[0] : $version;
     }
 }
