@@ -1,9 +1,12 @@
 <?php
 namespace LeKoala\DebugBar;
 
+use DebugBar\JavascriptRenderer;
 use Exception;
+use LeKoala\DebugBar\Collector\PhpInfoCollector;
 use Monolog\Logger;
 use ReflectionObject;
+use SilverStripe\Core\Config\ConfigLoader;
 use SilverStripe\ORM\DB;
 use Psr\Log\LoggerInterface;
 use SilverStripe\Core\Kernel;
@@ -27,7 +30,6 @@ use SilverStripe\Admin\AdminRootController;
 use SilverStripe\Control\Email\SwiftMailer;
 use DebugBar\DataCollector\PDO\PDOCollector;
 use DebugBar\DataCollector\PDO\TraceablePDO;
-use DebugBar\DataCollector\PhpInfoCollector;
 use SilverStripe\Core\Manifest\ModuleLoader;
 use DebugBar\DataCollector\MessagesCollector;
 use SilverStripe\Core\Manifest\ModuleResource;
@@ -50,7 +52,7 @@ class DebugBar
     use Injectable;
 
     /**
-     * @var DebugBar\DebugBar
+     * @var BaseDebugBar
      */
     protected static $debugbar;
 
@@ -60,7 +62,7 @@ class DebugBar
     public static $bufferingEnabled = false;
 
     /**
-     * @var DebugBar\JavascriptRenderer
+     * @var JavascriptRenderer
      */
     protected static $renderer;
 
@@ -105,7 +107,7 @@ class DebugBar
      * Init the debugbar instance
      *
      * @global array $databaseConfig
-     * @return DebugBar\DebugBar|null
+     * @return BaseDebugBar|null
      */
     public static function initDebugBar()
     {
@@ -114,22 +116,22 @@ class DebugBar
             return self::$debugbar;
         }
 
-        self::$debugbar = $debugbar = new BaseDebugBar;
+        self::$debugbar = $debugbar = new BaseDebugBar();
 
         if (isset($_REQUEST['showqueries']) && Director::isDev()) {
             self::setShowQueries(true);
             unset($_REQUEST['showqueries']);
         }
 
-        $debugbar->addCollector(new PhpInfoCollector);
-        $debugbar->addCollector(new TimeDataCollector);
-        $debugbar->addCollector(new MemoryCollector);
+        $debugbar->addCollector(new PhpInfoCollector());
+        $debugbar->addCollector(new TimeDataCollector());
+        $debugbar->addCollector(new MemoryCollector());
 
         // Add config proxy replacing the core config manifest
         $configManifest = false;
 
         if (self::config()->config_collector) {
-            /** @var SilverStripe\Core\Config\ConfigLoader $configLoader */
+            /** @var ConfigLoader $configLoader */
             $configLoader = Injector::inst()->get(Kernel::class)->getConfigLoader();
             // Let's safely access the manifest value without popping things
             $manifests = self::getProtectedValue($configLoader, 'manifests');
