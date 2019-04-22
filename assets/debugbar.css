@@ -92,6 +92,7 @@ div.phpdebugbar-resize-handle {
 }
 
 div.phpdebugbar-closed, div.phpdebugbar-minimized{
+  border-left: 1px solid #ccc;
   border-top: 1px solid #ccc;
 }
 
