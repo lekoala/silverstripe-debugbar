@@ -49,7 +49,7 @@ SilverStripe\Core\Injector\Injector:
   SilverStripe\Control\Director:
     properties:
       Middlewares:
-        DebugBarMiddleware: %$DebugBarMiddleware
+        DebugBarMiddleware: '%$DebugBarMiddleware'
 SilverStripe\Admin\LeftAndMain:
   extensions:
     - LeKoala\DebugBar\Extension\LeftAndMainExtension

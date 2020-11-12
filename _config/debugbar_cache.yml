@@ -15,7 +15,7 @@ SilverStripe\Core\Injector\Injector:
   Psr\SimpleCache\CacheInterface.proxied:
     class: SilverStripe\Core\Injector\AopProxyService
     properties:
-      proxied: %$Psr\SimpleCache\CacheInterface.backend
+      proxied: '%$Psr\SimpleCache\CacheInterface.backend'
       afterCall:
         get:
-          - %$LeKoala\DebugBar\Aspect\CacheAfterCallAspect
+          - '%$LeKoala\DebugBar\Aspect\CacheAfterCallAspect'
