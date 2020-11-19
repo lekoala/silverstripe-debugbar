@@ -29,6 +29,13 @@ class ProxyDBExtension extends Extension
 
     public function updateProxy(ProxyGenerator &$proxy)
     {
+        // We shouldn't record and save in memory DB requests if the DebugBar is disabled
+        // otherwise long running tasks such as unit tests will slowly build up memory trying
+        // to store them.
+        if (!empty(DebugBar::disabledCriteria())) {
+            return;
+        }
+
         self::$findSource = DebugBar::config()->get('find_source');
 
         // In the closure, $this is the proxied database
