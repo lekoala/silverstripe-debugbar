@@ -6,14 +6,14 @@ use DebugBar\DataCollector\AssetProvider;
 use DebugBar\DataCollector\DataCollector;
 use DebugBar\DataCollector\Renderable;
 use LeKoala\DebugBar\DebugBar;
-use LeKoala\DebugBar\Proxy\TemplateParserProxy;
+use LeKoala\DebugBar\Proxy\SSViewerProxy;
 use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Cookie;
-use SilverStripe\Control\Session;
+use SilverStripe\Control\Director;
 use SilverStripe\Core\Convert;
 use SilverStripe\i18n\i18n;
-use SilverStripe\Security\Member;
+use SilverStripe\Security\Security;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\View\Requirements;
 
@@ -34,7 +34,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
             'cookies' => self::getCookieData(),
             'parameters' => self::getRequestParameters(),
             'requirements' => self::getRequirementsData(),
-            'user' => Member::currentUserID() ? Member::currentUser()->Title : 'Not logged in',
+            'user' => Security::getCurrentUser() ? Security::getCurrentUser()->Title : 'Not logged in',
             'templates' => self::getTemplateData(),
         );
         return $data;
@@ -47,16 +47,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
      */
     public static function getTemplateData()
     {
-        if (TemplateParserProxy::getCached()) {
-            return array(
-                'templates' => array(
-                    'NOTE: Rendered templates will not display when cached, please flush to view the list.'
-                ),
-                'count' => ''
-            );
-        }
-
-        $templates = TemplateParserProxy::getTemplatesUsed();
+        $templates = SSViewerProxy::getTemplatesUsed();
         return array(
             'templates' => $templates,
             'count' => count($templates)
@@ -107,6 +98,11 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
     public static function getSessionData()
     {
         $data = DebugBar::getRequest()->getSession()->getAll();
+
+        if (empty($data)) {
+            return [];
+        }
+
         $filtered = [];
 
         // Filter not useful data
@@ -175,8 +171,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
 
         $userIcon = 'user-times';
         $userText = 'Not logged in';
-        if (Member::currentUserID()) {
-            $member = Member::currentUser();
+        if ($member = Security::getCurrentUser()) {
             $memberTag = $member->getTitle() . ' (#' . $member->ID . ')';
 
             $userIcon = 'user';
@@ -196,7 +191,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
                 "default" => "",
             ),
             "version" => array(
-                "icon" => "desktop",
+                "icon" => "hashtag",
                 "tooltip" => LeftAndMain::create()->CMSVersion(),
                 "default" => ""
             ),
@@ -223,33 +218,29 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
                 "map" => "$name.parameters",
                 "default" => "{}"
             ),
-            "config" => array(
-                "icon" => "gear",
+            "SiteConfig" => array(
+                "icon" => "sliders",
                 "widget" => "PhpDebugBar.Widgets.VariableListWidget",
                 "map" => "$name.config",
                 "default" => "{}"
             ),
             "requirements" => array(
-                "icon" => "file-o ",
+                "icon" => "file-text-o",
                 "widget" => "PhpDebugBar.Widgets.ListWidget",
                 "map" => "$name.requirements",
                 "default" => "{}"
             ),
             'templates' => array(
-                'icon' => 'edit',
+                'icon' => 'file-code-o',
                 'widget' => 'PhpDebugBar.Widgets.ListWidget',
                 'map' => "$name.templates.templates",
                 'default' => '{}'
             ),
-        );
-
-        // Add badge for number of templates if there are some
-        if (!TemplateParserProxy::getCached()) {
-            $widgets['templates:badge'] = array(
+            'templates:badge' => array(
                 'map' => "$name.templates.count",
                 'default' => 0
-            );
-        }
+            )
+        );
 
         if (!empty(self::$debug)) {
             $widgets["debug"] = array(
@@ -273,8 +264,8 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
     public function getAssets()
     {
         return array(
-            'base_path' => '/' . DEBUGBAR_DIR . '/javascript',
-            'base_url' => DEBUGBAR_DIR . '/javascript',
+            'base_path' => '/' . DebugBar::moduleResource('javascript')->getRelativePath(),
+            'base_url' => Director::makeRelative(DebugBar::moduleResource('javascript')->getURL()),
             'css' => [],
             'js' => 'widgets.js',
         );

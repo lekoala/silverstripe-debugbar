@@ -5,7 +5,6 @@ namespace LeKoala\DebugBar\Test;
 use DebugBar\DataCollector\MessagesCollector;
 use LeKoala\DebugBar\Collector\DatabaseCollector;
 use LeKoala\DebugBar\DebugBar;
-use LeKoala\DebugBar\Proxy\DatabaseProxy;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
@@ -37,9 +36,6 @@ class DebugBarTest extends SapphireTest
     {
         // De we have a debugbar instance
         $this->assertNotEmpty(DebugBar::getDebugBar());
-
-        $conn = DB::get_conn();
-        $this->assertInstanceOf(DatabaseProxy::class, $conn);
     }
 
     public function testLHelper()
@@ -64,20 +60,11 @@ class DebugBarTest extends SapphireTest
 
     public function testDHelper()
     {
-        $this->markTestSkipped(
-            'This test needs to be looked at again, the output buffering is not capturing the result'
-        );
         $sql = 'SELECT * FROM Member';
         ob_start();
-        // Passing a SapphireTest as first arg prevent exit
         d($this, 'test', $sql);
         $content = ob_get_clean();
-        $this->assertTrue((bool) strpos($content, "Value for: 'test'"), "Value for test not found");
-        $this->assertTrue((bool) strpos($content, 'sf-dump'), "Symfony dumper not found");
-        $this->assertTrue(
-            (bool)strpos($content, '<span style="font-weight:bold;">SELECT</span>'),
-            "Sql formatted query not found"
-        );
+        $this->assertContains("Value for: 'test'", $content, "Value for test not found");
     }
 
     /**

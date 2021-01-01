@@ -2,18 +2,16 @@
 
 namespace LeKoala\DebugBar\Collector;
 
+use SilverStripe\ORM\DB;
+use LeKoala\DebugBar\DebugBar;
+use SilverStripe\Control\Director;
+use DebugBar\DataCollector\Renderable;
 use DebugBar\DataCollector\AssetProvider;
 use DebugBar\DataCollector\DataCollector;
-use DebugBar\DataCollector\Renderable;
-use DebugBar\DataCollector\TimeDataCollector as BaseTimeDataCollector;
-use LeKoala\DebugBar\DebugBar;
-use Psr\Log\LoggerInterface;
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\ORM\DB;
+use LeKoala\DebugBar\Extension\ProxyDBExtension;
 
 /**
- * Collects data about SQL statements executed through the DatabaseProxy
+ * Collects data about SQL statements executed through the proxied behaviour
  */
 class DatabaseCollector extends DataCollector implements Renderable, AssetProvider
 {
@@ -23,31 +21,24 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
     protected $timeCollector;
 
     /**
-     * @var SS_Database
-     */
-    protected $db;
-
-    /**
      * @return array
      */
     public function collect()
     {
-        // Gather the database connector at the last minute in case it has been replaced by other modules
-        $this->db = DB::get_conn();
         $this->timeCollector = DebugBar::getDebugBar()->getCollector('time');
 
         $data = $this->collectData($this->timeCollector);
 
         // Check for excessive number of queries
-        $dbQueryWarningLevel = DebugBar::config()->warn_query_limit;
+        $dbQueryWarningLevel = DebugBar::config()->get('warn_query_limit');
         if ($dbQueryWarningLevel && $data['nb_statements'] > $dbQueryWarningLevel) {
-            $helpLink = DebugBar::config()->performance_guide_link;
-            Injector::inst()->get(LoggerInterface::class)
-                ->addWarning(
-                    'This page ran more than ' . $dbQueryWarningLevel . ' database queries. You could reduce this by '
+            $helpLink = DebugBar::config()->get('performance_guide_link');
+            $messages = DebugBar::getDebugBar()->getCollector('messages');
+            $messages->info(
+                'This page ran more than ' . $dbQueryWarningLevel . ' database queries. You could reduce this by '
                     . 'implementing caching. For more information, <a href="' . $helpLink . '" target="_blank">'
                     . 'click here.</a>'
-                );
+            );
         }
 
         return $data;
@@ -80,10 +71,12 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
         $failed = 0;
 
         $i       = 0;
-        $queries = $this->db->getQueries();
 
-        $limit   = DebugBar::config()->query_limit;
-        $warnDurationThreshold = Config::inst()->get(DebugBar::class, 'warn_dbqueries_threshold_seconds');
+        // Get queries gathered by proxy
+        $queries = ProxyDBExtension::getQueries();
+
+        $limit   = DebugBar::config()->get('query_limit');
+        $warnDurationThreshold = DebugBar::config()->get('warn_dbqueries_threshold_seconds');
 
         $showDb = count(array_unique(array_map(function ($stmt) {
                 return $stmt['database'];
@@ -155,7 +148,7 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
     {
         return array(
             "database" => array(
-                "icon" => "inbox",
+                "icon" => "database",
                 "widget" => "PhpDebugBar.Widgets.SQLQueriesWidget",
                 "map" => "db",
                 "default" => "[]"
@@ -173,8 +166,8 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
     public function getAssets()
     {
         return array(
-            'base_path' => '/' . DEBUGBAR_DIR . '/javascript',
-            'base_url' => DEBUGBAR_DIR.'/javascript',
+            'base_path' => '/' . DebugBar::moduleResource('javascript')->getRelativePath(),
+            'base_url' => Director::makeRelative(DebugBar::moduleResource('javascript')->getURL()),
             'css' => 'sqlqueries/widget.css',
             'js' => 'sqlqueries/widget.js'
         );

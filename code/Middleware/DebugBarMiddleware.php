@@ -7,6 +7,7 @@ use SilverStripe\Control\Middleware\HTTPMiddleware;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
+use SilverStripe\View\Requirements;
 
 class DebugBarMiddleware implements HTTPMiddleware
 {
@@ -14,7 +15,9 @@ class DebugBarMiddleware implements HTTPMiddleware
     {
         $this->beforeRequest($request);
         $response = $delegate($request);
-        $this->afterRequest($request, $response);
+        if ($response) {
+            $this->afterRequest($request, $response);
+        }
         return $response;
     }
 
@@ -74,13 +77,21 @@ class DebugBarMiddleware implements HTTPMiddleware
         // Inject init script into the HTML response
         $body = $response->getBody();
         if (strpos($body, '</body>') !== false) {
-            $body = str_replace('</body>', $script . '</body>', $body);
+            if (Requirements::get_write_js_to_body()) {
+                $body = str_replace('</body>', $script . '</body>', $body);
+            } else {
+                // Ensure every js script is properly loaded before firing custom script
+                $script = strip_tags($script);
+                $script = "window.addEventListener('DOMContentLoaded', function() { $script });";
+                $script = '<script type="application/javascript">//<![CDATA[' . "\n" . $script . "\n</script>";
+                $body = str_replace('</head>', $script . '</head>', $body);
+            }
             $response->setBody($body);
         }
 
         // Ajax support
         if (Director::is_ajax() && !headers_sent()) {
-            if (DebugBar::isAdminUrl() && !DebugBar::config()->enabled_in_admin) {
+            if (DebugBar::isAdminUrl() && !DebugBar::config()->get('enabled_in_admin')) {
                 return;
             }
             // Skip anything that is not a GET request
@@ -88,12 +99,13 @@ class DebugBarMiddleware implements HTTPMiddleware
                 return;
             }
             // Always enable in admin because everything is mostly loaded through ajax
-            if (DebugBar::config()->ajax || DebugBar::isAdminUrl()) {
+            if (DebugBar::config()->get('ajax') || DebugBar::isAdminUrl()) {
                 $headers = $debugbar->getDataAsHeaders();
 
                 // Prevent throwing js errors in case header size is too large
                 if (is_array($headers)) {
-                    $debugbar->sendDataInHeaders();
+                    $maxHeaderLength = DebugBar::config()->get('max_header_length');
+                    $debugbar->sendDataInHeaders(null, 'phpdebugbar', $maxHeaderLength);
                 }
             }
         }

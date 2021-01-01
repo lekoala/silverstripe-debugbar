@@ -1,32 +1,47 @@
 <?php
-
 namespace LeKoala\DebugBar;
 
-use DebugBar\Bridge\MonologCollector;
-use DebugBar\DebugBar as BaseDebugBar;
-use DebugBar\DataCollector\MemoryCollector;
-use DebugBar\DataCollector\PDO\PDOCollector;
-use DebugBar\DataCollector\PDO\TraceablePDO;
-use DebugBar\DataCollector\PhpInfoCollector;
-use DebugBar\Storage\FileStorage;
+use DebugBar\JavascriptRenderer;
 use Exception;
-use LeKoala\DebugBar\Collector\DatabaseCollector;
-use LeKoala\DebugBar\Collector\SilverStripeCollector;
-use LeKoala\DebugBar\Collector\TimeDataCollector;
-use LeKoala\DebugBar\Messages\LogFormatter;
-use LeKoala\DebugBar\Proxy\DatabaseProxy;
-use Psr\Log\LoggerInterface;
+use LeKoala\DebugBar\Collector\PhpInfoCollector;
 use Monolog\Logger;
 use ReflectionObject;
-use SilverStripe\Admin\LeftAndMain;
+use SilverStripe\Core\Config\ConfigLoader;
+use SilverStripe\ORM\DB;
+use Psr\Log\LoggerInterface;
+use SilverStripe\Core\Kernel;
+use DebugBar\Storage\FileStorage;
 use SilverStripe\Control\Director;
+use SilverStripe\Core\Environment;
+use SilverStripe\Admin\LeftAndMain;
+use SilverStripe\View\Requirements;
+use SilverStripe\Control\Controller;
+use DebugBar\Bridge\MonologCollector;
 use SilverStripe\Control\HTTPRequest;
+use DebugBar\DebugBar as BaseDebugBar;
+use SilverStripe\Control\Email\Mailer;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injectable;
-use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\Connect\PDOConnector;
-use SilverStripe\ORM\DB;
-use SilverStripe\View\Requirements;
+use DebugBar\DataCollector\MemoryCollector;
+use LeKoala\DebugBar\Messages\LogFormatter;
+use SilverStripe\Admin\AdminRootController;
+use SilverStripe\Control\Email\SwiftMailer;
+use DebugBar\DataCollector\PDO\PDOCollector;
+use DebugBar\DataCollector\PDO\TraceablePDO;
+use SilverStripe\Core\Manifest\ModuleLoader;
+use DebugBar\DataCollector\MessagesCollector;
+use SilverStripe\Core\Manifest\ModuleResource;
+use LeKoala\DebugBar\Collector\ConfigCollector;
+use LeKoala\DebugBar\Proxy\ConfigManifestProxy;
+use LeKoala\DebugBar\Collector\DatabaseCollector;
+use LeKoala\DebugBar\Collector\TimeDataCollector;
+use DebugBar\Bridge\SwiftMailer\SwiftLogCollector;
+use DebugBar\Bridge\SwiftMailer\SwiftMailCollector;
+use LeKoala\DebugBar\Collector\PartialCacheCollector;
+use LeKoala\DebugBar\Collector\SilverStripeCollector;
+use SilverStripe\Config\Collections\CachedConfigCollection;
 
 /**
  * A simple helper
@@ -37,7 +52,7 @@ class DebugBar
     use Injectable;
 
     /**
-     * @var DebugBar\DebugBar
+     * @var BaseDebugBar
      */
     protected static $debugbar;
 
@@ -47,7 +62,7 @@ class DebugBar
     public static $bufferingEnabled = false;
 
     /**
-     * @var DebugBar\JavascriptRenderer
+     * @var JavascriptRenderer
      */
     protected static $renderer;
 
@@ -63,9 +78,9 @@ class DebugBar
 
     /**
      * Get the Debug Bar instance
-     * @return \DebugBar\StandardDebugBar
      * @throws Exception
      * @global array $databaseConfig
+     * @return BaseDebugBar
      */
     public static function getDebugBar()
     {
@@ -73,10 +88,8 @@ class DebugBar
             return self::$debugbar;
         }
 
-        if (!Director::isDev() || self::isDisabled() || self::vendorNotInstalled() ||
-            self::notLocalIp() || Director::is_cli() || self::isDevUrl() ||
-            (self::isAdminUrl() && !self::config()->enabled_in_admin)
-        ) {
+        $reasons = self::disabledCriteria();
+        if (!empty($reasons)) {
             self::$debugbar = false; // no need to check again
             return;
         }
@@ -94,7 +107,7 @@ class DebugBar
      * Init the debugbar instance
      *
      * @global array $databaseConfig
-     * @return DebugBar\StandardDebugBar
+     * @return BaseDebugBar|null
      */
     public static function initDebugBar()
     {
@@ -103,21 +116,40 @@ class DebugBar
             return self::$debugbar;
         }
 
-        self::$debugbar = $debugbar = new BaseDebugBar;
+        self::$debugbar = $debugbar = new BaseDebugBar();
 
-        if (isset($_REQUEST['showqueries'])) {
+        if (isset($_REQUEST['showqueries']) && Director::isDev()) {
             self::setShowQueries(true);
-            echo "The queries above have been run before we started DebugBar";
-            echo '<hr>';
             unset($_REQUEST['showqueries']);
         }
 
-        $debugbar->addCollector(new PhpInfoCollector);
-        $debugbar->addCollector(new TimeDataCollector);
-        $debugbar->addCollector(new MemoryCollector);
+        $debugbar->addCollector(new PhpInfoCollector());
+        $debugbar->addCollector(new TimeDataCollector());
+        $debugbar->addCollector(new MemoryCollector());
+
+        // Add config proxy replacing the core config manifest
+        $configManifest = false;
+
+        if (self::config()->config_collector) {
+            /** @var ConfigLoader $configLoader */
+            $configLoader = Injector::inst()->get(Kernel::class)->getConfigLoader();
+            // Let's safely access the manifest value without popping things
+            $manifests = self::getProtectedValue($configLoader, 'manifests');
+            foreach ($manifests as $manifest) {
+                if ($manifest instanceof CachedConfigCollection) {
+                    $configManifest = $manifest;
+                    break;
+                }
+            }
+            // We can display a CachedConfigCollection
+            if ($configManifest) {
+                $configProxy = new ConfigManifestProxy($configManifest);
+                $configLoader->pushManifest($configProxy);
+            }
+        }
 
         $connector = DB::get_connector();
-        if (!self::config()->force_proxy && $connector instanceof PDOConnector) {
+        if (!self::config()->get('force_proxy') && $connector instanceof PDOConnector) {
             // Use a little bit of magic to replace the pdo instance
             $refObject = new ReflectionObject($connector);
             $refProperty = $refObject->getProperty('pdoConnection');
@@ -127,27 +159,54 @@ class DebugBar
 
             $debugbar->addCollector(new PDOCollector($traceablePdo));
         } else {
-            DB::set_conn($db = new DatabaseProxy(DB::get_conn()));
-            $db->setShowQueries(self::getShowQueries());
             $debugbar->addCollector(new DatabaseCollector);
         }
 
         // Add message collector last so other collectors can send messages to the console using it
-        $logger = Injector::inst()->get(LoggerInterface::class);
-        $logCollector = new MonologCollector($logger, Logger::DEBUG, true, 'messages');
-        $logCollector->setFormatter(new LogFormatter);
+        $debugbar->addCollector(new MessagesCollector());
 
-        $debugbar->addCollector($logCollector);
+        // Aggregate monolog into messages
+        $logger = Injector::inst()->get(LoggerInterface::class);
+        if ($logger instanceof Logger) {
+            $logCollector = new MonologCollector($logger);
+            $logCollector->setFormatter(new LogFormatter);
+            $debugbar['messages']->aggregate($logCollector);
+        }
 
         // Add some SilverStripe specific infos
         $debugbar->addCollector(new SilverStripeCollector);
 
-        if (self::config()->enable_storage) {
-            $debugbar->setStorage(new FileStorage(TEMP_FOLDER . '/debugbar'));
+        if (self::config()->get('enable_storage')) {
+            $debugBarTempFolder = TEMP_FOLDER . '/debugbar';
+            $debugbar->setStorage($fileStorage = new FileStorage($debugBarTempFolder));
+            if (isset($_GET['flush']) && is_dir($debugBarTempFolder)) {
+                // FileStorage::clear() is implemented with \DirectoryIterator which throws UnexpectedValueException if dir can not be opened
+                $fileStorage->clear();
+            }
+        }
+
+        if ($configManifest) {
+            // Add the config collector
+            $debugbar->addCollector(new ConfigCollector);
+        }
+
+        // Partial cache
+        if (self::config()->partial_cache_collector) {
+            $debugbar->addCollector(new PartialCacheCollector);
+        }
+
+        // Email logging
+        if (self::config()->email_collector) {
+            $mailer = Injector::inst()->get(Mailer::class);
+            if ($mailer instanceof SwiftMailer) {
+                $swiftInst = $mailer->getSwiftMailer();
+                $debugbar['messages']->aggregate(new SwiftLogCollector($swiftInst));
+                $debugbar->addCollector(new SwiftMailCollector($swiftInst));
+            }
         }
 
         // Since we buffer everything, why not enable all dev options ?
-        if (self::config()->auto_debug) {
+        if (self::config()->get('auto_debug')) {
             $_REQUEST['debug'] = true;
             $_REQUEST['debug_request'] = true;
         }
@@ -160,21 +219,66 @@ class DebugBar
         return $debugbar;
     }
 
+    /**
+     * Access a protected property when the api does not allow access
+     *
+     * @param object $object
+     * @param string $property
+     * @return mixed
+     */
+    protected static function getProtectedValue($object, $property)
+    {
+        $refObject = new ReflectionObject($object);
+        $refProperty = $refObject->getProperty($property);
+        $refProperty->setAccessible(true);
+        return $refProperty->getValue($object);
+    }
+
+    /**
+     * Clear the current instance of DebugBar
+     *
+     * @return void
+     */
     public static function clearDebugBar()
     {
         self::$debugbar = null;
     }
 
+    /**
+     * @return boolean
+     */
     public static function getShowQueries()
     {
         return self::$showQueries;
     }
 
+    /**
+     * Override default showQueries mode
+     *
+     * @param boolean $showQueries
+     * @return void
+     */
     public static function setShowQueries($showQueries)
     {
         self::$showQueries = $showQueries;
     }
 
+    /**
+     * Helper to access this module resources
+     *
+     * @param string $path
+     * @return ModuleResource
+     */
+    public static function moduleResource($path)
+    {
+        return ModuleLoader::getModule('lekoala/silverstripe-debugbar')->getResource($path);
+    }
+
+    /**
+     * Include DebugBar assets using Requirements API
+     *
+     * @return void
+     */
     public static function includeRequirements()
     {
         $debugbar = self::getDebugBar();
@@ -191,10 +295,11 @@ class DebugBar
         $renderer = $debugbar->getJavascriptRenderer();
 
         // We don't need the true path since we are going to use Requirements API that appends the BASE_PATH
-        $renderer->setBasePath(DEBUGBAR_DIR . '/assets');
-        $renderer->setBaseUrl(DEBUGBAR_DIR . '/assets');
+        $assetsResource = self::moduleResource('assets');
+        $renderer->setBasePath($assetsResource->getRelativePath());
+        $renderer->setBaseUrl(Director::makeRelative($assetsResource->getURL()));
 
-        $includeJquery = self::config()->include_jquery;
+        $includeJquery = self::config()->get('include_jquery');
         // In CMS, jQuery is already included
         if (self::isAdminController()) {
             $includeJquery = false;
@@ -216,21 +321,26 @@ class DebugBar
             $renderer->setEnableJqueryNoConflict(false);
         }
 
-        if (DebugBar::config()->enable_storage) {
+        if (DebugBar::config()->get('enable_storage')) {
             $renderer->setOpenHandlerUrl('__debugbar');
         }
 
         foreach ($renderer->getAssets('css') as $cssFile) {
-            Requirements::css(ltrim($cssFile, '/'));
+            Requirements::css(Director::makeRelative(ltrim($cssFile, '/')));
         }
 
         foreach ($renderer->getAssets('js') as $jsFile) {
-            Requirements::javascript(ltrim($jsFile, '/'));
+            Requirements::javascript(Director::makeRelative(ltrim($jsFile, '/')));
         }
 
         self::$renderer = $renderer;
     }
 
+    /**
+     * Returns the script to display the DebugBar
+     *
+     * @return string
+     */
     public static function renderDebugBar()
     {
         if (!self::$renderer) {
@@ -239,7 +349,12 @@ class DebugBar
 
         // Requirements may have been cleared (CMS iframes...) or not set (Security...)
         $js = Requirements::backend()->getJavascript();
-        if (!array_key_exists('debugbar/assets/debugbar.js', $js)) {
+        $debugBarResource = self::moduleResource('assets/debugbar.js');
+        $path = $debugBarResource->getRelativePath();
+
+        // Url in getJavascript has a / slash, so fix if necessary
+        $path = str_replace("assets\\debugbar.js", "assets/debugbar.js", $path);
+        if (!array_key_exists($path, $js)) {
             return;
         }
         $initialize = true;
@@ -252,32 +367,52 @@ class DebugBar
     }
 
     /**
+     * Get all criteria why the DebugBar could be disabled
+     *
+     * @return array
+     */
+    public static function disabledCriteria()
+    {
+        $reasons = array();
+        if (!Director::isDev()) {
+            $reasons[] = 'Not in dev mode';
+        }
+        if (self::isDisabled()) {
+            $reasons[] = 'Disabled by a constant or configuration';
+        }
+        if (self::vendorNotInstalled()) {
+            $reasons[] = 'DebugBar is not installed in vendors';
+        }
+        if (self::notLocalIp()) {
+            $reasons[] = 'Not a local ip';
+        }
+        if (Director::is_cli()) {
+            $reasons[] = 'In CLI mode';
+        }
+        if (self::isDevUrl()) {
+            $reasons[] = 'Dev tools';
+        }
+        if (self::isAdminUrl() && !self::config()->get('enabled_in_admin')) {
+            $reasons[] = 'In admin';
+        }
+        if (isset($_GET['CMSPreview'])) {
+            $reasons[] = 'CMS Preview';
+        }
+        return $reasons;
+    }
+
+    /**
      * Determine why DebugBar is disabled
+     *
+     * Deprecated in favor of disabledCriteria
      *
      * @return string
      */
     public static function whyDisabled()
     {
-        if (!Director::isDev()) {
-            return 'Not in dev mode';
-        }
-        if (self::isDisabled()) {
-            return 'Disabled by a constant or configuration';
-        }
-        if (self::vendorNotInstalled()) {
-            return 'DebugBar is not installed in vendors';
-        }
-        if (self::notLocalIp()) {
-            return 'Not a local ip';
-        }
-        if (Director::is_cli()) {
-            return 'In CLI mode';
-        }
-        if (self::isDevUrl()) {
-            return 'Dev tools';
-        }
-        if (self::isAdminUrl() && !self::config()->enabled_in_admin) {
-            return 'In admin';
+        $reasons = self::disabledCriteria();
+        if (!empty($reasons)) {
+            return $reasons[0];
         }
         return "I don't know why";
     }
@@ -289,7 +424,7 @@ class DebugBar
 
     public static function notLocalIp()
     {
-        if (!self::config()->check_local_ip) {
+        if (!self::config()->get('check_local_ip')) {
             return false;
         }
         if (isset($_SERVER['REMOTE_ADDR'])) {
@@ -300,7 +435,7 @@ class DebugBar
 
     public static function isDisabled()
     {
-        if (getenv('DEBUGBAR_DISABLE') || static::config()->disabled) {
+        if (Environment::getEnv('DEBUGBAR_DISABLE') || static::config()->get('disabled')) {
             return true;
         }
         return false;
@@ -313,7 +448,10 @@ class DebugBar
 
     public static function isAdminUrl()
     {
-        return strpos(self::getRequestUrl(), '/admin/') === 0;
+        $baseUrl = rtrim(BASE_URL, '/');
+        $adminUrl = AdminRootController::config()->get('url_base');
+
+        return strpos(self::getRequestUrl(), $baseUrl . '/' . $adminUrl . '/') === 0;
     }
 
     public static function isAdminController()

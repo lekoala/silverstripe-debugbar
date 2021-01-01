@@ -5,10 +5,6 @@ use Psr\Log\LoggerInterface;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Injector\Injector;
 
-if (!defined('DEBUGBAR_DIR')) {
-    define('DEBUGBAR_DIR', 'debugbar');
-}
-
 // Add a simple utility that leverages Symfony VarDumper and cleans buffer to avoid debug messages
 if (!function_exists('d')) {
 
@@ -22,6 +18,15 @@ if (!function_exists('d')) {
     function d()
     {
         $args = func_get_args();
+
+        $doExit = true;
+        $isPlain = Director::is_ajax() || Director::is_cli();
+
+        // Allow testing the helper
+        if (isset($args[0]) && $args[0] instanceof \SilverStripe\Dev\SapphireTest) {
+            $doExit = false;
+            array_shift($args);
+        }
 
         // Clean buffer that may be in the way
         if (ob_get_contents()) {
@@ -44,7 +49,7 @@ if (!function_exists('d')) {
 
         // Probably best to avoid using this in live websites...
         if (Director::isLive()) {
-            Injector::inst()->get(LoggerInterface::class)->warning("Please remove call to d() in $file:$line");
+            Injector::inst()->get(LoggerInterface::class)->info("Please remove call to d() in $file:$line");
             return;
         }
 
@@ -59,26 +64,33 @@ if (!function_exists('d')) {
             $arguments_name = array_map('trim', preg_split("/(?![^(]*\)),/", $matches[1]));
         }
 
-        $isAjax = Director::is_ajax();
-
         // Display data nicely according to context
-        $print = function () use ($isAjax) {
+        $print = function () use ($isPlain) {
             $args = func_get_args();
-            if (!$isAjax) {
+            if (!$isPlain) {
                 echo '<pre>';
             }
             foreach ($args as $arg) {
-                if (!$arg) {
+                if ($isPlain && $arg === "") {
+                        echo "(empty)";
+                    continue;
+                }
+                if ($isPlain && $arg === null) {
+                        echo "(null)";
                     continue;
                 }
                 if (is_string($arg)) {
                     echo $arg;
                 } else {
-                    print_r($arg);
+                    // Avoid print_r on object as it can cause massive recursion
+                    if (is_object($arg)) {
+                        echo get_class($arg) . "\n";
+                    }
+                    echo json_encode($arg, JSON_PRETTY_PRINT, 5);
                 }
                 echo "\n";
             }
-            if (!$isAjax) {
+            if (!$isPlain) {
                 echo '</pre>';
             }
         };
@@ -108,8 +120,8 @@ if (!function_exists('d')) {
                 $print('Value for: ' . $varname);
                 $len = strlen($varname);
             }
-            // For ajax requests, a good old print_r is much better
-            if ($isAjax || !function_exists('dump')) {
+            // For ajax and cli requests, a good old print_r is much better
+            if ($isPlain || !function_exists('dump')) {
                 $print($arg);
                 // Make a nice line between variables for readability
                 if (count($args) > 1) {
@@ -124,17 +136,22 @@ if (!function_exists('d')) {
             }
             $i++;
         }
-        exit();
+        if ($doExit) {
+            exit();
+        }
     }
 }
 
 // Add a simple log helper that provides a default priority
 if (!function_exists('l')) {
-
     function l($message, $priority = Logger::DEBUG, $extras = [])
     {
         if (!is_string($message)) {
             $message = json_encode((array) $message);
+        }
+        if (is_array($priority)) {
+            $extras = $priority;
+            $priority = Logger::DEBUG;
         }
         Injector::inst()->get(LoggerInterface::class)->log($priority, $message, $extras);
     }

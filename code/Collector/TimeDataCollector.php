@@ -16,8 +16,8 @@ class TimeDataCollector extends BaseTimeDataCollector
     {
         $widgets = parent::getWidgets();
 
-        $upperThreshold = DebugBar::config()->warn_request_time_seconds;
-        $warningRatio = DebugBar::config()->warn_warning_ratio;
+        $upperThreshold = DebugBar::config()->get('warn_request_time_seconds');
+        $warningRatio = DebugBar::config()->get('warn_warning_ratio');
 
         // Can be disabled by setting the value to false
         if (!is_numeric($upperThreshold)) {

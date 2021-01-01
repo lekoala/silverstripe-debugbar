@@ -27,6 +27,7 @@ composer require --dev lekoala/silverstripe-debugbar
 * [Database profiling](#database-profiling)
 * [System logs and messages](#system-logs-and-messages)
 * [Template use](#template-use)
+* [Partial caching hits and misses](#partial-caching-hits-and-misses)
 * [Environment and other information](#environment-and-other-information)
 * [Helper methods](#helper-methods)
 * [Configuration options](#configuration-options)
@@ -106,6 +107,13 @@ The "Templates" tab will show you how many template calls were made, and the fil
 This will only be populated when you are flushing your cache (`?flush=1`). When templates are cached, a notice will be displayed letting you know to flush to see the full list.
 
 ![Templates](docs/_images/templates.png)
+
+### Partial caching hits and misses
+The "TemplateCache" tab shows how effective your chosen partial cache key is (e.g. `<% cached 'navigation', $LastEdited %>...<% end_cached %>`). It does
+this by indicating whether a key has hit a cache or not.
+
+![Partial caching](docs/_images/templateCache.png)
+
 
 ### Environment and other information
 
@@ -206,6 +214,9 @@ LeKoala\DebugBar\DebugBar:
 | `warn_request_time_seconds` | int | Threshold (seconds) for what constitutes a *dangerously* long page request (upper limit) |
 | `warn_warning_ratio` | float | Ratio to divide the warning request time by to get the *warning* level (default 0.5) |
 | `show_namespace` | bool | Show the fully qualified namespace in the Database tab when set to true. Defaults to false |
+| `config_collector` | bool | Show the config tab. Defaults to true |
+| `partial_cache_collector` | bool | Show the partial cache tab. Defaults to true |
+| `email_collector` | bool | Show the email tab. Defaults to true |
 
 #### Disabling the debug bar
 
@@ -221,6 +232,12 @@ LeKoala\DebugBar\DebugBar:
 ```
 
 ### Troubleshooting
+
+#### Using Vagrant
+
+If you are using Vagrant (or presumably Docker or other virtualisation) and the DebugBar
+isn't showing up, make sure you have the `check_local_ip` config option set to `false`. This
+is due to the way Vagrant and Virtualbox configure networking by default.
 
 #### Managing jQuery
 

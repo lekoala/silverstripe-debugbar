@@ -10,7 +10,7 @@ use SilverStripe\Dev\SapphireTest;
 class DatabaseCollectorTest extends SapphireTest
 {
     /**
-     * @var DebugBarSilverStripeCollector
+     * @var DatabaseCollector
      */
     protected $collector;
 
@@ -31,18 +31,27 @@ class DatabaseCollectorTest extends SapphireTest
 
     public function testCollect()
     {
+        // Update the limit
+        $testLimit = 500;
+        Config::modify()->set(DebugBar::class, 'query_limit', $testLimit);
+
         // Deliberately high warning threshold
         Config::modify()->set(DebugBar::class, 'warn_dbqueries_threshold_seconds', 200);
         $result = $this->collector->collect();
 
         $this->assertGreaterThan(1, $result['nb_statements']);
         $this->assertEquals(0, $result['nb_failed_statements']);
-        $this->assertCount($result['nb_statements'], $result['statements']);
 
+        // This should be equal if below the limit
+        if ($result['nb_statements'] <= $testLimit) {
+            $this->assertCount($result['nb_statements'], $result['statements']);
+        }
+
+        // Make sure each statement has all its required details
         $statement = array_shift($result['statements']);
         $this->assertNotEmpty($statement['sql']);
         $this->assertEquals(1, $statement['is_success']);
-        $this->assertContains('SapphireTest', $statement['source']);
+        $this->assertNotEmpty($statement['source']);
         $this->assertFalse($statement['warn']);
 
         // Deliberately low warning threshold
@@ -58,7 +67,7 @@ class DatabaseCollectorTest extends SapphireTest
     {
         $expected = array(
             'database' => array(
-                'icon' => 'inbox',
+                'icon' => 'database',
                 'widget' => 'PhpDebugBar.Widgets.SQLQueriesWidget',
                 'map' => 'db',
                 'default' => '[]'
@@ -74,13 +83,14 @@ class DatabaseCollectorTest extends SapphireTest
 
     public function testGetAssets()
     {
-        $expected = array(
-            'base_path' => '/debugbar/javascript',
-            'base_url' => 'debugbar/javascript',
-            'css' => 'sqlqueries/widget.css',
-            'js' => 'sqlqueries/widget.js'
-        );
+        $config = $this->collector->getAssets();
 
-        $this->assertSame($expected, $this->collector->getAssets());
+        $this->assertArrayHasKey('base_path', $config);
+        $this->assertArrayHasKey('base_url', $config);
+        $this->assertArrayHasKey('css', $config);
+        $this->assertArrayHasKey('js', $config);
+
+        $this->assertFileExists(implode(DIRECTORY_SEPARATOR, [BASE_PATH, $config['base_path'], $config['css']]));
+        $this->assertFileExists(implode(DIRECTORY_SEPARATOR, [BASE_PATH, $config['base_path'], $config['js']]));
     }
 }
