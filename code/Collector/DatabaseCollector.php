@@ -79,7 +79,7 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
         $warnDurationThreshold = DebugBar::config()->get('warn_dbqueries_threshold_seconds');
 
         $showDb = count(array_unique(array_map(function ($stmt) {
-                return $stmt['database'];
+            return $stmt['database'];
         }, $queries))) > 1;
 
         foreach ($queries as $stmt) {

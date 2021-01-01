@@ -38,6 +38,7 @@ LeKoala\DebugBar\DebugBar:
   config_collector: true
   partial_cache_collector: true
   email_collector: true
+  header_collector: true
 SilverStripe\Control\Director:
   rules:
     '__debugbar': 'LeKoala\DebugBar\DebugBarController'

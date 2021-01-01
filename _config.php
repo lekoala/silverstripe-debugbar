@@ -72,11 +72,11 @@ if (!function_exists('d')) {
             }
             foreach ($args as $arg) {
                 if ($isPlain && $arg === "") {
-                        echo "(empty)";
+                    echo "(empty)";
                     continue;
                 }
                 if ($isPlain && $arg === null) {
-                        echo "(null)";
+                    echo "(null)";
                     continue;
                 }
                 if (is_string($arg)) {
