@@ -2,6 +2,7 @@
 
 namespace LeKoala\DebugBar\Extension;
 
+use LeKoala\DebugBar\Collector\HeaderCollector;
 use LeKoala\DebugBar\Collector\SilverStripeCollector;
 use LeKoala\DebugBar\DebugBar;
 use SilverStripe\Control\Controller;
@@ -40,6 +41,10 @@ class ControllerExtension extends Extension
         }
 
         DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugbar) {
+            // Add the headers Collector
+            if (!$debugbar->hasCollector('Headers') && DebugBar::config()->get('header_collector')) {
+                $debugbar->addCollector(new HeaderCollector($this->owner));
+            }
             /** @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugbar->getCollector('time');
             if (!$timeData) {

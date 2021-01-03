@@ -217,6 +217,7 @@ LeKoala\DebugBar\DebugBar:
 | `config_collector` | bool | Show the config tab. Defaults to true |
 | `partial_cache_collector` | bool | Show the partial cache tab. Defaults to true |
 | `email_collector` | bool | Show the email tab. Defaults to true |
+| `header_collector` | bool | Show the headers tab. Defaults to true |
 
 #### Disabling the debug bar
 
