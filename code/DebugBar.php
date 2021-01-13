@@ -1,4 +1,5 @@
 <?php
+
 namespace LeKoala\DebugBar;
 
 use DebugBar\JavascriptRenderer;
@@ -148,18 +149,20 @@ class DebugBar
             }
         }
 
-        $connector = DB::get_connector();
-        if (!self::config()->get('force_proxy') && $connector instanceof PDOConnector) {
-            // Use a little bit of magic to replace the pdo instance
-            $refObject = new ReflectionObject($connector);
-            $refProperty = $refObject->getProperty('pdoConnection');
-            $refProperty->setAccessible(true);
-            $traceablePdo = new TraceablePDO($refProperty->getValue($connector));
-            $refProperty->setValue($connector, $traceablePdo);
+        if (self::config()->db_collector) {
+            $connector = DB::get_connector();
+            if (!self::config()->get('force_proxy') && $connector instanceof PDOConnector) {
+                // Use a little bit of magic to replace the pdo instance
+                $refObject = new ReflectionObject($connector);
+                $refProperty = $refObject->getProperty('pdoConnection');
+                $refProperty->setAccessible(true);
+                $traceablePdo = new TraceablePDO($refProperty->getValue($connector));
+                $refProperty->setValue($connector, $traceablePdo);
 
-            $debugbar->addCollector(new PDOCollector($traceablePdo));
-        } else {
-            $debugbar->addCollector(new DatabaseCollector);
+                $debugbar->addCollector(new PDOCollector($traceablePdo));
+            } else {
+                $debugbar->addCollector(new DatabaseCollector);
+            }
         }
 
         // Add message collector last so other collectors can send messages to the console using it
@@ -449,7 +452,11 @@ class DebugBar
     public static function isAdminUrl()
     {
         $baseUrl = rtrim(BASE_URL, '/');
-        $adminUrl = AdminRootController::config()->get('url_base');
+        if (class_exists(AdminRootController::class)) {
+            $adminUrl = AdminRootController::config()->get('url_base');
+        } else {
+            $adminUrl = 'admin';
+        }
 
         return strpos(self::getRequestUrl(), $baseUrl . '/' . $adminUrl . '/') === 0;
     }

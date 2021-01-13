@@ -128,6 +128,8 @@ There is a variety of other useful information available via various tabs and in
 * **Parameters:** Displays all GET, POST and REQUEST parameters from the current request
 * **Config:** Displays a list of the current [SiteConfig](https://github.com/silverstripe/silverstripe-siteconfig) settings from the CMS
 * **Requirements:** Shows a list of all [`Requirements`](https://docs.silverstripe.org/en/developer_guides/templates/requirements/) calls made during a page's execution
+* **Mails:** Shows a list of all emails sent
+* **Headers:** Shows a list of all headers
 
 #### Indicators
 
@@ -214,6 +216,7 @@ LeKoala\DebugBar\DebugBar:
 | `warn_request_time_seconds` | int | Threshold (seconds) for what constitutes a *dangerously* long page request (upper limit) |
 | `warn_warning_ratio` | float | Ratio to divide the warning request time by to get the *warning* level (default 0.5) |
 | `show_namespace` | bool | Show the fully qualified namespace in the Database tab when set to true. Defaults to false |
+| `db_collector` | bool | Show the db tab. Defaults to true |
 | `config_collector` | bool | Show the config tab. Defaults to true |
 | `partial_cache_collector` | bool | Show the partial cache tab. Defaults to true |
 | `email_collector` | bool | Show the email tab. Defaults to true |

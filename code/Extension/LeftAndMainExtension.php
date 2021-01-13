@@ -3,14 +3,12 @@
 namespace LeKoala\DebugBar\Extension;
 
 use LeKoala\DebugBar\DebugBar;
-use SilverStripe\Admin\LeftAndMainExtension as BaseLeftAndMainExtension;
+use SilverStripe\Core\Extension;
 
 /**
- * Description of DebugBarLeftAndMainExtension
- *
  * @author Koala
  */
-class LeftAndMainExtension extends BaseLeftAndMainExtension
+class LeftAndMainExtension extends Extension
 {
     public function accessedCMS()
     {

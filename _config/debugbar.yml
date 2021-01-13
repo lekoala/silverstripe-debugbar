@@ -36,6 +36,7 @@ LeKoala\DebugBar\DebugBar:
   show_namespaces: false
   # Enable or disable collectors below
   config_collector: true
+  db_collector: true
   partial_cache_collector: true
   email_collector: true
   header_collector: true
@@ -51,12 +52,16 @@ SilverStripe\Core\Injector\Injector:
     properties:
       Middlewares:
         DebugBarMiddleware: '%$DebugBarMiddleware'
-SilverStripe\Admin\LeftAndMain:
-  extensions:
-    - LeKoala\DebugBar\Extension\LeftAndMainExtension
 SilverStripe\Control\Controller:
   extensions:
     - LeKoala\DebugBar\Extension\ControllerExtension
 TractorCow\SilverStripeProxyDB\ProxyDBFactory:
   extensions:
     - LeKoala\DebugBar\Extension\ProxyDBExtension
+---
+Only:
+  moduleexists: silverstripe/admin
+---
+SilverStripe\Admin\LeftAndMain:
+  extensions:
+    - LeKoala\DebugBar\Extension\LeftAndMainExtension

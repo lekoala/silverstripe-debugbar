@@ -30,7 +30,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
             'session' => self::getSessionData(),
             'config' => self::getConfigData(),
             'locale' => i18n::get_locale(),
-            'version' => LeftAndMain::create()->CMSVersion(),
+            'version' => class_exists(LeftAndMain::class) ? LeftAndMain::create()->CMSVersion() : 'unknown',
             'cookies' => self::getCookieData(),
             'parameters' => self::getRequestParameters(),
             'requirements' => self::getRequirementsData(),
@@ -123,6 +123,9 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
 
     public static function getConfigData()
     {
+        if (!class_exists(SiteConfig::class)) {
+            return [];
+        }
         return SiteConfig::current_site_config()->toMap();
     }
 
@@ -177,6 +180,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
             $userIcon = 'user';
             $userText = 'Logged in as ' . $memberTag;
 
+            // TODO: upgrade to newer version of the module
             // Masquerade integration
             if (DebugBar::getRequest()->getSession()->get('Masquerade.Old.loggedInAs')) {
                 $userIcon = 'user-secret';
@@ -192,7 +196,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
             ),
             "version" => array(
                 "icon" => "hashtag",
-                "tooltip" => LeftAndMain::create()->CMSVersion(),
+                "tooltip" => class_exists(LeftAndMain::class) ? LeftAndMain::create()->CMSVersion() : 'unknown',
                 "default" => ""
             ),
             "locale" => array(
@@ -218,12 +222,6 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
                 "map" => "$name.parameters",
                 "default" => "{}"
             ),
-            "SiteConfig" => array(
-                "icon" => "sliders",
-                "widget" => "PhpDebugBar.Widgets.VariableListWidget",
-                "map" => "$name.config",
-                "default" => "{}"
-            ),
             "requirements" => array(
                 "icon" => "file-text-o",
                 "widget" => "PhpDebugBar.Widgets.ListWidget",
@@ -241,6 +239,15 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
                 'default' => 0
             )
         );
+
+        if (!empty($this->getConfigData())) {
+            $widgets["SiteConfig"] = array(
+                "icon" => "sliders",
+                "widget" => "PhpDebugBar.Widgets.VariableListWidget",
+                "map" => "$name.config",
+                "default" => "{}"
+            );
+        }
 
         if (!empty(self::$debug)) {
             $widgets["debug"] = array(
