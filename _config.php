@@ -96,7 +96,15 @@ if (!function_exists('d')) {
         };
 
         // Display caller info
-        $print("$file:$line ($caller)");
+        $fileline = "$file:$line";
+        if (!$isPlain) {
+            // Allow opening in ide
+            // TODO: make ide configurable
+            $idePlaceholder = 'vscode://file/{file}:{line}';
+            $ideLink = str_replace(['{file}', '{line}'], [$file, $line], $idePlaceholder);
+            $fileline = "<a href=\"$ideLink\">$fileline</a>";
+        }
+        $print("$fileline ($caller)");
 
         // Display data in a friendly manner
         if (empty($args)) {
