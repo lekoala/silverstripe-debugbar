@@ -125,10 +125,11 @@ There is a variety of other useful information available via various tabs and in
 
 * **Session:** Displays a list of everything in your current SilverStripe session
 * **Cookies:** Displays a list of all cookies available in a request
-* **Parameters:** Displays all GET, POST and REQUEST parameters from the current request
+* **Parameters:** Displays all GET, POST and ROUTE parameters from the current request
 * **Config:** Displays a list of the current [SiteConfig](https://github.com/silverstripe/silverstripe-siteconfig) settings from the CMS
 * **Requirements:** Shows a list of all [`Requirements`](https://docs.silverstripe.org/en/developer_guides/templates/requirements/) calls made during a page's execution
-* **Mails:** Shows a list of all emails sent
+* **Middlewares:** Shows a list of all [`Middlewares`](https://docs.silverstripe.org/en/4/developer_guides/controllers/middlewares/) used for this request
+* **Mails:** Shows a list of all [emails](https://docs.silverstripe.org/en/4/developer_guides/email/) sent
 * **Headers:** Shows a list of all headers
 
 #### Indicators

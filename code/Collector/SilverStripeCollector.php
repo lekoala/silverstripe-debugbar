@@ -11,6 +11,7 @@ use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Cookie;
 use SilverStripe\Control\Director;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Convert;
 use SilverStripe\i18n\i18n;
 use SilverStripe\Security\Security;
@@ -36,8 +37,29 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
             'requirements' => self::getRequirementsData(),
             'user' => Security::getCurrentUser() ? Security::getCurrentUser()->Title : 'Not logged in',
             'templates' => self::getTemplateData(),
+            'middlewares' => self::getMiddlewares(),
         );
         return $data;
+    }
+
+    /**
+     * Get all middlewares executed on this request
+     *
+     * @return array
+     */
+    public static function getMiddlewares()
+    {
+        $middlewares = Director::singleton()->getMiddlewares();
+        if (!$middlewares) {
+            return [
+                'list' => array(),
+                'count' => 0,
+            ];
+        }
+        return array(
+            'list' => array_keys($middlewares),
+            'count' => count($middlewares)
+        );
     }
 
     /**
@@ -227,6 +249,16 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
                 "widget" => "PhpDebugBar.Widgets.ListWidget",
                 "map" => "$name.requirements",
                 "default" => "{}"
+            ),
+            "middlewares" => array(
+                "icon" => "file-text-o",
+                "widget" => "PhpDebugBar.Widgets.ListWidget",
+                "map" => "$name.middlewares.list",
+                "default" => "{}"
+            ),
+            "middlewares:badge" => array(
+                "map" => "$name.middlewares.count",
+                "default" => 0
             ),
             'templates' => array(
                 'icon' => 'file-code-o',
