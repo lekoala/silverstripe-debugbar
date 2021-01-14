@@ -4,6 +4,7 @@ namespace LeKoala\DebugBar\Proxy;
 
 use LeKoala\DebugBar\DebugBar;
 use SilverStripe\View\SSViewer;
+use SilverStripe\Control\Director;
 
 /**
  * The template parser proxy will monitor the templates that are used during a page request. Since the
@@ -35,6 +36,7 @@ class SSViewerProxy extends SSViewer
         $templateName = self::normalizeTemplateName($this->chosen);
         self::trackTemplateUsed($templateName);
 
+        $startTime = microtime(true);
         DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugBar) use ($templateName) {
             /** @var $timeData DebugBar\DataCollector\TimeDataCollector */
             $timeData = $debugBar->getCollector('time');
@@ -45,6 +47,8 @@ class SSViewerProxy extends SSViewer
         });
 
         $result = parent::process($item, $arguments, $inheritedScope);
+        $endTime = microtime(true);
+        $totalTime = sprintf("%.2f", $endTime - $startTime);
 
         DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugBar) use ($templateName) {
             /** @var $timeData DebugBar\DataCollector\TimeDataCollector */
@@ -57,7 +61,37 @@ class SSViewerProxy extends SSViewer
             }
         });
 
+        $templateRenderWarningLevel = DebugBar::config()->get('template_rendering_warning_level');
+        if ($templateRenderWarningLevel && $totalTime > $templateRenderWarningLevel) {
+            $sourceFile = $this->getCacheFile($this->chosen);
+            $messages = DebugBar::getDebugBar()->getCollector('messages');
+            $messages->addMessage(
+                "The template $templateName needed $totalTime seconds to render" .
+                    "\nYou could reduce this by implementing partial caching." .
+                    "\nYou can also check the cache file : $sourceFile",
+                'warning',
+                false
+            );
+        }
+
         return $result;
+    }
+
+    /**
+     * Get the cache file for a given template
+     *
+     * Useful to get to path to a slow template for example
+     *
+     * @param string $template
+     * @return string
+     */
+    public function getCacheFile($template = null)
+    {
+        if ($template === null) {
+            $template = $this->chosen;
+        }
+        return TEMP_PATH . DIRECTORY_SEPARATOR . '.cache'
+            . str_replace(['\\', '/', ':'], '.', Director::makeRelative(realpath($template)));
     }
 
     /**

@@ -40,6 +40,9 @@ LeKoala\DebugBar\DebugBar:
   partial_cache_collector: true
   email_collector: true
   header_collector: true
+  # Threshold (seconds) for how long a template can take to render before issuing a warning
+  # set 0 to disable
+  template_rendering_warning_level: 2.0
 SilverStripe\Control\Director:
   rules:
     '__debugbar': 'LeKoala\DebugBar\DebugBarController'
