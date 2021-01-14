@@ -32,8 +32,32 @@ class SSViewerProxy extends SSViewer
      */
     public function process($item, $arguments = null, $inheritedScope = null)
     {
-        self::trackTemplateUsed($this->chosen);
-        return parent::process($item, $arguments, $inheritedScope);
+        $templateName = self::normalizeTemplateName($this->chosen);
+        self::trackTemplateUsed($templateName);
+
+        DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugBar) use ($templateName) {
+            /** @var $timeData DebugBar\DataCollector\TimeDataCollector */
+            $timeData = $debugBar->getCollector('time');
+            if (!$timeData) {
+                return;
+            }
+            $timeData->startMeasure($templateName, $templateName);
+        });
+
+        $result = parent::process($item, $arguments, $inheritedScope);
+
+        DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugBar) use ($templateName) {
+            /** @var $timeData DebugBar\DataCollector\TimeDataCollector */
+            $timeData = $debugBar->getCollector('time');
+            if (!$timeData) {
+                return;
+            }
+            if ($timeData->hasStartedMeasure($templateName)) {
+                $timeData->stopMeasure($templateName);
+            }
+        });
+
+        return $result;
     }
 
     /**
@@ -47,12 +71,33 @@ class SSViewerProxy extends SSViewer
     }
 
     /**
-     * Remove the base path from a template file path and track its use
+     * Reset the array
+     *
+     * @return void
+     */
+    public static function resetTemplatesUsed()
+    {
+        static::$allTemplates = [];
+    }
+
+    /**
+     * Helps tracking the use of templates
      *
      * @param string $templateName
      */
     protected static function trackTemplateUsed($templateName)
     {
-        static::$allTemplates[] = str_ireplace(BASE_PATH, '', $templateName);
+        static::$allTemplates[] = $templateName;
+    }
+
+    /**
+     * Remove base path from template
+     *
+     * @param string $templateName
+     * @return string
+     */
+    protected static function normalizeTemplateName($templateName)
+    {
+        return  str_ireplace(BASE_PATH, '', $templateName);
     }
 }

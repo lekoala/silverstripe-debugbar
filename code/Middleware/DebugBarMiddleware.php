@@ -3,6 +3,8 @@
 namespace LeKoala\DebugBar\Middleware;
 
 use LeKoala\DebugBar\DebugBar;
+use LeKoala\DebugBar\Extension\ProxyDBExtension;
+use LeKoala\DebugBar\Proxy\SSViewerProxy;
 use SilverStripe\Control\Middleware\HTTPMiddleware;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
