@@ -19,14 +19,21 @@ class ConfigManifestProxyTest extends SapphireTest
 
         DebugBar::initDebugBar();
 
-        /** @var ConfigLoader $configLoader */
-        $configLoader = Injector::inst()->get(Kernel::class)->getConfigLoader();
+        $configLoader = $this->getConfigLoader();
 
         // Check top level manifest is our proxy
-        // TODO: in tests, we have a DeltaConfigCollection which is not working with the proxy
+        // TODO: in tests, we have a SilverStripe\Config\Collections\DeltaConfigCollection which is not working with the proxy
         if (!($configLoader->getManifest() instanceof ConfigManifestProxy)) {
             $this->markTestSkipped("ConfigManifestProxy is not initialized");
         }
+    }
+
+    /**
+     * @return ConfigLoader
+     */
+    protected function getConfigLoader()
+    {
+        return Injector::inst()->get(Kernel::class)->getConfigLoader();
     }
 
     public function testGetCallsAreCaptured()
@@ -34,7 +41,8 @@ class ConfigManifestProxyTest extends SapphireTest
         // TODO: check why this is not working properly
         $this->markTestSkipped("Result does not contain SSViewerProxy for some reason to determine");
 
-        $manifest = Injector::inst()->get(Kernel::class)->getConfigLoader()->getManifest();
+        $configLoader = $this->getConfigLoader();
+        $manifest = $configLoader->getManifest();
 
         Config::inst()->get(SSViewerProxy::class, 'cached');
         $result = $manifest->getConfigCalls();

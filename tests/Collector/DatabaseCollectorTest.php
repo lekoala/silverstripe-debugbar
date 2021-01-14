@@ -2,10 +2,12 @@
 
 namespace LeKoala\DebugBar\Test\Collector;
 
-use LeKoala\DebugBar\Collector\DatabaseCollector;
+use SilverStripe\ORM\DB;
 use LeKoala\DebugBar\DebugBar;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\SapphireTest;
+use SilverStripe\Core\Config\Config;
+use LeKoala\DebugBar\Extension\ProxyDBExtension;
+use LeKoala\DebugBar\Collector\DatabaseCollector;
 
 class DatabaseCollectorTest extends SapphireTest
 {
@@ -61,6 +63,9 @@ class DatabaseCollectorTest extends SapphireTest
         $this->assertNotEmpty($result['statements']);
         $statement = array_shift($result['statements']);
         $this->assertTrue($statement['warn']);
+
+        // Avoid memory leaks
+        ProxyDBExtension::resetQueries();
     }
 
     public function testGetWidgets()

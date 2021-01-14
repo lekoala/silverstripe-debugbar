@@ -2,7 +2,6 @@
 
 namespace LeKoala\DebugBar\Collector;
 
-use SilverStripe\ORM\DB;
 use LeKoala\DebugBar\DebugBar;
 use SilverStripe\Control\Director;
 use DebugBar\DataCollector\Renderable;

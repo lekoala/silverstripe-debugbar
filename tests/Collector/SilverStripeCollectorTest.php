@@ -110,70 +110,19 @@ class SilverStripeCollectorTest extends SapphireTest
         $this->logInWithPermission('ADMIN');
         $this->collector->collect();
         $result = $this->collector->getWidgets();
-        // Stub out the dynamic data
-        $result['version']['tooltip'] = 'Stub';
-        $result['locale']['tooltip'] = 'Stub';
-        $result['user']['tooltip'] = 'Current member';
 
-        $expected = array(
-            'user' => array(
-                'icon' => 'user',
-                'tooltip' => 'Current member',
-                'default' => '',
-            ),
-            'version' => array(
-                'icon' => 'hashtag',
-                'tooltip' => 'Stub',
-                'default' => '',
-            ),
-            'locale' => array(
-                'icon' => 'globe',
-                'tooltip' => 'Stub',
-                'default' => '',
-            ),
-            'session' => array(
-                'icon' => 'archive',
-                'widget' => 'PhpDebugBar.Widgets.VariableListWidget',
-                'map' => 'silverstripe.session',
-                'default' => '{}',
-            ),
-            'cookies' => array(
-                'icon' => 'asterisk',
-                'widget' => 'PhpDebugBar.Widgets.VariableListWidget',
-                'map' => 'silverstripe.cookies',
-                'default' => '{}',
-            ),
-            'parameters' => array(
-                'icon' => 'arrow-right',
-                'widget' => 'PhpDebugBar.Widgets.VariableListWidget',
-                'map' => 'silverstripe.parameters',
-                'default' => '{}',
-            ),
-            'SiteConfig' => array(
-                'icon' => 'sliders',
-                'widget' => 'PhpDebugBar.Widgets.VariableListWidget',
-                'map' => 'silverstripe.config',
-                'default' => '{}',
-            ),
-            'requirements' => array(
-                'icon' => 'file-text-o',
-                'widget' => 'PhpDebugBar.Widgets.ListWidget',
-                'map' => 'silverstripe.requirements',
-                'default' => '{}',
-            ),
-            'templates' => array(
-                'icon' => 'file-code-o',
-                'widget' => 'PhpDebugBar.Widgets.ListWidget',
-                'map' => "silverstripe.templates.templates",
-                'default' => '{}'
-            ),
-            'templates:badge' => array(
-                'map' => 'silverstripe.templates.count',
-                'default' => 0
-            )
-        );
+        $expectedKeys = [
+            'user',
+            'version',
+            'locale',
+            'parameters',
+            'requirements',
+            'templates'
+        ];
 
-        $this->assertSame($expected, $result);
+        foreach ($expectedKeys as $expectedKey) {
+            $this->assertArrayHasKey($expectedKey, $result, "$expectedKey not found in widgets");
+        }
         $this->logOut();
     }
 
