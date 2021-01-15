@@ -181,11 +181,11 @@ if (typeof(PhpDebugBar) == 'undefined') {
     });
 
     // ------------------------------------------------------------------
-    
+
     /**
      * An extension of KVListWidget where the data represents a list
      * of variables
-     * 
+     *
      * Options:
      *  - data
      */
@@ -197,8 +197,9 @@ if (typeof(PhpDebugBar) == 'undefined') {
             $('<span />').attr('title', key).text(key).appendTo(dt);
 
             var v = value;
-            if (v && v.length > 100) {
-                v = v.substr(0, 100) + "...";
+            var trimLength = 200;
+            if (v && v.length > trimLength) {
+                v = v.substr(0, trimLength) + "...";
             }
             var prettyVal = null;
             dd.text(v).click(function() {
@@ -214,7 +215,7 @@ if (typeof(PhpDebugBar) == 'undefined') {
     });
 
     // ------------------------------------------------------------------
-    
+
     /**
      * Iframe widget
      *
@@ -258,15 +259,16 @@ if (typeof(PhpDebugBar) == 'undefined') {
 
         render: function() {
             var self = this;
+            var trimLength = 200;
 
             this.$list = new ListWidget({ itemRenderer: function(li, value) {
                 var m = value.message;
-                if (m.length > 100) {
-                    m = m.substr(0, 100) + "...";
+                if (m.length > trimLength) {
+                    m = m.substr(0, trimLength) + "...";
                 }
 
                 var val = $('<span />').addClass(csscls('value')).text(m).appendTo(li);
-                if (!value.is_string || value.message.length > 100) {
+                if (!value.is_string || value.message.length > trimLength) {
                     var prettyVal = value.message;
                     if (!value.is_string) {
                         prettyVal = null;
@@ -389,7 +391,7 @@ if (typeof(PhpDebugBar) == 'undefined') {
 
                         m.appendTo(li);
                         this.$el.append(li);
-                        
+
                         if (measure.params && !$.isEmptyObject(measure.params)) {
                             var table = $('<table><tr><th colspan="2">Params</th></tr></table>').addClass(csscls('params')).appendTo(li);
                             for (var key in measure.params) {
@@ -415,7 +417,7 @@ if (typeof(PhpDebugBar) == 'undefined') {
     });
 
     // ------------------------------------------------------------------
-    
+
     /**
      * Widget for the displaying exceptions
      *
@@ -458,6 +460,6 @@ if (typeof(PhpDebugBar) == 'undefined') {
         }
 
     });
-    
+
 
 })(PhpDebugBar.$);

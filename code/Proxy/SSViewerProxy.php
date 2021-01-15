@@ -66,11 +66,11 @@ class SSViewerProxy extends SSViewer
             $sourceFile = $this->getCacheFile($this->chosen);
             $messages = DebugBar::getDebugBar()->getCollector('messages');
             $messages->addMessage(
-                "The template $templateName needed $totalTime seconds to render" .
+                "The template $templateName needed $totalTime seconds to render." .
                     "\nYou could reduce this by implementing partial caching." .
                     "\nYou can also check the cache file : $sourceFile",
                 'warning',
-                false
+                true
             );
         }
 
@@ -121,6 +121,9 @@ class SSViewerProxy extends SSViewer
      */
     protected static function trackTemplateUsed($templateName)
     {
+        if (in_array($templateName, static::$allTemplates)) {
+            return;
+        }
         static::$allTemplates[] = $templateName;
     }
 
@@ -132,6 +135,6 @@ class SSViewerProxy extends SSViewer
      */
     protected static function normalizeTemplateName($templateName)
     {
-        return  str_ireplace(BASE_PATH, '', $templateName);
+        return str_ireplace(BASE_PATH, '', $templateName);
     }
 }

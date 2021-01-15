@@ -38,7 +38,7 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
                     "\nYou could reduce this by implementing caching." .
                     "\nYou can find more info here: $helpLink",
                 'warning',
-                false
+                true
             );
         }
 
