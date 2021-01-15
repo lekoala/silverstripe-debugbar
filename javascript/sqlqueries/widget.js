@@ -124,7 +124,7 @@
                         duplicate++;
                         for (var i = 0; i < sql[stmt].keys.length; i++) {
                             // Add a visual badge
-                            var $badge = $('<span class="' + csscls('badge') + '">' + duplicate + '</span>');
+                            var $badge = $('<span class="' + csscls('badge') + '" title="Duplicate group">' + duplicate + '</span>');
                             this.$list.$el.find('.' + csscls('list-item')).eq(sql[stmt].keys[i])
                                     .addClass(csscls('sql-duplicate')).addClass(csscls('sql-duplicate-' + duplicate)).append($badge);
                         }
