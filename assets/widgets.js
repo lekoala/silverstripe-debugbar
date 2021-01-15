@@ -458,6 +458,14 @@ if (typeof(PhpDebugBar) == 'undefined') {
                             left = (measure.relative_start * 100 / data.duration).toFixed(2),
                             width = Math.min((measure.duration * 100 / data.duration).toFixed(2), 100 - left);
 
+                        var span = $('<span />').addClass(csscls('value')).css({
+                            left: left + "%",
+                            width: width + "%"
+                        });
+                        // We add duration as a tooltip
+                        span.attr('title', measure.duration_str);
+                        m.append(span);
+
                         // Look for a previous measure for the same label
                         var liId = 'li-' + measure.label.replace(/[^a-z0-9]/gi,'');
                         li.attr('id', liId);
@@ -471,14 +479,6 @@ if (typeof(PhpDebugBar) == 'undefined') {
                                 $('<span />').addClass(csscls('collector')).text(measure.collector).appendTo(m);
                             }
                         }
-
-                        var span = $('<span />').addClass(csscls('value')).css({
-                            left: left + "%",
-                            width: width + "%"
-                        });
-                        // We add duration as a tooltip
-                        span.attr('title', measure.duration_str);
-                        m.append(span);
 
                         // If there is no previous item, append to list
                         if(prevLi.length == 0) {
