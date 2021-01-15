@@ -190,11 +190,13 @@ class ProxyDBExtension extends Extension
             \SilverStripe\View\SSViewer_DataPresenter::class,
             \SilverStripe\View\SSViewer_Scope::class,
             \SilverStripe\View\SSViewer::class,
+            \LeKoala\DebugBar\Proxy\SSViewerProxy::class,
             \SilverStripe\View\ViewableData::class
         );
 
         $sources = array();
         foreach ($traces as $trace) {
+            $file = isset($trace['file']) ? pathinfo($trace['file'], PATHINFO_FILENAME) : null;
             $class = isset($trace['class']) ? $trace['class'] : null;
             $line = isset($trace['line']) ? $trace['line'] : null;
             $function = isset($trace['function']) ? $trace['function'] : null;
@@ -233,11 +235,17 @@ class ProxyDBExtension extends Extension
             if ($class && !DebugBar::config()->get('show_namespaces')) {
                 $nameArray = explode("\\", $class);
                 $name = array_pop($nameArray);
+
+                // Maybe we are inside a trait?
+                if ($file && $file != $name) {
+                    $name .= '(' . $file . ')';
+                }
             }
             if ($function) {
                 $name .= $type . $function;
             }
             if ($line) {
+                // Line number could apply to a trait
                 $name .= ':' . $line;
             }
 
