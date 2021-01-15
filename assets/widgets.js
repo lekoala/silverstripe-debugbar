@@ -458,18 +458,33 @@ if (typeof(PhpDebugBar) == 'undefined') {
                             left = (measure.relative_start * 100 / data.duration).toFixed(2),
                             width = Math.min((measure.duration * 100 / data.duration).toFixed(2), 100 - left);
 
-                        m.append($('<span />').addClass(csscls('value')).css({
-                            left: left + "%",
-                            width: width + "%"
-                        }));
-                        m.append($('<span />').addClass(csscls('label')).text(measure.label + " (" + measure.duration_str + ")"));
-
-                        if (measure.collector) {
-                            $('<span />').addClass(csscls('collector')).text(measure.collector).appendTo(m);
+                        // Look for a previous measure for the same label
+                        var liId = 'li-' + measure.label.replace(/[^a-z0-9]/gi,'');
+                        li.attr('id', liId);
+                        var prevLi = this.$el.find('#' + liId);
+                        if(prevLi.length > 0) {
+                            m  = prevLi.find('.' + csscls('measure'));
+                        }
+                        else {
+                            m.append($('<span />').addClass(csscls('label')).text(measure.label + ' (' + Math.round(aggregate[measure.label]['duration'] * 1000) + 'ms)'));
+                            if (measure.collector) {
+                                $('<span />').addClass(csscls('collector')).text(measure.collector).appendTo(m);
+                            }
                         }
 
-                        m.appendTo(li);
-                        this.$el.append(li);
+                        var span = $('<span />').addClass(csscls('value')).css({
+                            left: left + "%",
+                            width: width + "%"
+                        });
+                        // We add duration as a tooltip
+                        span.attr('title', measure.duration_str);
+                        m.append(span);
+
+                        // If there is no previous item, append to list
+                        if(prevLi.length == 0) {
+                            m.appendTo(li);
+                            this.$el.append(li);
+                        }
 
                         if (measure.params && !$.isEmptyObject(measure.params)) {
                             var table = $('<table><tr><th colspan="2">Params</th></tr></table>').addClass(csscls('params')).appendTo(li);
