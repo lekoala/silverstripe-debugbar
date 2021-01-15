@@ -280,6 +280,10 @@ Since you need to add jQuery before DebugBar this may be a problem, and therefor
 
 If you want DebugBar to work on the `Security` controller, make sure to include all relevant requirements by calling `DebugBar::includeRequirements();` after you include jQuery. When DebugBar is disabled this call will be ignored. Also note that any subsequent call to this method will be ignored as well.
 
+#### Customize DebugBar css
+
+Any customisation to the default css (as stored in "assets") should be made to css/custom.css. This file will be appended to the default css.
+
 ---
 
 ## Maintainer
