@@ -87,9 +87,17 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
 
         $output = [];
         foreach ($requirements as $asset => $specs) {
-            $output[] = $asset . ': ' . Convert::raw2json($specs);
+            // Get the filename only
+            $fileNames = explode('/', $asset);
+            $fileName = end($fileNames);
+            $specs['href'] = $asset;
+            $output[$fileName] = json_encode($specs, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         }
-        return $output;
+
+        return [
+            'list' => $output,
+            'count' => count($requirements)
+        ];
     }
 
     public static function getRequestParameters()
@@ -245,10 +253,14 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
                 "default" => "{}"
             ),
             "requirements" => array(
-                "icon" => "file-text-o",
-                "widget" => "PhpDebugBar.Widgets.ListWidget",
-                "map" => "$name.requirements",
+                "icon"    => "file-text-o",
+                "widget"  => "PhpDebugBar.Widgets.VariableListWidget",
+                "map"     => "$name.requirements.list",
                 "default" => "{}"
+            ),
+            "requirements:badge" => array(
+                "map"     => "$name.requirements.count",
+                "default" => 0
             ),
             "middlewares" => array(
                 "icon" => "file-text-o",
