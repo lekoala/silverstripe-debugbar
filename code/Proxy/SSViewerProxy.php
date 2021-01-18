@@ -64,7 +64,7 @@ class SSViewerProxy extends SSViewer
         $templateRenderWarningLevel = DebugBar::config()->get('template_rendering_warning_level');
         if ($templateRenderWarningLevel && $totalTime > $templateRenderWarningLevel) {
             $sourceFile = $this->getCacheFile($this->chosen);
-            $messages = DebugBar::getDebugBar()->getCollector('messages');
+            $messages = DebugBar::getMessageCollector();
             $messages->addMessage(
                 "The template $templateName needed $totalTime seconds to render." .
                     "\nYou could reduce this by implementing partial caching." .

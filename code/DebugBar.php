@@ -77,6 +77,8 @@ class DebugBar
      */
     protected static $request;
 
+    protected static $extraTimes = [];
+
     /**
      * Get the Debug Bar instance
      * @throws Exception
@@ -126,6 +128,7 @@ class DebugBar
 
         $debugbar->addCollector(new PhpInfoCollector());
         $debugbar->addCollector(new TimeDataCollector());
+        self::measureExtraTime();
         $debugbar->addCollector(new MemoryCollector());
 
         // Add config proxy replacing the core config manifest
@@ -534,5 +537,71 @@ class DebugBar
         if (Controller::has_curr()) {
             return Controller::curr()->getRequest();
         }
+    }
+
+    /**
+     * @return TimeDataCollector
+     */
+    public static function getTimeCollector()
+    {
+        return self::getDebugBar()->getCollector('time');
+    }
+
+    /**
+     * @return MessagesCollector
+     */
+    public static function getMessageCollector()
+    {
+        return self::getDebugBar()->getCollector('time');
+    }
+
+    /**
+     * Start/stop time tracking (also before init)
+     *
+     * @param string $label
+     * @return void
+     */
+    public static function trackTime($label)
+    {
+        if (self::$debugbar) {
+            $timeData = self::getTimeCollector();
+            if (!$timeData) {
+                return;
+            }
+            if ($timeData->hasStartedMeasure($label)) {
+                $timeData->stopMeasure($label);
+            } else {
+                $timeData->startMeasure($label);
+            }
+        } else {
+            // Store in temp array
+            if (!isset(self::$extraTimes[$label])) {
+                self::$extraTimes[$label] = [microtime(true)];
+            } else {
+                self::$extraTimes[$label][] = microtime(true);
+            }
+        }
+    }
+
+    /**
+     * Add extra time to time collector
+     */
+    public static function measureExtraTime()
+    {
+        $timeData = self::getTimeCollector();
+        if (!$timeData) {
+            return;
+        }
+        foreach (self::$extraTimes as $label => $values) {
+            if (!isset($values[1])) {
+                continue; // unfinished measure
+            }
+            $timeData->addMeasure(
+                $label,
+                $values[0],
+                $values[1]
+            );
+        }
+        self::$extraTimes = [];
     }
 }

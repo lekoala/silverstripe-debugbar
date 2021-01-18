@@ -60,6 +60,13 @@ The execution timeline ("Timeline" tab) provides you with a graphical overview o
 
 The example above is from loading a page in the CMS.
 
+You can also use our helper `DebugBar::trackTime` in order to start/stop a given measure. This will also work even before DebugBar is initialized
+allowing you, for example, to measure boot up time like this:
+
+    DebugBar::trackTime('create_request');
+    $request = HTTPRequestBuilder::createFromEnvironment();
+    DebugBar::trackTime('create_request');
+
 ### Database profiling
 
 The "Database" tab allows you to view a list of all the database operations that a page request has made, and will group duplicated queries together. This can be useful to identify areas where performance can be improved, such as using `DataObject::get_by_id()` (which caches the result) instead of `DataObject::get()->byID()`.
@@ -113,7 +120,6 @@ The "TemplateCache" tab shows how effective your chosen partial cache key is (e.
 this by indicating whether a key has hit a cache or not.
 
 ![Partial caching](docs/_images/templateCache.png)
-
 
 ### Environment and other information
 
