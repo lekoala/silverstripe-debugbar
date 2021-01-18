@@ -49,7 +49,7 @@ class SilverStripeCollectorTest extends SapphireTest
         // $this->assertContains('Framework', $data['version']);
         $this->assertSame(SiteConfig::class, $data['config']['ClassName']);
         $this->assertSame('User, ADMIN', $data['user']);
-        $this->assertCount(0, $data['requirements']);
+        $this->assertCount(0, $data['requirements']['list']);
 
         $this->logOut();
 
@@ -62,8 +62,9 @@ class SilverStripeCollectorTest extends SapphireTest
         Requirements::css('debugbar/assets/debugbar.css');
         $data = $this->collector->collect();
         $this->assertArrayHasKey('requirements', $data);
-        $this->assertNotEmpty($data['requirements']);
-        $this->assertContains('assets/debugbar.css', $data['requirements'][0]);
+        $this->assertNotEmpty($data['requirements']['list']);
+        $this->assertGreaterThan(0, $data['requirements']['count']);
+        $this->assertArrayHasKey('debugbar.css', $data['requirements']['list']);
     }
 
     public function testShowRequestParameters()
