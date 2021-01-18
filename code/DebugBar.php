@@ -2,15 +2,13 @@
 
 namespace LeKoala\DebugBar;
 
-use DebugBar\JavascriptRenderer;
 use Exception;
-use LeKoala\DebugBar\Collector\PhpInfoCollector;
 use Monolog\Logger;
 use ReflectionObject;
-use SilverStripe\Core\Config\ConfigLoader;
 use SilverStripe\ORM\DB;
 use Psr\Log\LoggerInterface;
 use SilverStripe\Core\Kernel;
+use DebugBar\JavascriptRenderer;
 use DebugBar\Storage\FileStorage;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Environment;
@@ -22,6 +20,7 @@ use SilverStripe\Control\HTTPRequest;
 use DebugBar\DebugBar as BaseDebugBar;
 use SilverStripe\Control\Email\Mailer;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Config\ConfigLoader;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\ORM\Connect\PDOConnector;
@@ -36,13 +35,17 @@ use DebugBar\DataCollector\MessagesCollector;
 use SilverStripe\Core\Manifest\ModuleResource;
 use LeKoala\DebugBar\Collector\ConfigCollector;
 use LeKoala\DebugBar\Proxy\ConfigManifestProxy;
+use LeKoala\DebugBar\Collector\PhpInfoCollector;
 use LeKoala\DebugBar\Collector\DatabaseCollector;
 use LeKoala\DebugBar\Collector\TimeDataCollector;
 use DebugBar\Bridge\SwiftMailer\SwiftLogCollector;
 use DebugBar\Bridge\SwiftMailer\SwiftMailCollector;
 use LeKoala\DebugBar\Collector\PartialCacheCollector;
 use LeKoala\DebugBar\Collector\SilverStripeCollector;
+use LeKoala\DebugBar\Middleware\DebugBarConfigMiddleware;
+use LeKoala\DebugBar\Proxy\DeltaConfigManifestProxy;
 use SilverStripe\Config\Collections\CachedConfigCollection;
+use SilverStripe\Config\Collections\DeltaConfigCollection;
 
 /**
  * A simple helper
@@ -132,24 +135,23 @@ class DebugBar
         $debugbar->addCollector(new MemoryCollector());
 
         // Add config proxy replacing the core config manifest
-        $configManifest = false;
-
         if (self::config()->config_collector) {
             /** @var ConfigLoader $configLoader */
             $configLoader = Injector::inst()->get(Kernel::class)->getConfigLoader();
-            // Let's safely access the manifest value without popping things
+            // There is no getManifests method on ConfigLoader
             $manifests = self::getProtectedValue($configLoader, 'manifests');
-            foreach ($manifests as $manifest) {
+            foreach ($manifests as $manifestIdx => $manifest) {
                 if ($manifest instanceof CachedConfigCollection) {
-                    $configManifest = $manifest;
-                    break;
+                    $manifest = new ConfigManifestProxy($manifest);
+                    $manifests[$manifestIdx] = $manifest;
+                }
+                if ($manifest instanceof DeltaConfigCollection) {
+                    $manifest = DeltaConfigManifestProxy::createFromOriginal($manifest);
+                    $manifests[$manifestIdx] = $manifest;
                 }
             }
-            // We can display a CachedConfigCollection
-            if ($configManifest) {
-                $configProxy = new ConfigManifestProxy($configManifest);
-                $configLoader->pushManifest($configProxy);
-            }
+            // Don't push as it may change stack order
+            self::setProtectedValue($configLoader, 'manifests', $manifests);
         }
 
         if (self::config()->db_collector) {
@@ -191,7 +193,7 @@ class DebugBar
             }
         }
 
-        if ($configManifest) {
+        if (self::config()->config_collector) {
             // Add the config collector
             $debugbar->addCollector(new ConfigCollector);
         }
@@ -238,6 +240,22 @@ class DebugBar
         $refProperty = $refObject->getProperty($property);
         $refProperty->setAccessible(true);
         return $refProperty->getValue($object);
+    }
+
+    /**
+     * Set a protected property when the api does not allow access
+     *
+     * @param object $object
+     * @param string $property
+     * @param mixed $newValue
+     * @return void
+     */
+    protected static function setProtectedValue($object, $property, $newValue)
+    {
+        $refObject = new ReflectionObject($object);
+        $refProperty = $refObject->getProperty($property);
+        $refProperty->setAccessible(true);
+        return $refProperty->setValue($object, $newValue);
     }
 
     /**

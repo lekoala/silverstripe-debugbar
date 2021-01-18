@@ -2,12 +2,15 @@
 
 namespace LeKoala\DebugBar\Collector;
 
+use SilverStripe\Core\Kernel;
 use LeKoala\DebugBar\DebugBar;
 use SilverStripe\Control\Director;
 use DebugBar\DataCollector\Renderable;
+use SilverStripe\Core\Injector\Injector;
 use DebugBar\DataCollector\AssetProvider;
 use DebugBar\DataCollector\DataCollector;
-use LeKoala\DebugBar\Proxy\ConfigManifestProxy;
+use LeKoala\DebugBar\Proxy\ProxyConfigCollectionInterface;
+use SilverStripe\Config\Collections\ConfigCollectionInterface;
 
 /**
  * Collects data about the config usage during a SilverStripe request
@@ -19,9 +22,23 @@ class ConfigCollector extends DataCollector implements Renderable, AssetProvider
         return 'config';
     }
 
+    /**
+     * @return ConfigCollectionInterface|ProxyConfigCollectionInterface
+     */
+    public function getConfigManifest()
+    {
+        $configLoader = Injector::inst()->get(Kernel::class)->getConfigLoader();
+        $manifest = $configLoader->getManifest();
+        return $manifest;
+    }
+
     public function collect()
     {
-        $result = ConfigManifestProxy::getConfigCalls();
+        $manifest = $this->getConfigManifest();
+        $result = [];
+        if (method_exists($manifest, 'getConfigCalls')) {
+            $result = $manifest->getConfigCalls();
+        }
         return [
             'count' => count($result),
             'calls' => $result
@@ -39,12 +56,10 @@ class ConfigCollector extends DataCollector implements Renderable, AssetProvider
             ]
         ];
 
-        if (count(ConfigManifestProxy::getConfigCalls()) > 0) {
-            $widgets['config:badge'] = [
-                'map' => 'config.count',
-                'default' => 0
-            ];
-        }
+        $widgets['config:badge'] = [
+            'map' => 'config.count',
+            'default' => 0
+        ];
 
         return $widgets;
     }
