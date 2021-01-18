@@ -3,12 +3,12 @@
 namespace LeKoala\DebugBar\Proxy;
 
 use LeKoala\DebugBar\DebugBar;
-use SilverStripe\Config\Collections\CachedConfigCollection;
+use SilverStripe\Config\Collections\DeltaConfigCollection;
 
-class ConfigManifestProxy extends CachedConfigCollection implements ProxyConfigCollectionInterface
+class DeltaConfigManifestProxy extends DeltaConfigCollection implements ProxyConfigCollectionInterface
 {
     /**
-     * @var CachedConfigCollection
+     * @var DeltaConfigCollection
      */
     protected $parent;
 
@@ -22,19 +22,11 @@ class ConfigManifestProxy extends CachedConfigCollection implements ProxyConfigC
      */
     protected $trackEmpty = false;
 
-    /**
-     * @param CachedConfigCollection $parent
-     */
-    public function __construct(CachedConfigCollection $parent)
+    public static function createFromOriginal(DeltaConfigCollection $collection)
     {
-        $this->parent = $parent;
-
-        $this->collection = $this->parent->getCollection();
-        $this->cache = $this->parent->getCache();
-        $this->flush = $this->parent->getFlush();
-        $this->collectionCreator = $this->parent->getCollectionCreator();
-
-        $this->setTrackEmpty(DebugBar::config()->config_track_empty);
+        $newCollection = static::createFromCollection($collection, $collection->getDeltaMiddleware()->getDisableFlag());
+        $newCollection->setTrackEmpty(DebugBar::config()->config_track_empty);
+        return $newCollection;
     }
 
     /**
