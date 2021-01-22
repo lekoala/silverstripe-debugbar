@@ -570,7 +570,7 @@ class DebugBar
      */
     public static function getMessageCollector()
     {
-        return self::getDebugBar()->getCollector('time');
+        return self::getDebugBar()->getCollector('messages');
     }
 
     /**
