@@ -1,6 +1,6 @@
 <?php
 
-namespace LeKoala\DebugBar\Aspect;
+namespace LeKoala\DebugBar\Aspects;
 
 use LeKoala\DebugBar\Collector\PartialCacheCollector;
 use SilverStripe\Core\Convert;

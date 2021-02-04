@@ -18,4 +18,4 @@ SilverStripe\Core\Injector\Injector:
       proxied: '%$Psr\SimpleCache\CacheInterface.backend'
       afterCall:
         get:
-          - '%$LeKoala\DebugBar\Aspect\CacheAfterCallAspect'
+          - '%$LeKoala\DebugBar\Aspects\CacheAfterCallAspect'

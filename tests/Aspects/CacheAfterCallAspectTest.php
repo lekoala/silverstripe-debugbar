@@ -1,8 +1,8 @@
 <?php
 
-namespace LeKoala\DebugBar\Test\Aspect;
+namespace LeKoala\DebugBar\Test\Aspects;
 
-use LeKoala\DebugBar\Aspect\CacheAfterCallAspect;
+use LeKoala\DebugBar\Aspects\CacheAfterCallAspect;
 use LeKoala\DebugBar\Collector\PartialCacheCollector;
 use Psr\SimpleCache\CacheInterface;
 use SilverStripe\Core\Injector\AopProxyService;
