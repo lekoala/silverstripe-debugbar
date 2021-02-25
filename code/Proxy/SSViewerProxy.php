@@ -33,6 +33,9 @@ class SSViewerProxy extends SSViewer
      */
     public function process($item, $arguments = null, $inheritedScope = null)
     {
+        if (DebugBar::isDisabled()) {
+            return parent::process($item, $arguments, $inheritedScope);
+        }
         $templateName = self::normalizeTemplateName($this->chosen);
         self::trackTemplateUsed($templateName);
 
