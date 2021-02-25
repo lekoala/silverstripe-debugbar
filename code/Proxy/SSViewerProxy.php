@@ -33,7 +33,8 @@ class SSViewerProxy extends SSViewer
      */
     public function process($item, $arguments = null, $inheritedScope = null)
     {
-        if (DebugBar::isDisabled()) {
+        // If there is no debug bar instance, process as usual
+        if (!DebugBar::getDebugBar()) {
             return parent::process($item, $arguments, $inheritedScope);
         }
         $templateName = self::normalizeTemplateName($this->chosen);
