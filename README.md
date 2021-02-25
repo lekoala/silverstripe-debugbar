@@ -274,6 +274,11 @@ protected function init()
     Requirements::javascript('framework/thirdparty/jquery/jquery.min.js');
 }
 ```
+#### FulltextSearchable support
+
+It has been reported that the `FulltextSearchable` extension conflicts with the `config_collector`.
+
+If you happen to have an issue (eg: your $SearchForm not being printed), please disable the `config_collector`.
 
 #### A quick note about the Security Page
 
