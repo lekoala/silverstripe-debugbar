@@ -20,6 +20,14 @@ class TimeDataCollectorTest extends SapphireTest
         $this->collector = new TimeDataCollector(microtime(true));
     }
 
+    public function tearDown()
+    {
+        DebugBar::clearDebugBar();
+        $this->collector = null;
+
+        parent::tearDown();
+    }
+
     public function testCollectorTooltip()
     {
         $result = $this->collector->getWidgets();

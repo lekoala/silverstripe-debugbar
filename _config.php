@@ -26,11 +26,11 @@ if (!function_exists('d')) {
         if (isset($args[0]) && $args[0] instanceof \SilverStripe\Dev\SapphireTest) {
             $doExit = false;
             array_shift($args);
-        }
-
-        // Clean buffer that may be in the way
-        if (ob_get_contents()) {
-            ob_end_clean();
+        } else {
+            // Clean buffer that may be in the way
+            if (ob_get_contents()) {
+                ob_end_clean();
+            }
         }
 
         $bt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS | DEBUG_BACKTRACE_PROVIDE_OBJECT);
@@ -72,23 +72,22 @@ if (!function_exists('d')) {
             }
             foreach ($args as $arg) {
                 if ($isPlain && $arg === "") {
-                    echo "(empty)";
-                    continue;
-                }
-                if ($isPlain && $arg === null) {
-                    echo "(null)";
-                    continue;
-                }
-                if (is_string($arg)) {
-                    echo $arg;
-                } else {
+                    $arg = "(empty)";
+                } elseif ($isPlain && $arg === null) {
+                    $arg = "(null)";
+                } elseif (!is_string($arg)) {
                     // Avoid print_r on object as it can cause massive recursion
                     if (is_object($arg)) {
-                        echo get_class($arg) . "\n";
+                        $arg = get_class($arg);
+                    } else {
+                        $arg = json_encode($arg, JSON_PRETTY_PRINT, 5);
                     }
-                    echo json_encode($arg, JSON_PRETTY_PRINT, 5);
                 }
-                echo "\n";
+                $arg = trim($arg);
+                if (strlen($arg) > 255) {
+                    $arg = substr($arg, 0, 252) . "...";
+                }
+                echo $arg . "\n";
             }
             if (!$isPlain) {
                 echo '</pre>';

@@ -26,6 +26,14 @@ class DatabaseCollectorTest extends SapphireTest
         $this->collector = DebugBar::getDebugBar()->getCollector('db');
     }
 
+    public function tearDown()
+    {
+        DebugBar::clearDebugBar();
+        $this->collector = null;
+
+        parent::tearDown();
+    }
+
     public function testCollectorExists()
     {
         $this->assertInstanceOf(DatabaseCollector::class, $this->collector);
@@ -63,9 +71,6 @@ class DatabaseCollectorTest extends SapphireTest
         $this->assertNotEmpty($result['statements']);
         $statement = array_shift($result['statements']);
         $this->assertTrue($statement['warn']);
-
-        // Avoid memory leaks
-        ProxyDBExtension::resetQueries();
     }
 
     public function testGetWidgets()

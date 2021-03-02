@@ -8,6 +8,7 @@ use SilverStripe\Dev\FunctionalTest;
 
 class ControllerTest extends FunctionalTest
 {
+
     public function tearDown()
     {
         parent::tearDown();

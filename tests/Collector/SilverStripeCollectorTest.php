@@ -28,6 +28,14 @@ class SilverStripeCollectorTest extends SapphireTest
         $this->collector = DebugBar::getDebugBar()->getCollector('silverstripe');
     }
 
+    public function tearDown()
+    {
+        DebugBar::clearDebugBar();
+        $this->collector = null;
+
+        parent::tearDown();
+    }
+
     public function testCollectorExists()
     {
         $this->assertInstanceOf(SilverStripeCollector::class, $this->collector);

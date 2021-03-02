@@ -36,16 +36,16 @@ use SilverStripe\Core\Manifest\ModuleResource;
 use LeKoala\DebugBar\Collector\ConfigCollector;
 use LeKoala\DebugBar\Proxy\ConfigManifestProxy;
 use LeKoala\DebugBar\Collector\PhpInfoCollector;
+use LeKoala\DebugBar\Extension\ProxyDBExtension;
 use LeKoala\DebugBar\Collector\DatabaseCollector;
 use LeKoala\DebugBar\Collector\TimeDataCollector;
 use DebugBar\Bridge\SwiftMailer\SwiftLogCollector;
 use DebugBar\Bridge\SwiftMailer\SwiftMailCollector;
+use LeKoala\DebugBar\Proxy\DeltaConfigManifestProxy;
 use LeKoala\DebugBar\Collector\PartialCacheCollector;
 use LeKoala\DebugBar\Collector\SilverStripeCollector;
-use LeKoala\DebugBar\Middleware\DebugBarConfigMiddleware;
-use LeKoala\DebugBar\Proxy\DeltaConfigManifestProxy;
-use SilverStripe\Config\Collections\CachedConfigCollection;
 use SilverStripe\Config\Collections\DeltaConfigCollection;
+use SilverStripe\Config\Collections\CachedConfigCollection;
 
 /**
  * A simple helper
@@ -266,6 +266,12 @@ class DebugBar
     public static function clearDebugBar()
     {
         self::$debugbar = null;
+        self::$bufferingEnabled = false;
+        self::$renderer = null;
+        self::$showQueries = false;
+        self::$request = null;
+        self::$extraTimes = [];
+        ProxyDBExtension::resetQueries();
     }
 
     /**

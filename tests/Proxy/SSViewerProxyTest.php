@@ -2,14 +2,23 @@
 
 namespace LeKoala\DebugBar\Test\Proxy;
 
-use LeKoala\DebugBar\Proxy\SSViewerProxy;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Dev\FunctionalTest;
-use SilverStrpe\Forms\TextField;
+use LeKoala\DebugBar\DebugBar;
 use SilverStripe\View\SSViewer;
+use SilverStrpe\Forms\TextField;
+use SilverStripe\Dev\FunctionalTest;
+use SilverStripe\Core\Injector\Injector;
+use LeKoala\DebugBar\Proxy\SSViewerProxy;
 
 class SSViewerProxyTest extends FunctionalTest
 {
+    public function setUp()
+    {
+        parent::setUp();
+
+        // Init manually because we are running tests
+        DebugBar::initDebugBar();
+    }
+
     public function testOverloadsSSViewer()
     {
         $templateParser = Injector::inst()->create(SSViewer::class, ['SilverStripe/Forms/Includes/Form']);
@@ -20,6 +29,11 @@ class SSViewerProxyTest extends FunctionalTest
     public function testTrackTemplatesUsed()
     {
         $this->get('/Security/login');
+
+        if (!DebugBar::getDebugBar()) {
+            $this->markTestSkipped("No instance available");
+            return;
+        }
 
         $templates = SSViewerProxy::getTemplatesUsed();
 

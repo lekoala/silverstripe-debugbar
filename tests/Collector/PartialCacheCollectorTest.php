@@ -2,8 +2,9 @@
 
 namespace LeKoala\DebugBar\Test\Collector;
 
-use LeKoala\DebugBar\Collector\PartialCacheCollector;
+use LeKoala\DebugBar\DebugBar;
 use SilverStripe\Dev\SapphireTest;
+use LeKoala\DebugBar\Collector\PartialCacheCollector;
 
 class PartialCacheCollectorTest extends SapphireTest
 {
@@ -16,6 +17,14 @@ class PartialCacheCollectorTest extends SapphireTest
     {
         parent::setUp();
         $this->collector = new PartialCacheCollector();
+    }
+
+    public function tearDown()
+    {
+        DebugBar::clearDebugBar();
+        $this->collector = null;
+
+        parent::tearDown();
     }
 
     public function testGetName()

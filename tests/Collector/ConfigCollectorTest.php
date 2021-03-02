@@ -26,6 +26,14 @@ class ConfigCollectorTest extends SapphireTest
         $this->collector = new ConfigCollector();
     }
 
+    public function tearDown()
+    {
+        DebugBar::clearDebugBar();
+        $this->collector = null;
+
+        parent::tearDown();
+    }
+
     public function testGetName()
     {
         $this->assertNotEmpty($this->collector->getName());
