@@ -564,19 +564,27 @@ class DebugBar
     }
 
     /**
-     * @return TimeDataCollector
+     * @return TimeDataCollector|false
      */
     public static function getTimeCollector()
     {
-        return self::getDebugBar()->getCollector('time');
+        $debugbar = self::getDebugBar();
+        if (!$debugbar) {
+            return false;
+        }
+        return $debugbar->getCollector('time');
     }
 
     /**
-     * @return MessagesCollector
+     * @return MessagesCollector|false
      */
     public static function getMessageCollector()
     {
-        return self::getDebugBar()->getCollector('messages');
+        $debugbar = self::getDebugBar();
+        if (!$debugbar) {
+            return false;
+        }
+        return  $debugbar->getCollector('messages');
     }
 
     /**

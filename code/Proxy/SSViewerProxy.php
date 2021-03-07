@@ -69,13 +69,15 @@ class SSViewerProxy extends SSViewer
         if ($templateRenderWarningLevel && $totalTime > $templateRenderWarningLevel) {
             $sourceFile = $this->getCacheFile($this->chosen);
             $messages = DebugBar::getMessageCollector();
-            $messages->addMessage(
-                "The template $templateName needed $totalTime seconds to render." .
-                    "\nYou could reduce this by implementing partial caching." .
-                    "\nYou can also check the cache file : $sourceFile",
-                'warning',
-                true
-            );
+            if ($messages) {
+                $messages->addMessage(
+                    "The template $templateName needed $totalTime seconds to render." .
+                        "\nYou could reduce this by implementing partial caching." .
+                        "\nYou can also check the cache file : $sourceFile",
+                    'warning',
+                    true
+                );
+            }
         }
 
         return $result;
