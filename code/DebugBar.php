@@ -377,6 +377,13 @@ class DebugBar
             return;
         }
 
+        // If we have any extra time pending, add it
+        if (!empty(self::$extraTimes)) {
+            foreach (self::$extraTimes as $extraTime => $extraTimeData) {
+                self::trackTime($extraTime);
+            }
+        }
+
         // Requirements may have been cleared (CMS iframes...) or not set (Security...)
         $js = Requirements::backend()->getJavascript();
         $debugBarResource = self::moduleResource('assets/debugbar.js');
@@ -595,22 +602,24 @@ class DebugBar
      */
     public static function trackTime($label)
     {
-        if (self::$debugbar) {
-            $timeData = self::getTimeCollector();
-            if (!$timeData) {
-                return;
-            }
-            if ($timeData->hasStartedMeasure($label)) {
-                $timeData->stopMeasure($label);
-            } else {
-                $timeData->startMeasure($label);
-            }
+        if (!isset(self::$extraTimes[$label])) {
+            self::$extraTimes[$label] = [microtime(true)];
         } else {
-            // Store in temp array
-            if (!isset(self::$extraTimes[$label])) {
-                self::$extraTimes[$label] = [microtime(true)];
-            } else {
-                self::$extraTimes[$label][] = microtime(true);
+            self::$extraTimes[$label][] = microtime(true);
+
+            // If we have the debugbar instance, add the measure
+            if (self::$debugbar) {
+                $timeData = self::getTimeCollector();
+                if (!$timeData) {
+                    return;
+                }
+                $values = self::$extraTimes[$label];
+                $timeData->addMeasure(
+                    $label,
+                    $values[0],
+                    $values[1]
+                );
+                unset(self::$extraTimes[$label]);
             }
         }
     }
@@ -633,7 +642,7 @@ class DebugBar
                 $values[0],
                 $values[1]
             );
+            unset(self::$extraTimes[$label]);
         }
-        self::$extraTimes = [];
     }
 }
