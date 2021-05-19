@@ -69,6 +69,8 @@ class DebugBarMiddleware implements HTTPMiddleware
                     microtime(true)
                 );
             }
+
+            DebugBar::closeExtraTime();
             $timeData->startMeasure('pre_request', 'pre request');
         });
     }

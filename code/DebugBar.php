@@ -80,6 +80,9 @@ class DebugBar
      */
     protected static $request;
 
+    /**
+     * @var array
+     */
     protected static $extraTimes = [];
 
     /**
@@ -620,6 +623,20 @@ class DebugBar
                     $values[1]
                 );
                 unset(self::$extraTimes[$label]);
+            }
+        }
+    }
+
+    /**
+     * Close any open extra time record
+     *
+     * @return void
+     */
+    public static function closeExtraTime()
+    {
+        foreach (self::$extraTimes as $label => $values) {
+            if (!isset($values[1])) {
+                self::$extraTimes[$label][] = microtime(true);
             }
         }
     }
