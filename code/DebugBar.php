@@ -414,7 +414,7 @@ class DebugBar
     public static function disabledCriteria()
     {
         $reasons = array();
-        if (self::onlyInDevMode() && Director::isDev()) {
+        if (!Director::isDev() && !self::allowAllEnvironments()) {
             $reasons[] = 'Not in dev mode';
         }
         if (self::isDisabled()) {
@@ -473,13 +473,13 @@ class DebugBar
         return false;
     }
 
-    public static function onlyInDevMode()
+    public static function allowAllEnvironments()
     {
         // You will also need to add a debugbar-live config
-        if (Environment::getEnv('DEBUGBAR_DISABLE_ONLY_DEV')) {
-            return false;
+        if (Environment::getEnv('DEBUGBAR_ALLOW_ALL_ENV')) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     public static function isDisabled()
