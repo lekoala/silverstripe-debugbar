@@ -39,25 +39,25 @@ class DebugBarMiddleware implements HTTPMiddleware
             }
 
             // Allows a more realistic view
-            // Define FRAMEWORK_BOOT in your index.php after composer autoload
-            if (defined('FRAMEWORK_BOOT')) {
+            // Define FRAMEWORK_BOOT_TIME in your index.php after composer autoload
+            if (defined('FRAMEWORK_BOOT_TIME')) {
                 if (isset($_SERVER['REQUEST_TIME_FLOAT'])) {
                     $timeData = $debugbar['time'];
                     $timeData->addMeasure(
                         'php boot',
                         $_SERVER['REQUEST_TIME_FLOAT'],
-                        FRAMEWORK_BOOT
+                        FRAMEWORK_BOOT_TIME
                     );
                     $timeData->addMeasure(
                         'framework boot',
-                        FRAMEWORK_BOOT,
+                        FRAMEWORK_BOOT_TIME,
                         microtime(true)
                     );
                 } else {
                     $timeData = $debugbar['time'];
                     $timeData->addMeasure(
                         'framework boot',
-                        FRAMEWORK_BOOT,
+                        FRAMEWORK_BOOT_TIME,
                         microtime(true)
                     );
                 }
