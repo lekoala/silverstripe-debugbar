@@ -59,3 +59,7 @@ a.phpdebugbar-open-btn {
     width: 400%;
     right: 0;
 }
+
+.phpdebugbar-widgets-key {
+    font-size: 1rem !important;
+}
