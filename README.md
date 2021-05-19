@@ -63,9 +63,25 @@ The example above is from loading a page in the CMS.
 You can also use our helper `DebugBar::trackTime` in order to start/stop a given measure. This will also work even before DebugBar is initialized
 allowing you, for example, to measure boot up time like this:
 
-    DebugBar::trackTime('create_request');
-    $request = HTTPRequestBuilder::createFromEnvironment();
-    DebugBar::trackTime('create_request');
+```php
+DebugBar::trackTime('create_request');
+$request = HTTPRequestBuilder::createFromEnvironment();
+// This line is optional : you can close it or it will be closed automatically before pre_request
+DebugBar::trackTime('create_request');
+```
+
+Speaking of boot time, you can get a more accurate measure than the one provided by `$_SERVER['REQUEST_TIME_FLOAT']` by
+defining the following constant in your `index.php` file.
+
+```php
+require dirname(__DIR__) . '/vendor/autoload.php';
+define('FRAMEWORK_BOOT_TIME', microtime(true));
+```
+
+This will give you a distinct php and framework boot time. This way, you can measure, for instance, the effects
+of doing a `composer dumpautoload -o` on your project.
+
+Note : any pending measure will be closed automatically before the `pre_request` measure.
 
 ### Database profiling
 
