@@ -1,5 +1,6 @@
 <?php
 
+use LeKoala\DebugBar\DebugBar;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use SilverStripe\Control\Director;
@@ -48,7 +49,7 @@ if (!function_exists('d')) {
         }
 
         // Probably best to avoid using this in live websites...
-        if (Director::isLive()) {
+        if (Director::isLive() && DebugBar::onlyInDevMode()) {
             Injector::inst()->get(LoggerInterface::class)->info("Please remove call to d() in $file:$line");
             return;
         }
