@@ -414,7 +414,7 @@ class DebugBar
     public static function disabledCriteria()
     {
         $reasons = array();
-        if (!Director::isDev()) {
+        if (self::onlyInDevMode() && Director::isDev()) {
             $reasons[] = 'Not in dev mode';
         }
         if (self::isDisabled()) {
@@ -471,6 +471,15 @@ class DebugBar
             return !in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1', '1'));
         }
         return false;
+    }
+
+    public static function onlyInDevMode()
+    {
+        // You will also need to add a debugbar-live config
+        if (Environment::getEnv('DEBUGBAR_DISABLE_ONLY_DEV')) {
+            return false;
+        }
+        return true;
     }
 
     public static function isDisabled()
