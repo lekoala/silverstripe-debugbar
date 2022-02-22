@@ -438,6 +438,9 @@ class DebugBar
         if (isset($_GET['CMSPreview'])) {
             $reasons[] = 'CMS Preview';
         }
+        if (self::isExcludedRoute()) {
+            $reasons[] = 'Route excluded';
+        }
         return $reasons;
     }
 
@@ -505,6 +508,23 @@ class DebugBar
         }
 
         return strpos(self::getRequestUrl(), $baseUrl . '/' . $adminUrl . '/') === 0;
+    }
+
+    public static function isExcludedRoute()
+    {
+        $isExcluded = false;
+        $excludedRoutes = self::config()->get('excluded_routes');
+        if (!empty($excludedRoutes))
+        {
+            $url = self::getRequestUrl();
+            foreach ($excludedRoutes as $excludedRoute) {
+                if (strpos($url, $excludedRoute) === 0) {
+                    $isExcluded = true;
+                    break;
+                }
+            }
+        }
+        return $isExcluded;
     }
 
     public static function isAdminController()
