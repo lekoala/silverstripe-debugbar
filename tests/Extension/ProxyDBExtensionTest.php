@@ -13,7 +13,7 @@ class ProxyDBExtensionTest extends SapphireTest
      */
     protected $conn;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->conn = DB::get_conn();

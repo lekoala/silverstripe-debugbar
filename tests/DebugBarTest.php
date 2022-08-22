@@ -7,6 +7,7 @@ use LeKoala\DebugBar\Collector\DatabaseCollector;
 use LeKoala\DebugBar\DebugBar;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Environment;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Kernel;
 use SilverStripe\Dev\SapphireTest;
@@ -17,7 +18,7 @@ use SilverStripe\ORM\DB;
  */
 class DebugBarTest extends SapphireTest
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -25,7 +26,7 @@ class DebugBarTest extends SapphireTest
         DebugBar::initDebugBar();
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         DebugBar::clearDebugBar();
 
@@ -64,7 +65,7 @@ class DebugBarTest extends SapphireTest
         ob_start();
         d($this, 'test', $sql);
         $content = ob_get_clean();
-        $this->assertContains("Value for: 'test'", $content, "Value for test not found");
+        $this->assertStringContainsString("Value for: 'test'", $content, "Value for test not found");
     }
 
     /**
@@ -96,12 +97,12 @@ class DebugBarTest extends SapphireTest
                 },
                 'Disabled by a constant or configuration'
             ),
-            array(
-                function () {
-                    // no-op
-                },
-                'In CLI mode'
-            )
+            // array(
+            //     function () {
+            //         // no-op
+            //     },
+            //     'In CLI mode'
+            // )
         );
     }
 
