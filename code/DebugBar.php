@@ -18,7 +18,7 @@ use SilverStripe\Control\Controller;
 use DebugBar\Bridge\MonologCollector;
 use SilverStripe\Control\HTTPRequest;
 use DebugBar\DebugBar as BaseDebugBar;
-use SilverStripe\Control\Email\Mailer;
+use Symfony\Component\Mailer\MailerInterface;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Config\ConfigLoader;
 use SilverStripe\Core\Config\Configurable;
@@ -208,7 +208,7 @@ class DebugBar
 
         // Email logging
         if (self::config()->email_collector) {
-            $mailer = Injector::inst()->get(Mailer::class);
+            $mailer = Injector::inst()->get(MailerInterface::class);
             if ($mailer instanceof SwiftMailer) {
                 $swiftInst = $mailer->getSwiftMailer();
                 $debugbar['messages']->aggregate(new SwiftLogCollector($swiftInst));
