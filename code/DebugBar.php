@@ -15,7 +15,7 @@ use SilverStripe\Core\Environment;
 use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\View\Requirements;
 use SilverStripe\Control\Controller;
-use DebugBar\Bridge\MonologCollector;
+use LeKoala\DebugBar\Bridge\MonologCollector;
 use SilverStripe\Control\HTTPRequest;
 use DebugBar\DebugBar as BaseDebugBar;
 use Symfony\Component\Mailer\MailerInterface;

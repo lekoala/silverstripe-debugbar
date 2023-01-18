@@ -14,7 +14,3 @@ jobs:
     # Only run cron on the silverstripe account
     if: (github.event_name == 'schedule' && github.repository_owner == 'lekoala') || (github.event_name != 'schedule')
     uses: silverstripe/gha-ci/.github/workflows/ci.yml@v1
-    with:
-      extra_jobs: |
-        - composer_require_extra: silverstripe/subsites:^3
-          name_suffix: subsites
