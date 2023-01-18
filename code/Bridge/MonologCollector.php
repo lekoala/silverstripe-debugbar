@@ -13,7 +13,7 @@ use Monolog\LogRecord;
  * A monolog handler as well as a data collector. Based on DebugBar\Bridge\MonologCollector
  * Note: This class is a temporary solution to keep existing dependencies working.
  * As soon as maximebf/php-debugbar is updated and compatible with monolog/monolog:^3
- * this class will be deprecated and removed immediately.
+ * this class should be deprecated and the DebugBar\Bridge\MonologCollector class should be used instead of this
  * <code>
  * $debugbar->addCollector(new MonologCollector($logger));
  * </code>
