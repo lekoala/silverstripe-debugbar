@@ -102,7 +102,7 @@ class DebugBarMiddleware implements HTTPMiddleware
         }
 
         // Inject init script into the HTML response
-        $body = $response->getBody();
+        $body = (string)$response->getBody();
         if (strpos($body, '</body>') !== false) {
             if (Requirements::get_write_js_to_body()) {
                 $body = str_replace('</body>', $script . '</body>', $body);

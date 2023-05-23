@@ -16,7 +16,7 @@ class CacheAfterCallAspect implements AfterCallAspect
     public function afterCall($proxied, $method, $args, $result)
     {
         $message = (empty($result)) ? "Missed: {$args[0]}" : "Hit: {$args[0]}";
-        $result = preg_replace('/\s+/', ' ', trim($result));
+        $result = preg_replace('/\s+/', ' ', trim($result ?? ''));
         $result = Convert::raw2att($result);
         PartialCacheCollector::addTemplateCache(
             $message,

@@ -21,14 +21,14 @@ class SilverStripeCollectorTest extends SapphireTest
 
     protected $usesDatabase = true;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         DebugBar::initDebugBar();
         $this->collector = DebugBar::getDebugBar()->getCollector('silverstripe');
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         DebugBar::clearDebugBar();
         $this->collector = null;

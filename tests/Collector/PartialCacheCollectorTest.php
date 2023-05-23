@@ -13,13 +13,13 @@ class PartialCacheCollectorTest extends SapphireTest
      */
     private $collector;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->collector = new PartialCacheCollector();
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         DebugBar::clearDebugBar();
         $this->collector = null;

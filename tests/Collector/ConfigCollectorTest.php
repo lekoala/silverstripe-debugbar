@@ -16,7 +16,7 @@ class ConfigCollectorTest extends SapphireTest
      */
     private $collector;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -26,7 +26,7 @@ class ConfigCollectorTest extends SapphireTest
         $this->collector = new ConfigCollector();
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         DebugBar::clearDebugBar();
         $this->collector = null;

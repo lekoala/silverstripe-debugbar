@@ -18,7 +18,7 @@ class DatabaseCollectorTest extends SapphireTest
 
     protected $usesDatabase = true;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -26,7 +26,7 @@ class DatabaseCollectorTest extends SapphireTest
         $this->collector = DebugBar::getDebugBar()->getCollector('db');
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         DebugBar::clearDebugBar();
         $this->collector = null;

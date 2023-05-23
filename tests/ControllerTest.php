@@ -9,7 +9,7 @@ use SilverStripe\Dev\FunctionalTest;
 class ControllerTest extends FunctionalTest
 {
 
-    public function tearDown()
+    public function tearDown(): void
     {
         parent::tearDown();
         DebugBar::clearDebugBar();

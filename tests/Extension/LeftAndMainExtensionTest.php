@@ -18,7 +18,7 @@ class LeftAndMainExtensionTest extends SapphireTest
      */
     protected $timeCollector;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -27,7 +27,7 @@ class LeftAndMainExtensionTest extends SapphireTest
         $this->timeCollector = DebugBar::getDebugBar()->getCollector('time');
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         DebugBar::clearDebugBar();
 

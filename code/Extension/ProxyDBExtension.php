@@ -107,10 +107,12 @@ class ProxyDBExtension extends Extension
             $matches = null;
             preg_match_all('/SELECT(.+?) FROM/is', $sql, $matches);
             $select = empty($matches[1]) ? null : trim($matches[1][0]);
-            if (strlen($select) > 100) {
-                $shortsql = str_replace($select, '"ClickToShowFields"', $sql);
-            } else {
-                $select = null;
+            if ($select !== null) {
+                if (strlen($select) > 100) {
+                    $shortsql = str_replace($select, '"ClickToShowFields"', $sql);
+                } else {
+                    $select = null;
+                }
             }
 
             self::$queries[] = array(

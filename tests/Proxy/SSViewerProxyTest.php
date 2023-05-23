@@ -11,7 +11,7 @@ use LeKoala\DebugBar\Proxy\SSViewerProxy;
 
 class SSViewerProxyTest extends FunctionalTest
 {
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

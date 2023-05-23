@@ -14,13 +14,13 @@ class TimeDataCollectorTest extends SapphireTest
      */
     protected $collector;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->collector = new TimeDataCollector(microtime(true));
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         DebugBar::clearDebugBar();
         $this->collector = null;
@@ -31,7 +31,7 @@ class TimeDataCollectorTest extends SapphireTest
     public function testCollectorTooltip()
     {
         $result = $this->collector->getWidgets();
-        $this->assertContains('Request duration', $result['time']['tooltip']);
+        $this->assertStringContainsString('Request duration', $result['time']['tooltip']);
     }
 
     /**
@@ -42,7 +42,7 @@ class TimeDataCollectorTest extends SapphireTest
         Config::modify()->set(DebugBar::class, 'warn_request_time_seconds', '0.00001');
         $result = $this->collector->getWidgets();
         $this->assertSame('danger', $result['time']['warn']);
-        $this->assertContains('>', $result['time']['tooltip']);
+        $this->assertStringContainsString('>', $result['time']['tooltip']);
     }
 
     /**
@@ -54,7 +54,7 @@ class TimeDataCollectorTest extends SapphireTest
         Config::modify()->set(DebugBar::class, 'warn_warning_ratio', '0.000000001');
         $result = $this->collector->getWidgets();
         $this->assertSame('warning', $result['time']['warn']);
-        $this->assertContains('>', $result['time']['tooltip']);
+        $this->assertStringContainsString('>', $result['time']['tooltip']);
     }
 
     /**
@@ -66,7 +66,7 @@ class TimeDataCollectorTest extends SapphireTest
         Config::modify()->set(DebugBar::class, 'warn_warning_ratio', '1');
         $result = $this->collector->getWidgets();
         $this->assertSame('ok', $result['time']['warn']);
-        $this->assertContains('<', $result['time']['tooltip']);
+        $this->assertStringContainsString('<', $result['time']['tooltip']);
     }
 
     public function testWarningCanBeDisabled()

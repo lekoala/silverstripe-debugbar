@@ -2,11 +2,11 @@
 
 namespace LeKoala\DebugBar\Test\Collector;
 
-use LeKoala\DebugBar\Collector\PhpInfoCollector;
-use PHPUnit_Framework_TestCase;
 use ReflectionClass;
+use SilverStripe\Dev\SapphireTest;
+use LeKoala\DebugBar\Collector\PhpInfoCollector;
 
-class PhpInfoCollectorTest extends PHPUnit_Framework_TestCase
+class PhpInfoCollectorTest extends SapphireTest
 {
     /**
      * Note: testing with reflection since it's tidier than moving parent::collect() into its own method just
