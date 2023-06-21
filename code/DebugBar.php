@@ -516,8 +516,7 @@ class DebugBar
     {
         $isExcluded = false;
         $excludedRoutes = self::config()->get('excluded_routes');
-        if (!empty($excludedRoutes))
-        {
+        if (!empty($excludedRoutes)) {
             $url = self::getRequestUrl();
             foreach ($excludedRoutes as $excludedRoute) {
                 if (strpos($url, $excludedRoute) === 0) {
