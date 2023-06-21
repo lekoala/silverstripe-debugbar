@@ -311,6 +311,28 @@ If you want DebugBar to work on the `Security` controller, make sure to include 
 
 Any customisation to the default css (as stored in "assets") should be made to css/custom.css. This file will be appended to the default css.
 
+### *903 upstream sent too big header
+
+When using nginx you can run into this error. This is due to the `proxy_buffer` being to small to send all response headers.
+
+The recommended config on official guide is:
+
+  location /index.php {
+    fastcgi_buffer_size 32k;
+    fastcgi_busy_buffers_size 64k;
+    fastcgi_buffers 4 32k;
+    ...
+  }
+
+You can tweak the settings like so (adjust the values depending on your needs):
+
+  location ~ \.php$ {
+    fastcgi_buffer_size 1024k;
+    fastcgi_busy_buffers_size 2048k;
+    fastcgi_buffers 4 1024k;
+    ...
+  }
+
 ---
 
 ## Maintainer
