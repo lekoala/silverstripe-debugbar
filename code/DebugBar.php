@@ -363,7 +363,9 @@ class DebugBar
         }
 
         foreach ($renderer->getAssets('js') as $jsFile) {
-            Requirements::javascript(Director::makeRelative(ltrim($jsFile, '/')));
+            Requirements::javascript(Director::makeRelative(ltrim($jsFile, '/')), [
+                'type' => 'text/javascript'
+            ]);
         }
 
         self::$renderer = $renderer;
