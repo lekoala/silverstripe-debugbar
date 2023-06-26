@@ -42,7 +42,7 @@ class SSViewerProxy extends SSViewer
 
         $startTime = microtime(true);
         DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugBar) use ($templateName) {
-            /** @var $timeData DebugBar\DataCollector\TimeDataCollector */
+            /** @var \DebugBar\DataCollector\TimeDataCollector $timeData */
             $timeData = $debugBar->getCollector('time');
             if (!$timeData) {
                 return;
@@ -55,7 +55,7 @@ class SSViewerProxy extends SSViewer
         $totalTime = sprintf("%.2f", $endTime - $startTime);
 
         DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugBar) use ($templateName) {
-            /** @var $timeData DebugBar\DataCollector\TimeDataCollector */
+            /** @var \DebugBar\DataCollector\TimeDataCollector $timeData */
             $timeData = $debugBar->getCollector('time');
             if (!$timeData) {
                 return;
