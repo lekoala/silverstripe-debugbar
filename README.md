@@ -232,6 +232,7 @@ LeKoala\DebugBar\DebugBar:
 | `warn_warning_ratio` | float | Ratio to divide the warning request time by to get the *warning* level (default 0.5) |
 | `show_namespace` | bool | Show the fully qualified namespace in the Database tab when set to true. Defaults to false |
 | `db_collector` | bool | Show the db tab. Defaults to true |
+| `db_save_csv` | bool | Save queries to csv in the temp folder. Use ?downloadqueries to download current. Defaults to false |
 | `config_collector` | bool | Show the config tab. Defaults to true |
 | `partial_cache_collector` | bool | Show the partial cache tab. Defaults to true |
 | `email_collector` | bool | Show the email tab. Defaults to true |

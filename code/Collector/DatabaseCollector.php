@@ -69,18 +69,19 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
         $stmts = array();
 
         $total_duration = 0;
-        $total_mem      = 0;
+        $total_mem = 0;
 
         $failed = 0;
 
-        $i       = 0;
+        $i = 0;
 
         // Get queries gathered by proxy
         $queries = ProxyDBExtension::getQueries();
 
-        $limit   = DebugBar::config()->get('query_limit');
+        $limit = DebugBar::config()->get('query_limit');
         $warnDurationThreshold = DebugBar::config()->get('warn_dbqueries_threshold_seconds');
 
+        // only show db if there is more than one database in use
         $showDb = count(array_filter(array_unique(array_map(function ($stmt) {
             return $stmt['database'];
         }, $queries)))) > 1;
@@ -122,6 +123,39 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
                     $stmt['start_time'],
                     $stmt['end_time']
                 );
+            }
+        }
+
+        // Save as CSV
+        $db_save_csv = DebugBar::config()->get('db_save_csv');
+        $db_save_csv = true;
+        if ($db_save_csv && !empty($queries)) {
+            $filename = date('Ymd_His') . '_' . count($queries) . '_' . uniqid() . '.csv';
+            $isOutput = false;
+            if (isset($_REQUEST['downloadqueries']) && Director::isDev()) {
+                $isOutput = true;
+                if (headers_sent()) {
+                    die('Cannot download queries, headers are already sent');
+                }
+                header('Content-Type: text/csv');
+                header('Content-Disposition: attachment;filename=' . $filename);
+                $fp = fopen('php://output', 'w');
+            } else {
+                $tempFolder = TEMP_FOLDER . '/debugbar/db';
+                if (!is_dir($tempFolder)) {
+                    mkdir($tempFolder, 0755, true);
+                }
+                $fp = fopen($tempFolder . '/' . $filename, 'w');
+            }
+            $headers = array_keys($queries[0]);
+            fputcsv($fp, $headers);
+            foreach ($queries as $query) {
+                fputcsv($fp, $query);
+            }
+            fclose($fp);
+
+            if ($isOutput) {
+                die();
             }
         }
 
