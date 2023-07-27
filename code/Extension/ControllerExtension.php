@@ -68,12 +68,6 @@ class ControllerExtension extends Extension
      */
     public function beforeCallActionHandler($request, $action)
     {
-        // This could be called twice
-        // TODO: check if we can remove this safely
-        if ($this->owner->beforeCallActionHandlerCalled) {
-            return;
-        }
-
         // If we don't have an action, getViewer will be called immediatly
         // If we have custom routes, request action is different than action
         $allParams     = $request->allParams();
@@ -96,8 +90,6 @@ class ControllerExtension extends Extension
             }
             $timeData->startMeasure("action", get_class($this->owner) . " action $action");
         });
-
-        $this->owner->beforeCallActionHandlerCalled = true;
     }
 
     /**
