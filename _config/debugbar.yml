@@ -4,7 +4,7 @@ Before:
   - 'mysite'
   - 'app'
 After:
-  - 'framework'
+  - '#corecache'
 Only:
   environment: 'dev'
 ---
