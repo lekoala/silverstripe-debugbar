@@ -62,6 +62,9 @@ SilverStripe\Control\Controller:
 TractorCow\SilverStripeProxyDB\ProxyDBFactory:
   extensions:
     - LeKoala\DebugBar\Extension\ProxyDBExtension
+SilverStripe\Control\Email\MailerSubscriber:
+  extensions:
+    - LeKoala\DebugBar\Extension\DebugMailerExtension
 ---
 Only:
   moduleexists: silverstripe/admin

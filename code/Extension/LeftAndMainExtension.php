@@ -13,7 +13,7 @@ class LeftAndMainExtension extends Extension
     public function accessedCMS()
     {
         DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugbar) {
-            /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
+            /** @var DebugBar\DataCollector\TimeDataCollector $timeData */
             $timeData = $debugbar->getCollector('time');
             if (!$timeData) {
                 return;
@@ -28,7 +28,7 @@ class LeftAndMainExtension extends Extension
     public function init()
     {
         DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugbar) {
-            /* @var $timeData DebugBar\DataCollector\TimeDataCollector */
+            /** @var DebugBar\DataCollector\TimeDataCollector $timeData */
             $timeData = $debugbar->getCollector('time');
             if (!$timeData) {
                 return;

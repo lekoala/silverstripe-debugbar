@@ -10,15 +10,15 @@ use Psr\Log\LoggerInterface;
 use SilverStripe\Core\Kernel;
 use DebugBar\JavascriptRenderer;
 use DebugBar\Storage\FileStorage;
+use SilverStripe\Dev\Deprecation;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Environment;
 use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\View\Requirements;
 use SilverStripe\Control\Controller;
-use LeKoala\DebugBar\Bridge\MonologCollector;
+use Symfony\Component\Mailer\Mailer;
 use SilverStripe\Control\HTTPRequest;
 use DebugBar\DebugBar as BaseDebugBar;
-use Symfony\Component\Mailer\MailerInterface;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Config\ConfigLoader;
 use SilverStripe\Core\Config\Configurable;
@@ -27,11 +27,13 @@ use SilverStripe\ORM\Connect\PDOConnector;
 use DebugBar\DataCollector\MemoryCollector;
 use LeKoala\DebugBar\Messages\LogFormatter;
 use SilverStripe\Admin\AdminRootController;
-use SilverStripe\Control\Email\SwiftMailer;
 use DebugBar\DataCollector\PDO\PDOCollector;
 use DebugBar\DataCollector\PDO\TraceablePDO;
 use SilverStripe\Core\Manifest\ModuleLoader;
 use DebugBar\DataCollector\MessagesCollector;
+use LeKoala\DebugBar\Bridge\MonologCollector;
+use LeKoala\DebugBar\Bridge\SymfonyMailer\MailerEventListener;
+use Symfony\Component\Mailer\MailerInterface;
 use SilverStripe\Core\Manifest\ModuleResource;
 use LeKoala\DebugBar\Collector\ConfigCollector;
 use LeKoala\DebugBar\Proxy\ConfigManifestProxy;
@@ -39,14 +41,13 @@ use LeKoala\DebugBar\Collector\PhpInfoCollector;
 use LeKoala\DebugBar\Extension\ProxyDBExtension;
 use LeKoala\DebugBar\Collector\DatabaseCollector;
 use LeKoala\DebugBar\Collector\TimeDataCollector;
-use DebugBar\Bridge\SwiftMailer\SwiftLogCollector;
-use DebugBar\Bridge\SwiftMailer\SwiftMailCollector;
 use LeKoala\DebugBar\Proxy\DeltaConfigManifestProxy;
 use LeKoala\DebugBar\Collector\PartialCacheCollector;
 use LeKoala\DebugBar\Collector\SilverStripeCollector;
 use SilverStripe\Config\Collections\DeltaConfigCollection;
 use SilverStripe\Config\Collections\CachedConfigCollection;
-use SilverStripe\Dev\Deprecation;
+use LeKoala\DebugBar\Bridge\SymfonyMailer\SymfonyMailerCollector;
+use LeKoala\DebugBar\Bridge\SymfonyMailer\SymfonyMailerLogCollector;
 
 /**
  * A simple helper
@@ -210,10 +211,8 @@ class DebugBar
         // Email logging
         if (self::config()->email_collector) {
             $mailer = Injector::inst()->get(MailerInterface::class);
-            if ($mailer instanceof SwiftMailer) {
-                $swiftInst = $mailer->getSwiftMailer();
-                $debugbar['messages']->aggregate(new SwiftLogCollector($swiftInst));
-                $debugbar->addCollector(new SwiftMailCollector($swiftInst));
+            if ($mailer instanceof Mailer) {
+                $debugbar->addCollector(new SymfonyMailerCollector($mailer));
             }
         }
 

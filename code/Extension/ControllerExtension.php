@@ -18,9 +18,11 @@ class ControllerExtension extends Extension
     {
         DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugbar) {
             // We must set the current controller when it's available and before it's pushed out of stack
-            $debugbar->getCollector('silverstripe')->setController(Controller::curr());
+            /** @var \LeKoala\DebugBar\Collector\SilverStripeCollector $ssCollector */
+            $ssCollector =  $debugbar->getCollector('silverstripe');
+            $ssCollector->setController(Controller::curr());
 
-            /** @var $timeData DebugBar\DataCollector\TimeDataCollector */
+            /** @var DebugBar\DataCollector\TimeDataCollector $timeData */
             $timeData = $debugbar->getCollector('time');
             if (!$timeData) {
                 return;
@@ -45,7 +47,7 @@ class ControllerExtension extends Extension
             if (!$debugbar->hasCollector('Headers') && DebugBar::config()->get('header_collector')) {
                 $debugbar->addCollector(new HeaderCollector($this->owner));
             }
-            /** @var $timeData DebugBar\DataCollector\TimeDataCollector */
+            /** @var DebugBar\DataCollector\TimeDataCollector $timeData */
             $timeData = $debugbar->getCollector('time');
             if (!$timeData) {
                 return;
@@ -84,7 +86,7 @@ class ControllerExtension extends Extension
         }
 
         DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugBar) use ($action) {
-            /** @var $timeData DebugBar\DataCollector\TimeDataCollector */
+            /** @var DebugBar\DataCollector\TimeDataCollector $timeData */
             $timeData = $debugBar->getCollector('time');
             if (!$timeData) {
                 return;
@@ -108,7 +110,7 @@ class ControllerExtension extends Extension
         self::clearBuffer();
 
         DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugBar) use ($action) {
-            /** @var $timeData DebugBar\DataCollector\TimeDataCollector */
+            /** @var DebugBar\DataCollector\TimeDataCollector $timeData */
             $timeData = $debugBar->getCollector('time');
             if (!$timeData) {
                 return;

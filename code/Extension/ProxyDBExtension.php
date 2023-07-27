@@ -18,7 +18,7 @@ class ProxyDBExtension extends Extension
      *
      * @var array
      */
-    protected static $queries = array();
+    protected static $queries = [];
 
     /**
      * Find source toggle (set by config find_source)
@@ -36,7 +36,7 @@ class ProxyDBExtension extends Extension
 
             // The first argument is always the sql query
             $sql = $args[0];
-            $parameters = isset($args[2]) ? $args[2] : array();
+            $parameters = isset($args[2]) ? $args[2] : [];
 
             // Sql can be an array
             // TODO: verify if it's still the case in SS4
@@ -115,7 +115,10 @@ class ProxyDBExtension extends Extension
                 }
             }
 
-            self::$queries[] = array(
+            // null on the first query, since it's the select statement itself
+            $db = DB::get_conn()->getSelectedDatabase();
+
+            self::$queries[] = [
                 'short_query' => $shortsql,
                 'select' => $select,
                 'query' => $sql,
@@ -125,9 +128,9 @@ class ProxyDBExtension extends Extension
                 'memory' => $endMemory - $startMemory,
                 'rows' => $handle ? $handle->numRecords() : null,
                 'success' => $handle ? true : false,
-                'database' => $this->getSelectedDatabase(),
+                'database' => $db,
                 'source' => self::$findSource ? self::findSource() : null
-            );
+            ];
 
             return $handle;
         };
@@ -161,7 +164,7 @@ class ProxyDBExtension extends Extension
         $traces = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS | DEBUG_BACKTRACE_PROVIDE_OBJECT);
 
         // Not relevant to determine source
-        $internalClasses = array(
+        $internalClasses = [
             '',
             get_called_class(),
             // DebugBar
@@ -186,17 +189,17 @@ class ProxyDBExtension extends Extension
             \SilverStripe\ORM\ListDecorator::class,
             // Core
             \SilverStripe\Control\Director::class,
-        );
+        ];
 
-        $viewerClasses = array(
+        $viewerClasses = [
             \SilverStripe\View\SSViewer_DataPresenter::class,
             \SilverStripe\View\SSViewer_Scope::class,
             \SilverStripe\View\SSViewer::class,
             \LeKoala\DebugBar\Proxy\SSViewerProxy::class,
             \SilverStripe\View\ViewableData::class
-        );
+        ];
 
-        $sources = array();
+        $sources = [];
         foreach ($traces as $trace) {
             $file = isset($trace['file']) ? pathinfo($trace['file'], PATHINFO_FILENAME) : null;
             $class = isset($trace['class']) ? $trace['class'] : null;
