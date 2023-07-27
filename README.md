@@ -4,21 +4,11 @@
 [![scrutinizer](https://scrutinizer-ci.com/g/lekoala/silverstripe-debugbar/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/lekoala/silverstripe-debugbar/)
 [![Code coverage](https://codecov.io/gh/lekoala/silverstripe-debugbar/branch/master/graph/badge.svg)](https://codecov.io/gh/lekoala/silverstripe-debugbar)
 
-## Requirements
-
-* SilverStripe ^4.0
-* [maximebf/php-debugbar](http://phpdebugbar.com)
-* [jdorn/sql-formatter](https://github.com/jdorn/sql-formatter)
-
 ## Installation
 
-You can install the debug bar with Composer:
-
-```
+```sh
 composer require --dev lekoala/silverstripe-debugbar
 ```
-
----
 
 ## Documentation
 
@@ -115,7 +105,7 @@ If a page request performance is more than a certain number of queries, a warnin
 
 ### System logs and messages
 
-The "Messages" tab will show you a list of anything that has been processed by [a SilverStripe logger](https://docs.silverstripe.org/en/4/developer_guides/debugging/error_handling/) during a page execution:
+The "Messages" tab will show you a list of anything that has been processed by [a SilverStripe logger](https://docs.silverstripe.org/en/developer_guides/debugging/error_handling/) during a page execution:
 
 ![System logs and messages](docs/_images/messages.png)
 
@@ -150,8 +140,8 @@ There is a variety of other useful information available via various tabs and in
 * **Parameters:** Displays all GET, POST and ROUTE parameters from the current request
 * **Config:** Displays a list of the current [SiteConfig](https://github.com/silverstripe/silverstripe-siteconfig) settings from the CMS
 * **Requirements:** Shows a list of all [`Requirements`](https://docs.silverstripe.org/en/developer_guides/templates/requirements/) calls made during a page's execution
-* **Middlewares:** Shows a list of all [`Middlewares`](https://docs.silverstripe.org/en/4/developer_guides/controllers/middlewares/) used for this request
-* **Mails:** Shows a list of all [emails](https://docs.silverstripe.org/en/4/developer_guides/email/) sent
+* **Middlewares:** Shows a list of all [`Middlewares`](https://docs.silverstripe.org/en/developer_guides/controllers/middlewares/) used for this request
+* **Mails:** Shows a list of all [emails](https://docs.silverstripe.org/en/developer_guides/email/) sent
 * **Headers:** Shows a list of all headers
 
 #### Indicators
