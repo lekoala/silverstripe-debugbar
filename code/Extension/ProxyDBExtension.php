@@ -39,7 +39,6 @@ class ProxyDBExtension extends Extension
             $parameters = isset($args[2]) ? $args[2] : [];
 
             // Sql can be an array
-            // TODO: verify if it's still the case in SS4
             if (is_array($sql)) {
                 $parameters = $sql[1];
                 $sql = $sql[0];

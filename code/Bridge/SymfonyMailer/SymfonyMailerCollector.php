@@ -16,7 +16,7 @@ class SymfonyMailerCollector extends DataCollector implements Renderable, AssetP
     /**
      * @var Email[]
      */
-    protected $emails;
+    protected $emails = [];
 
     public function collect()
     {

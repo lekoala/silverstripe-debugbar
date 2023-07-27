@@ -11,8 +11,6 @@ use SilverStripe\Admin\LeftAndMain;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Cookie;
 use SilverStripe\Control\Director;
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Core\Convert;
 use SilverStripe\i18n\i18n;
 use SilverStripe\Security\Security;
 use SilverStripe\SiteConfig\SiteConfig;
