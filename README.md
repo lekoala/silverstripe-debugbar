@@ -4,21 +4,13 @@
 [![scrutinizer](https://scrutinizer-ci.com/g/lekoala/silverstripe-debugbar/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/lekoala/silverstripe-debugbar/)
 [![Code coverage](https://codecov.io/gh/lekoala/silverstripe-debugbar/branch/master/graph/badge.svg)](https://codecov.io/gh/lekoala/silverstripe-debugbar)
 
-## Requirements
-
-* SilverStripe ^4.0
-* [maximebf/php-debugbar](http://phpdebugbar.com)
-* [jdorn/sql-formatter](https://github.com/jdorn/sql-formatter)
-
 ## Installation
 
 You can install the debug bar with Composer:
 
-```
+```sh
 composer require --dev lekoala/silverstripe-debugbar
 ```
-
----
 
 ## Documentation
 
