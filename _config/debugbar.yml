@@ -38,6 +38,7 @@ LeKoala\DebugBar\DebugBar:
   config_track_empty: false
   db_collector: true
   db_save_csv: false
+  cache_collector: true
   partial_cache_collector: true
   email_collector: true
   header_collector: true
@@ -48,6 +49,8 @@ SilverStripe\Control\Director:
   rules:
     '__debugbar': 'LeKoala\DebugBar\DebugBarController'
 SilverStripe\Core\Injector\Injector:
+  Symfony\Component\Cache\Psr16Cache:
+    class: LeKoala\DebugBar\Proxy\CacheProxy
   SilverStripe\View\SSViewer:
     class: LeKoala\DebugBar\Proxy\SSViewerProxy
   DebugBarMiddleware:

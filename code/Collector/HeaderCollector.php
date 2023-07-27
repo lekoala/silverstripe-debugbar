@@ -47,7 +47,6 @@ class HeaderCollector extends DataCollector implements Renderable, AssetProvider
      */
     public function collect()
     {
-
         $result = $this->controller->getResponse()->getHeaders();
 
         foreach ($result as $key => &$value) {

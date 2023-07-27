@@ -128,7 +128,6 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
 
         // Save as CSV
         $db_save_csv = DebugBar::config()->get('db_save_csv');
-        $db_save_csv = true;
         if ($db_save_csv && !empty($queries)) {
             $filename = date('Ymd_His') . '_' . count($queries) . '_' . uniqid() . '.csv';
             $isOutput = false;

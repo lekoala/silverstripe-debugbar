@@ -32,8 +32,8 @@ use DebugBar\DataCollector\PDO\TraceablePDO;
 use SilverStripe\Core\Manifest\ModuleLoader;
 use DebugBar\DataCollector\MessagesCollector;
 use LeKoala\DebugBar\Bridge\MonologCollector;
-use LeKoala\DebugBar\Bridge\SymfonyMailer\MailerEventListener;
 use Symfony\Component\Mailer\MailerInterface;
+use LeKoala\DebugBar\Collector\CacheCollector;
 use SilverStripe\Core\Manifest\ModuleResource;
 use LeKoala\DebugBar\Collector\ConfigCollector;
 use LeKoala\DebugBar\Proxy\ConfigManifestProxy;
@@ -46,6 +46,7 @@ use LeKoala\DebugBar\Collector\PartialCacheCollector;
 use LeKoala\DebugBar\Collector\SilverStripeCollector;
 use SilverStripe\Config\Collections\DeltaConfigCollection;
 use SilverStripe\Config\Collections\CachedConfigCollection;
+use LeKoala\DebugBar\Bridge\SymfonyMailer\MailerEventListener;
 use LeKoala\DebugBar\Bridge\SymfonyMailer\SymfonyMailerCollector;
 use LeKoala\DebugBar\Bridge\SymfonyMailer\SymfonyMailerLogCollector;
 
@@ -189,6 +190,11 @@ class DebugBar
         if (self::config()->config_collector) {
             // Add the config collector
             $debugbar->addCollector(new ConfigCollector);
+        }
+
+        // Cache
+        if (self::config()->cache_collector) {
+            $debugbar->addCollector(new CacheCollector);
         }
 
         // Partial cache
