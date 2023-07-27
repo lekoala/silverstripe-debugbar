@@ -63,6 +63,11 @@ class DebugBar
     public static $bufferingEnabled = false;
 
     /**
+     * @var bool
+     */
+    public static $suppressJquery = false;
+
+    /**
      * @var JavascriptRenderer
      */
     protected static $renderer;
@@ -293,6 +298,18 @@ class DebugBar
     public static function moduleResource($path)
     {
         return ModuleLoader::getModule('lekoala/silverstripe-debugbar')->getResource($path);
+    }
+
+    public static function suppressJquery($flag = true)
+    {
+        $file = "debugbar/assets/vendor/jquery/dist/jquery.min.js";
+        if ($flag) {
+            Requirements::block($file);
+        } else {
+            Requirements::unblock($file);
+        }
+
+        self::$suppressJquery = $flag;
     }
 
     /**

@@ -294,6 +294,20 @@ protected function init()
 }
 ```
 
+If you include jQuery during an action, you need to call `DebugBar::suppressJquery();`.
+This will move all our scripts after your own, which should include Jquery first.
+
+```php
+public function my_action()
+{
+    DebugBar::suppressJquery();
+    Requirements::javascript("//code.jquery.com/jquery-3.3.1.min.js");
+    Requirements::javascript("my.plugin.js");
+
+    return $this;
+}
+```
+
 #### FulltextSearchable support
 
 It has been reported that the `FulltextSearchable` extension conflicts with the `config_collector`.

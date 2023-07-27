@@ -7,6 +7,7 @@ use SilverStripe\Control\Middleware\HTTPMiddleware;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
+use SilverStripe\Dev\Debug;
 use SilverStripe\View\Requirements;
 
 class DebugBarMiddleware implements HTTPMiddleware
@@ -102,6 +103,18 @@ class DebugBarMiddleware implements HTTPMiddleware
         // Inject init script into the HTML response
         $body = (string)$response->getBody();
         if (strpos($body, '</body>') !== false) {
+            if (DebugBar::$suppressJquery) {
+                // Move scripts after the latest script
+                $matches = [];
+                preg_match_all('/<script(.*) src="(.*)\/debugbar\/(.*)"><\/script>/', $body, $matches);
+                $body = preg_replace('/<script(.*) src="(.*)\/debugbar\/(.*)"><\/script>\n/', '', $body);
+
+                $ourRequirements = array_reverse($matches[0]);
+                foreach ($ourRequirements as $ourRequirement) {
+                    $script = $ourRequirement . "\n" . $script;
+                }
+            }
+
             if (Requirements::get_write_js_to_body()) {
                 $body = str_replace('</body>', $script . '</body>', $body);
             } else {
