@@ -7,7 +7,6 @@ use LeKoala\DebugBar\Collector\SilverStripeCollector;
 use LeKoala\DebugBar\DebugBar;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Extension;
-use SilverStripe\Security\Security;
 
 /**
  * A controller extension to log times and render the Debug Bar
@@ -36,11 +35,7 @@ class ControllerExtension extends Extension
 
     public function onAfterInit()
     {
-        // On Security, onAfterInit is called before init() in your Page method
-        // jQuery is most likely not included yet
-        if (!$this->owner instanceof Security) {
-            DebugBar::includeRequirements();
-        }
+        $result = DebugBar::includeRequirements();
 
         DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugbar) {
             // Add the headers Collector

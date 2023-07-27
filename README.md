@@ -264,8 +264,8 @@ is due to the way Vagrant and Virtualbox configure networking by default.
 The DebugBar will include its own version of jQuery by default. It will only be disabled
 in the admin (which already use jQuery).
 
-If you have added jQuery in your requirements (filename must be jquery.js or jquery.min.js),
-the DebugBar will not load its own jQuery version. You can also set the following
+If you have added jQuery in your requirements the DebugBar will not load its own jQuery
+version (if the filename is jquery.js or jquery.min.js). You can also set the following
 configuration flag to false to prevent the DebugBar from including its own jQuery.
 
 ```yaml
@@ -284,7 +284,7 @@ protected function init()
 }
 ```
 
-When using simple theme, you probably want to disable the jquery from the cdn.
+When using the simple theme, you probably want to disable the jquery from the cdn.
 
 ```php
 protected function init()

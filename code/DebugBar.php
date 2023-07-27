@@ -5,7 +5,6 @@ namespace LeKoala\DebugBar;
 use Exception;
 use Monolog\Logger;
 use ReflectionObject;
-use SilverStripe\ORM\DB;
 use Psr\Log\LoggerInterface;
 use SilverStripe\Core\Kernel;
 use DebugBar\JavascriptRenderer;
@@ -23,12 +22,9 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Config\ConfigLoader;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Injector\Injectable;
-use SilverStripe\ORM\Connect\PDOConnector;
 use DebugBar\DataCollector\MemoryCollector;
 use LeKoala\DebugBar\Messages\LogFormatter;
 use SilverStripe\Admin\AdminRootController;
-use DebugBar\DataCollector\PDO\PDOCollector;
-use DebugBar\DataCollector\PDO\TraceablePDO;
 use SilverStripe\Core\Manifest\ModuleLoader;
 use DebugBar\DataCollector\MessagesCollector;
 use LeKoala\DebugBar\Bridge\MonologCollector;
@@ -46,9 +42,7 @@ use LeKoala\DebugBar\Collector\PartialCacheCollector;
 use LeKoala\DebugBar\Collector\SilverStripeCollector;
 use SilverStripe\Config\Collections\DeltaConfigCollection;
 use SilverStripe\Config\Collections\CachedConfigCollection;
-use LeKoala\DebugBar\Bridge\SymfonyMailer\MailerEventListener;
 use LeKoala\DebugBar\Bridge\SymfonyMailer\SymfonyMailerCollector;
-use LeKoala\DebugBar\Bridge\SymfonyMailer\SymfonyMailerLogCollector;
 
 /**
  * A simple helper
@@ -303,20 +297,21 @@ class DebugBar
 
     /**
      * Include DebugBar assets using Requirements API
+     * This needs to be called before the template is rendered otherwise the calls to the Requirements API are ignored
      *
-     * @return void
+     * @return bool
      */
     public static function includeRequirements()
     {
         $debugbar = self::getDebugBar();
 
         if (!$debugbar) {
-            return;
+            return false;
         }
 
         // Already called
         if (self::$renderer) {
-            return;
+            return false;
         }
 
         $renderer = $debugbar->getJavascriptRenderer();
@@ -353,16 +348,23 @@ class DebugBar
         }
 
         foreach ($renderer->getAssets('css') as $cssFile) {
-            Requirements::css(Director::makeRelative(ltrim($cssFile, '/')));
+            Requirements::css(self::replaceAssetPath($cssFile));
         }
 
         foreach ($renderer->getAssets('js') as $jsFile) {
-            Requirements::javascript(Director::makeRelative(ltrim($jsFile, '/')), [
-                'type' => 'text/javascript'
+            Requirements::javascript(self::replaceAssetPath($jsFile), [
+                'type' => 'application/javascript'
             ]);
         }
 
         self::$renderer = $renderer;
+
+        return true;
+    }
+
+    protected static function replaceAssetPath($file)
+    {
+        return Director::makeRelative(str_replace('\\', '/', ltrim($file, '/')));
     }
 
     /**
@@ -383,13 +385,13 @@ class DebugBar
             }
         }
 
-        // Requirements may have been cleared (CMS iframes...) or not set (Security...)
+        // Requirements may have been cleared (CMS iframes...) or not set
         $js = Requirements::backend()->getJavascript();
         $debugBarResource = self::moduleResource('assets/debugbar.js');
         $path = $debugBarResource->getRelativePath();
 
         // Url in getJavascript has a / slash, so fix if necessary
-        $path = str_replace("assets\\debugbar.js", "assets/debugbar.js", $path);
+        $path = str_replace("\\", "/", $path);
         if (!array_key_exists($path, $js)) {
             return;
         }
@@ -401,11 +403,10 @@ class DebugBar
         // Normally deprecation notices are output in a shutdown function, which runs well after debugbar has rendered.
         // This ensures the deprecation notices which have been noted up to this point are logged out and collected by
         // the MonologCollector.
-        if (method_exists(Deprecation::class, 'outputNotices')) {
-            Deprecation::outputNotices();
-        }
+        Deprecation::outputNotices();
 
         $script = self::$renderer->render($initialize);
+
         return $script;
     }
 
