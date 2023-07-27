@@ -3,8 +3,6 @@
 namespace LeKoala\DebugBar\Middleware;
 
 use LeKoala\DebugBar\DebugBar;
-use LeKoala\DebugBar\Extension\ProxyDBExtension;
-use LeKoala\DebugBar\Proxy\SSViewerProxy;
 use SilverStripe\Control\Middleware\HTTPMiddleware;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
@@ -46,18 +44,18 @@ class DebugBarMiddleware implements HTTPMiddleware
                     $timeData->addMeasure(
                         'php boot',
                         $_SERVER['REQUEST_TIME_FLOAT'],
-                        FRAMEWORK_BOOT_TIME
+                        constant('FRAMEWORK_BOOT_TIME')
                     );
                     $timeData->addMeasure(
                         'framework boot',
-                        FRAMEWORK_BOOT_TIME,
+                        constant('FRAMEWORK_BOOT_TIME'),
                         microtime(true)
                     );
                 } else {
                     $timeData = $debugbar['time'];
                     $timeData->addMeasure(
                         'framework boot',
-                        FRAMEWORK_BOOT_TIME,
+                        constant('FRAMEWORK_BOOT_TIME'),
                         microtime(true)
                     );
                 }
