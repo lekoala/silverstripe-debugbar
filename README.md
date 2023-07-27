@@ -219,7 +219,6 @@ LeKoala\DebugBar\DebugBar:
 | `enable_storage` | bool | Store all previous request in the temp folder (enabled by default) |
 | `auto_debug` | bool| Automatically collect debug and debug_request data (disabled by default) |
 | `ajax` | bool | Automatically inject data in XHR requests (disabled by default, since this makes the Chrome request inspector very slow due to the large amount of header data) |
-| `force_proxy` | bool | Always use the database proxy instead of built in PDO collector (enabled by default) |
 | `check_local_ip` | bool | Do not display the DebugBar if not using a local ip (enabled by default) |
 | `find_source` | bool | Trace which file generates a database query (enabled by default) |
 | `enabled_in_admin` | bool | enable DebugBar in the CMS (enabled by default) |
