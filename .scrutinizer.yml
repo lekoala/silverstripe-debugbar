@@ -1,6 +1,7 @@
 inherit: true
 
 build:
+  image: default-bionic
   nodes:
     analysis:
       tests:
