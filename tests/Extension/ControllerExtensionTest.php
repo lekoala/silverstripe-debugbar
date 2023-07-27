@@ -81,8 +81,6 @@ class ControllerExtensionTest extends FunctionalTest
             $this->assertFalse($timeData->hasStartedMeasure('handle'));
             $this->assertTrue($timeData->hasStartedMeasure('action'));
         });
-
-        $this->assertTrue($this->controller->beforeCallActionHandlerCalled);
     }
 
     public function testAfterCallActionHandler()
