@@ -14,6 +14,8 @@ use DebugBar\DataCollector\DataCollector;
  */
 class CacheCollector extends DataCollector implements Renderable, AssetProvider
 {
+    protected $showGet = false;
+
     public function getName()
     {
         return 'cache';
@@ -34,24 +36,32 @@ class CacheCollector extends DataCollector implements Renderable, AssetProvider
     {
         $result = CacheProxy::getData();
 
-
         $keys = [];
+        $showGet = $this->showGet || isset($_REQUEST['debug_cacheshowget']);
         foreach ($result as $k => $v) {
+            $type = $v['type'] ?? null;
+            if (!$showGet && $type == "get") {
+                continue;
+            }
             $val = $v['value'];
             if (!is_string($val)) {
                 $val = json_encode($val);
             }
-            if (strlen($val) > 150) {
-                $val = substr($val, 0, 150) . "...";
-            }
+            // Long values are trimmed by DebugBar js
             if (!empty($v['ttl'])) {
                 $val .= " - TTL: " . $v['ttl'];
             }
-            $keys[$k] = $val;
+            if (!empty($v['caller'])) {
+                $val .= " - (" . $v['caller'] . ")";
+            }
+            if ($type == 'set' && $showGet) {
+                $val = "SET - " . $val;
+            }
+            $keys[$v['key']] = $val;
         }
 
         return [
-            'count' => count($result),
+            'count' => count($keys),
             'keys' => $keys
         ];
     }
@@ -72,5 +82,24 @@ class CacheCollector extends DataCollector implements Renderable, AssetProvider
         ];
 
         return $widgets;
+    }
+
+    /**
+     * Get the value of showGet
+     */
+    public function getShowGet()
+    {
+        return $this->showGet;
+    }
+
+    /**
+     * Set the value of showGet
+     *
+     * @param bool $showGet
+     */
+    public function setShowGet($showGet)
+    {
+        $this->showGet = $showGet;
+        return $this;
     }
 }

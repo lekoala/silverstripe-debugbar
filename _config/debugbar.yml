@@ -39,6 +39,7 @@ LeKoala\DebugBar\DebugBar:
   db_collector: true
   db_save_csv: false
   cache_collector: true
+  cache_collector_show_get: false
   partial_cache_collector: true
   email_collector: true
   header_collector: true

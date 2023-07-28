@@ -193,7 +193,8 @@ class DebugBar
 
         // Cache
         if (self::config()->cache_collector) {
-            $debugbar->addCollector(new CacheCollector);
+            $debugbar->addCollector($cacheCollector = new CacheCollector);
+            $cacheCollector->setShowGet(self::config()->cache_collector_show_get);
         }
 
         // Partial cache

@@ -234,6 +234,7 @@ LeKoala\DebugBar\DebugBar:
 | `db_save_csv` | bool | Save queries to csv in the temp folder. Use ?downloadqueries to download current. Defaults to false |
 | `config_collector` | bool | Show the config tab. Defaults to true |
 | `cache_collector` | bool | Show the cache tab. Defaults to true |
+| `cache_collector_show_get` | bool | Display get calls in cache tab. Defaults to false |
 | `partial_cache_collector` | bool | Show the partial cache tab. Defaults to true |
 | `email_collector` | bool | Show the email tab. Defaults to true |
 | `header_collector` | bool | Show the headers tab. Defaults to true |
