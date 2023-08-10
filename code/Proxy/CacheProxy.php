@@ -34,7 +34,7 @@ class CacheProxy extends Psr16Cache
 
     private function getCaller(): string
     {
-        $trace = debug_backtrace();
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
         $caller = "";
         $ignore = ["set", "get", "setCacheValue", "getCacheValue", "getCaller"];
         foreach ($trace as $t) {
