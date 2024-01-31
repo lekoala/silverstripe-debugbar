@@ -2,11 +2,12 @@
 
 namespace LeKoala\DebugBar\Extension;
 
-use LeKoala\DebugBar\Collector\HeaderCollector;
-use LeKoala\DebugBar\Collector\SilverStripeCollector;
 use LeKoala\DebugBar\DebugBar;
-use SilverStripe\Control\Controller;
 use SilverStripe\Core\Extension;
+use SilverStripe\Control\Controller;
+use LeKoala\DebugBar\Collector\HeaderCollector;
+use SilverStripe\CMS\Controllers\ContentController;
+use LeKoala\DebugBar\Collector\SilverStripeCollector;
 
 /**
  * A controller extension to log times and render the Debug Bar
@@ -35,7 +36,10 @@ class ControllerExtension extends Extension
 
     public function onAfterInit()
     {
-        $result = DebugBar::includeRequirements();
+        // Avoid requirements being called to early due to RootURLController
+        if ($this->owner instanceof ContentController) {
+            DebugBar::includeRequirements();
+        }
 
         DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugbar) {
             // Add the headers Collector
