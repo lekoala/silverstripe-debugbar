@@ -197,15 +197,21 @@ class ProxyDBExtension extends Extension
         );
 
         $sources = array();
-        foreach ($traces as $trace) {
+        foreach ($traces as $i => $trace) {
+            // We need to be able to look ahead one item in the trace, because the class/function values
+            // are talking about what is being *called* on this line, not the function this line lives in.
+            if (!isset($traces[$i+1])) {
+                break;
+            }
+
             $file = isset($trace['file']) ? pathinfo($trace['file'], PATHINFO_FILENAME) : null;
-            $class = isset($trace['class']) ? $trace['class'] : null;
+            $class = isset($traces[$i+1]['class']) ? $traces[$i+1]['class'] : null;
             $line = isset($trace['line']) ? $trace['line'] : null;
-            $function = isset($trace['function']) ? $trace['function'] : null;
-            $type = isset($trace['type']) ? $trace['type'] : '::';
+            $function = isset($traces[$i+1]['function']) ? $traces[$i+1]['function'] : null;
+            $type = isset($traces[$i+1]['type']) ? $traces[$i+1]['type'] : '::';
 
             /* @var $object SSViewer */
-            $object = isset($trace['object']) ? $trace['object'] : null;
+            $object = isset($traces[$i+1]['object']) ? $traces[$i+1]['object'] : null;
 
             if (in_array($class, $internalClasses)) {
                 continue;
