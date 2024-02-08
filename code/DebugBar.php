@@ -46,6 +46,7 @@ use LeKoala\DebugBar\Collector\PartialCacheCollector;
 use LeKoala\DebugBar\Collector\SilverStripeCollector;
 use SilverStripe\Config\Collections\DeltaConfigCollection;
 use SilverStripe\Config\Collections\CachedConfigCollection;
+use SilverStripe\Dev\Deprecation;
 
 /**
  * A simple helper
@@ -400,6 +401,13 @@ class DebugBar
         $initialize = true;
         if (Director::is_ajax()) {
             $initialize = false;
+        }
+
+        // Normally deprecation notices are output in a shutdown function, which runs well after debugbar has rendered.
+        // This ensures the deprecation notices which have been noted up to this point are logged out and collected by
+        // the MonologCollector.
+        if (method_exists(Deprecation::class, 'outputNotices')) {
+            Deprecation::outputNotices();
         }
 
         $script = self::$renderer->render($initialize);
