@@ -1,9 +1,8 @@
 <?php
 
-use LeKoala\DebugBar\DebugBar;
-use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use SilverStripe\Control\Director;
+use SilverStripe\Core\Environment;
 use SilverStripe\Core\Injector\Injector;
 
 // Add a simple utility that leverages Symfony VarDumper and cleans buffer to avoid debug messages
@@ -37,8 +36,8 @@ if (!function_exists('d')) {
         $bt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS | DEBUG_BACKTRACE_PROVIDE_OBJECT);
 
         // Where is d called is the first element of the backtrace
-        $line = $bt[0]['line'];
-        $file = $bt[0]['file'];
+        $line = $bt[0]['line'] ?? 0;
+        $file = $bt[0]['file'] ?? "unknown file";
 
         // Caller
         $caller_function = isset($bt[1]['function']) ? $bt[1]['function'] : null;
@@ -56,18 +55,23 @@ if (!function_exists('d')) {
 
         // Arguments passed to the function are stored in matches
         $src = file($file);
+        if (!$src) {
+            return;
+        }
         $src_line = $src[$line - 1];
         preg_match("/d\((.+)\)/", $src_line, $matches);
 
         // Find all arguments, ignore variables within parenthesis
         $arguments_name = array();
         if (!empty($matches[1])) {
-            $arguments_name = array_map('trim', preg_split("/(?![^(]*\)),/", $matches[1]));
+            $split = preg_split("/(?![^(]*\)),/", $matches[1]);
+            if ($split) {
+                $arguments_name = array_map('trim', $split);
+            }
         }
 
         // Display data nicely according to context
-        $print = function () use ($isPlain) {
-            $args = func_get_args();
+        $print = function (...$args) use ($isPlain) {
             if (!$isPlain) {
                 echo '<pre>';
             }
@@ -81,7 +85,7 @@ if (!function_exists('d')) {
                     if (is_object($arg)) {
                         $arg = get_class($arg);
                     } else {
-                        $arg = json_encode($arg, JSON_PRETTY_PRINT, 5);
+                        $arg = json_encode($arg, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR, 5);
                     }
                 }
                 $arg = trim($arg);
@@ -99,8 +103,11 @@ if (!function_exists('d')) {
         $fileline = "$file:$line";
         if (!$isPlain) {
             // Allow opening in ide
-            // TODO: make ide configurable
-            $idePlaceholder = 'vscode://file/{file}:{line}';
+            $idePrefix = Environment::getEnv('IDE_PROTOCOL');
+            if (!$idePrefix) {
+                $idePrefix = 'vscode';
+            }
+            $idePlaceholder = $idePrefix . '://file/{file}:{line}';
             $ideLink = str_replace(['{file}', '{line}'], [$file, $line], $idePlaceholder);
             $fileline = "<a href=\"$ideLink\">$fileline</a>";
         }
@@ -152,15 +159,23 @@ if (!function_exists('d')) {
 
 // Add a simple log helper that provides a default priority
 if (!function_exists('l')) {
-    function l($message, $priority = Logger::DEBUG, $extras = [])
+    /**
+     * @param string|array<mixed> $message
+     * @param mixed $priority This can be skipped array can be used instead for extras
+     * @param array<mixed> $extras
+     * @return void
+     */
+    function l($message, $priority = \Monolog\Level::Debug, $extras = [])
     {
         if (!is_string($message)) {
-            $message = json_encode((array) $message);
+            $message = json_encode((array) $message, JSON_THROW_ON_ERROR);
         }
         if (is_array($priority)) {
             $extras = $priority;
-            $priority = Logger::DEBUG;
+            $priority = \Monolog\Level::Debug;
         }
-        Injector::inst()->get(LoggerInterface::class)->log($priority, $message, $extras);
+        /** @var LoggerInterface $inst */
+        $inst = Injector::inst()->get(LoggerInterface::class);
+        $inst->log($priority, $message, $extras);
     }
 }
