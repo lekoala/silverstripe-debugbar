@@ -25,11 +25,12 @@ class DebugBarMiddleware implements HTTPMiddleware
      * Track the start up of the framework boot
      *
      * @param HTTPRequest $request
+     * @return void
      */
     protected function beforeRequest(HTTPRequest $request)
     {
         DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugbar) {
-            /** @var DebugBar\DataCollector\TimeDataCollector $timeData */
+            /** @var \DebugBar\DataCollector\TimeDataCollector|null $timeData */
             $timeData = $debugbar->getCollector('time');
 
             if (!$timeData) {
@@ -78,6 +79,7 @@ class DebugBarMiddleware implements HTTPMiddleware
      *
      * @param HTTPRequest  $request
      * @param HTTPResponse $response
+     * @return void
      */
     protected function afterRequest(HTTPRequest $request, HTTPResponse $response)
     {
