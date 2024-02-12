@@ -16,7 +16,7 @@ class ProxyDBExtension extends Extension
     /**
      * Store queries
      *
-     * @var array
+     * @var array<array<mixed>>
      */
     protected static $queries = [];
 
@@ -27,6 +27,10 @@ class ProxyDBExtension extends Extension
      */
     protected static $findSource = true;
 
+    /**
+     * @param ProxyGenerator $proxy
+     * @return void
+     */
     public function updateProxy(ProxyGenerator &$proxy)
     {
         self::$findSource = DebugBar::config()->get('find_source');
@@ -117,7 +121,7 @@ class ProxyDBExtension extends Extension
             // null on the first query, since it's the select statement itself
             $db = DB::get_conn()->getSelectedDatabase();
 
-            self::$queries[] = [
+            self::$queries[] = array(
                 'short_query' => $shortsql,
                 'select' => $select,
                 'query' => $sql,
@@ -129,7 +133,7 @@ class ProxyDBExtension extends Extension
                 'success' => $handle ? true : false,
                 'database' => $db,
                 'source' => self::$findSource ? self::findSource() : null
-            ];
+            );
 
             return $handle;
         };
@@ -143,7 +147,7 @@ class ProxyDBExtension extends Extension
      *
      * Helpful for long running process and avoid accumulating queries
      *
-     * @return array
+     * @return void
      */
     public static function resetQueries()
     {
@@ -151,19 +155,22 @@ class ProxyDBExtension extends Extension
     }
 
     /**
-     * @return array
+     * @return array<array<mixed>>
      */
     public static function getQueries()
     {
         return self::$queries;
     }
 
+    /**
+     * @return string
+     */
     protected static function findSource()
     {
         $traces = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS | DEBUG_BACKTRACE_PROVIDE_OBJECT);
 
         // Not relevant to determine source
-        $internalClasses = [
+        $internalClasses = array(
             '',
             get_called_class(),
             // DebugBar
@@ -188,26 +195,32 @@ class ProxyDBExtension extends Extension
             \SilverStripe\ORM\ListDecorator::class,
             // Core
             \SilverStripe\Control\Director::class,
-        ];
+        );
 
-        $viewerClasses = [
+        $viewerClasses = array(
             \SilverStripe\View\SSViewer_DataPresenter::class,
             \SilverStripe\View\SSViewer_Scope::class,
             \SilverStripe\View\SSViewer::class,
             \LeKoala\DebugBar\Proxy\SSViewerProxy::class,
             \SilverStripe\View\ViewableData::class
-        ];
+        );
 
         $sources = [];
-        foreach ($traces as $trace) {
+        foreach ($traces as $i => $trace) {
+            // We need to be able to look ahead one item in the trace, because the class/function values
+            // are talking about what is being *called* on this line, not the function this line lives in.
+            if (!isset($traces[$i + 1])) {
+                break;
+            }
+
             $file = isset($trace['file']) ? pathinfo($trace['file'], PATHINFO_FILENAME) : null;
-            $class = isset($trace['class']) ? $trace['class'] : null;
+            $class = isset($traces[$i + 1]['class']) ? $traces[$i + 1]['class'] : null;
             $line = isset($trace['line']) ? $trace['line'] : null;
-            $function = isset($trace['function']) ? $trace['function'] : null;
-            $type = isset($trace['type']) ? $trace['type'] : '::';
+            $function = isset($traces[$i + 1]['function']) ? $traces[$i + 1]['function'] : null;
+            $type = isset($traces[$i + 1]['type']) ? $traces[$i + 1]['type'] : '::';
 
             /* @var $object SSViewer */
-            $object = isset($trace['object']) ? $trace['object'] : null;
+            $object = isset($traces[$i + 1]['object']) ? $traces[$i + 1]['object'] : null;
 
             if (in_array($class, $internalClasses)) {
                 continue;
