@@ -197,7 +197,6 @@ The `l()` function helps you to log messages, and since they will appear in the 
 l('My message');
 ```
 
-
 ### Configuration options
 
 Wherever possible, features and settings have been made configurable. You can see a list of the default configuration settings by looking at `_config/debugbar.yml`. To modify any of these settings you can define a YAML configuration block in your `mysite/_config` folder, for example:
@@ -329,6 +328,11 @@ If you want DebugBar to work on the `Security` controller, make sure to include 
 #### Customize DebugBar css
 
 Any customisation to the default css (as stored in "assets") should be made to css/custom.css. This file will be appended to the default css.
+
+#### More than one body
+
+If you more than one body tag, the middleware will fail to insert properly the required scripts.
+If that happens, you can use the <!-- debugbar --> placeholder in your page template. This is where the scripts will be inserted.
 
 ### *903 upstream sent too big header
 

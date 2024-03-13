@@ -101,6 +101,9 @@ class DebugBarMiddleware implements HTTPMiddleware
             return;
         }
 
+        // Use module to make sure it's deferred and does not cause side effects
+        $script = str_replace('<script type="text/javascript">', '<script type="module">', $script);
+
         // Inject init script into the HTML response
         $body = (string)$response->getBody();
         if (strpos($body, '</body>') !== false) {
@@ -113,14 +116,26 @@ class DebugBarMiddleware implements HTTPMiddleware
                 $customScripts = implode("\n", $matches[0]);
             }
 
-            if (Requirements::get_write_js_to_body()) {
-                $body = str_replace('</body>', $customScripts . "\n" . $script . '</body>', $body);
+            $scriptsToInsert = $customScripts . "\n" . $script;
+            // You can use a placeholder if somehow you have a </body> string somewhere else in the body
+            // @link https://github.com/lekoala/silverstripe-debugbar/issues/154
+            $debugbarPlaceholder = "<!-- debugbar -->";
+            if (strpos($body, $debugbarPlaceholder) !== false) {
+                $body = str_replace($debugbarPlaceholder, $scriptsToInsert, $body);
             } else {
-                // Ensure every js script is properly loaded before firing custom script
-                $script = strip_tags($script);
-                $script = "window.addEventListener('DOMContentLoaded', function() { $script });";
-                $script = '<script type="application/javascript">//<![CDATA[' . "\n" . $script . "\n</script>";
-                $body = str_replace('</head>', $customScripts . "\n" . $script . '</head>', $body);
+                if (Requirements::get_write_js_to_body()) {
+                    // Replace the last occurence of </body>
+                    $pos = strrpos($body, '</body>');
+                    if ($pos !== false) {
+                        $body = substr_replace($body, $scriptsToInsert . '</body>', $pos, strlen('</body>'));
+                    }
+                } else {
+                    // Replace the first occurence of </head>
+                    $pos = strpos($body, '</head>');
+                    if ($pos !== false) {
+                        $body = substr_replace($body, $scriptsToInsert . '</head>', $pos, strlen('</head>'));
+                    }
+                }
             }
             $response->setBody($body);
         }

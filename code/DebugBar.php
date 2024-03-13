@@ -53,7 +53,7 @@ class DebugBar
     use Injectable;
 
     /**
-     * @var BaseDebugBar
+     * @var BaseDebugBar|false|null
      */
     protected static $debugbar;
 
@@ -68,7 +68,7 @@ class DebugBar
     public static $suppressJquery = false;
 
     /**
-     * @var JavascriptRenderer
+     * @var JavascriptRenderer|null
      */
     protected static $renderer;
 
@@ -78,12 +78,12 @@ class DebugBar
     protected static $showQueries = false;
 
     /**
-     * @var HTTPRequest
+     * @var HTTPRequest|null
      */
     protected static $request;
 
     /**
-     * @var array
+     * @var array<string,array<float>>
      */
     protected static $extraTimes = [];
 
@@ -91,7 +91,7 @@ class DebugBar
      * Get the Debug Bar instance
      * @throws Exception
      * @global array $databaseConfig
-     * @return BaseDebugBar
+     * @return BaseDebugBar|false
      */
     public static function getDebugBar()
     {
@@ -102,7 +102,7 @@ class DebugBar
         $reasons = self::disabledCriteria();
         if (!empty($reasons)) {
             self::$debugbar = false; // no need to check again
-            return;
+            return false;
         }
 
         self::initDebugBar();
@@ -206,7 +206,7 @@ class DebugBar
         if (self::config()->email_collector) {
             $mailer = Injector::inst()->get(MailerInterface::class);
             if ($mailer instanceof Mailer) {
-                $debugbar->addCollector(new SymfonyMailerCollector($mailer));
+                $debugbar->addCollector(new SymfonyMailerCollector);
             }
         }
 
@@ -252,7 +252,7 @@ class DebugBar
         $refObject = new ReflectionObject($object);
         $refProperty = $refObject->getProperty($property);
         $refProperty->setAccessible(true);
-        return $refProperty->setValue($object, $newValue);
+        $refProperty->setValue($object, $newValue);
     }
 
     /**
@@ -301,6 +301,10 @@ class DebugBar
         return ModuleLoader::getModule('lekoala/silverstripe-debugbar')->getResource($path);
     }
 
+    /**
+     * @param bool $flag
+     * @return void
+     */
     public static function suppressJquery($flag = true)
     {
         $file = "debugbar/assets/vendor/jquery/dist/jquery.min.js";
@@ -380,6 +384,10 @@ class DebugBar
         return true;
     }
 
+    /**
+     * @param string $file
+     * @return string
+     */
     protected static function replaceAssetPath($file)
     {
         return Director::makeRelative(str_replace('\\', '/', ltrim($file, '/')));
@@ -393,7 +401,7 @@ class DebugBar
     public static function renderDebugBar()
     {
         if (!self::$renderer) {
-            return;
+            return '';
         }
 
         // If we have any extra time pending, add it
@@ -411,7 +419,7 @@ class DebugBar
         // Url in getJavascript has a / slash, so fix if necessary
         $path = str_replace("\\", "/", $path);
         if (!array_key_exists($path, $js)) {
-            return;
+            return '';
         }
         $initialize = true;
         if (Director::is_ajax()) {
@@ -431,7 +439,7 @@ class DebugBar
     /**
      * Get all criteria why the DebugBar could be disabled
      *
-     * @return array
+     * @return array<string>
      */
     public static function disabledCriteria()
     {
@@ -482,11 +490,17 @@ class DebugBar
         return "I don't know why";
     }
 
+    /**
+     * @return bool
+     */
     public static function vendorNotInstalled()
     {
         return !class_exists('DebugBar\\StandardDebugBar');
     }
 
+    /**
+     * @return bool
+     */
     public static function notLocalIp()
     {
         if (!self::config()->get('check_local_ip')) {
@@ -498,6 +512,9 @@ class DebugBar
         return false;
     }
 
+    /**
+     * @return bool
+     */
     public static function allowAllEnvironments()
     {
         // You will also need to add a debugbar-live config
@@ -507,6 +524,9 @@ class DebugBar
         return false;
     }
 
+    /**
+     * @return bool
+     */
     public static function isDisabled()
     {
         if (Environment::getEnv('DEBUGBAR_DISABLE') || static::config()->get('disabled')) {
@@ -515,11 +535,17 @@ class DebugBar
         return false;
     }
 
+    /**
+     * @return bool
+     */
     public static function isDevUrl()
     {
         return strpos(self::getRequestUrl(), '/dev/') === 0;
     }
 
+    /**
+     * @return bool
+     */
     public static function isAdminUrl()
     {
         $baseUrl = rtrim(BASE_URL, '/');
@@ -532,6 +558,9 @@ class DebugBar
         return strpos(self::getRequestUrl(), $baseUrl . '/' . $adminUrl . '/') === 0;
     }
 
+    /**
+     * @return bool
+     */
     public static function isExcludedRoute()
     {
         $isExcluded = false;
@@ -548,9 +577,12 @@ class DebugBar
         return $isExcluded;
     }
 
+    /**
+     * @return bool
+     */
     public static function isAdminController()
     {
-        if (Controller::curr()) {
+        if (Controller::has_curr()) {
             return Controller::curr() instanceof LeftAndMain;
         }
         return self::isAdminUrl();
@@ -589,6 +621,7 @@ class DebugBar
      * Helper to make code cleaner
      *
      * @param callable $callback
+     * @return void
      */
     public static function withDebugBar($callback)
     {
@@ -601,6 +634,7 @@ class DebugBar
      * Set the current request. Is provided by the DebugBarMiddleware.
      *
      * @param HTTPRequest $request
+     * @return void
      */
     public static function setRequest(HTTPRequest $request)
     {
@@ -610,7 +644,7 @@ class DebugBar
     /**
      * Get the current request
      *
-     * @return HTTPRequest
+     * @return HTTPRequest|null
      */
     public static function getRequest()
     {
@@ -621,6 +655,7 @@ class DebugBar
         if (Controller::has_curr()) {
             return Controller::curr()->getRequest();
         }
+        return null;
     }
 
     /**
@@ -632,6 +667,7 @@ class DebugBar
         if (!$debugbar) {
             return false;
         }
+        //@phpstan-ignore-next-line
         return $debugbar->getCollector('time');
     }
 
@@ -644,6 +680,7 @@ class DebugBar
         if (!$debugbar) {
             return false;
         }
+        //@phpstan-ignore-next-line
         return  $debugbar->getCollector('messages');
     }
 
@@ -693,6 +730,7 @@ class DebugBar
 
     /**
      * Add extra time to time collector
+     * @return void
      */
     public static function measureExtraTime()
     {
