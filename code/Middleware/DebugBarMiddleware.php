@@ -87,6 +87,13 @@ class DebugBarMiddleware implements HTTPMiddleware
         if (!$debugbar) {
             return;
         }
+
+        // Don't apply to assets
+        $dir = defined('ASSETS_DIR') ? ASSETS_DIR : 'assets';
+        if (strpos($request->getURL(), "$dir/") === 0) {
+            return;
+        }
+
         DebugBar::setRequest($request);
 
         // All queries have been displayed

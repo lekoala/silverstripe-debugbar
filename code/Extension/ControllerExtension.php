@@ -5,6 +5,7 @@ namespace LeKoala\DebugBar\Extension;
 use LeKoala\DebugBar\Collector\HeaderCollector;
 use LeKoala\DebugBar\Collector\SilverStripeCollector;
 use LeKoala\DebugBar\DebugBar;
+use SilverStripe\CMS\Controllers\ContentController;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Extension;
 use SilverStripe\Security\Security;
@@ -36,7 +37,7 @@ class ControllerExtension extends Extension
     {
         // On Security, onAfterInit is called before init() in your Page method
         // jQuery is most likely not included yet
-        if (!$this->owner instanceof Security) {
+        if (!$this->owner instanceof Security && $this->owner instanceof ContentController) {
             DebugBar::includeRequirements();
         }
 
