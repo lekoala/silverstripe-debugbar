@@ -87,13 +87,19 @@ class DebugBarMiddleware implements HTTPMiddleware
         if (!$debugbar) {
             return;
         }
+
+        // Don't apply to assets
+        $dir = defined('ASSETS_DIR') ? ASSETS_DIR : 'assets';
+        if (strpos($request->getURL(), "$dir/") === 0) {
+            return;
+        }
+
         DebugBar::setRequest($request);
 
         // All queries have been displayed
         if (DebugBar::getShowQueries()) {
             exit();
         }
-
         $script = DebugBar::renderDebugBar();
 
         // If the bar is not renderable, return early
@@ -106,6 +112,7 @@ class DebugBarMiddleware implements HTTPMiddleware
 
         // Inject init script into the HTML response
         $body = (string)$response->getBody();
+
         if (strpos($body, '</body>') !== false) {
             $customScripts = '';
             if (DebugBar::$suppressJquery) {
