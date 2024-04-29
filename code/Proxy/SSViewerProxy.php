@@ -141,6 +141,10 @@ class SSViewerProxy extends SSViewer
      */
     protected static function normalizeTemplateName($templateName)
     {
+        // Fallback for if the templateName is not a string or array (or anything, really)
+        if (!$templateName) {
+            $templateName = '';
+        }
         return str_ireplace(BASE_PATH, '', $templateName);
     }
 }
