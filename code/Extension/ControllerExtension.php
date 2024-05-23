@@ -6,9 +6,7 @@ use LeKoala\DebugBar\DebugBar;
 use SilverStripe\CMS\Controllers\ContentController;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Extension;
-use SilverStripe\Control\Controller;
 use LeKoala\DebugBar\Collector\HeaderCollector;
-use SilverStripe\CMS\Controllers\ContentController;
 use LeKoala\DebugBar\Collector\SilverStripeCollector;
 
 /**
