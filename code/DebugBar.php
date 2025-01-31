@@ -159,7 +159,7 @@ class DebugBar
             self::setProtectedValue($configLoader, 'manifests', $manifests);
         }
 
-        if (self::config()->db_collector) {
+        if (self::config()->db_collector && class_exists(\TractorCow\SilverStripeProxyDB\ProxyDBFactory::class)) {
             $debugbar->addCollector(new DatabaseCollector);
         }
 
