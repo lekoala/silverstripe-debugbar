@@ -86,6 +86,7 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
             return $stmt['database'];
         }, $queries)))) > 1;
 
+        $showDb = false;
         foreach ($queries as $stmt) {
             $i++;
 
@@ -94,6 +95,10 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
 
             if (!$stmt['success']) {
                 $failed++;
+            }
+
+            if (str_starts_with($stmt['short_query'], 'SHOW DATABASES LIKE')) {
+                $showDb = true;
             }
 
             if ($limit && $i > $limit) {
@@ -161,6 +166,7 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
         return array(
             'nb_statements' => count($queries),
             'nb_failed_statements' => $failed,
+            'show_db' => $showDb,
             'statements' => $stmts,
             'accumulated_duration' => $total_duration,
             'accumulated_duration_str' => $this->getDataFormatter()->formatDuration($total_duration),
