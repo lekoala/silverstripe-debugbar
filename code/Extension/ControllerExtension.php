@@ -37,9 +37,10 @@ class ControllerExtension extends Extension
     public function onAfterInit()
     {
         // Avoid requirements being called to early due to RootURLController
-        if ($this->owner instanceof ContentController) {
-            DebugBar::includeRequirements();
+        if ($this->owner instanceof \SilverStripe\CMS\Controllers\RootURLController) {
+            return;
         }
+        DebugBar::includeRequirements();
 
         DebugBar::withDebugBar(function (\DebugBar\DebugBar $debugbar) {
             // Add the headers Collector
