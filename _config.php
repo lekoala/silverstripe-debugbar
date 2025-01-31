@@ -144,7 +144,7 @@ if (!function_exists('d')) {
                 }
             } else {
                 if ($varname && is_string($arg) && strpos($varname, 'sql') !== false) {
-                    echo SqlFormatter::format($arg);
+                    echo \LeKoala\DebugBar\DebugBarUtils::formatSql($arg);
                 } else {
                     dump($arg);
                 }
@@ -174,7 +174,6 @@ if (!function_exists('l')) {
             $extras = $priority;
             $priority = \Monolog\Level::Debug;
         }
-        /** @var LoggerInterface $inst */
         $inst = Injector::inst()->get(LoggerInterface::class);
         $inst->log($priority, $message, $extras);
     }
