@@ -44,6 +44,17 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
             }
         }
 
+        if (isset($data['has_unclosed_transaction']) && $data['has_unclosed_transaction']) {
+            $messages = DebugBar::getMessageCollector();
+            if ($messages) {
+                $messages->addMessage(
+                    "There is an unclosed transaction on your page and some statement may not be persisted to the database",
+                    'warning',
+                    true
+                );
+            }
+        }
+
         return $data;
     }
 
@@ -87,6 +98,7 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
         }, $queries)))) > 1;
 
         $showDb = false;
+        $hasUnclosedTransaction = false;
         foreach ($queries as $stmt) {
             $i++;
 
@@ -99,6 +111,13 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
 
             if (str_starts_with($stmt['short_query'], 'SHOW DATABASES LIKE')) {
                 $showDb = true;
+            }
+
+            if (str_contains($stmt['short_query'], 'START TRANSACTION')) {
+                $hasUnclosedTransaction = true;
+            }
+            if (str_contains($stmt['short_query'], 'END TRANSACTION')) {
+                $hasUnclosedTransaction = false;
             }
 
             if ($limit && $i > $limit) {
@@ -167,6 +186,7 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
             'nb_statements' => count($queries),
             'nb_failed_statements' => $failed,
             'show_db' => $showDb,
+            'has_unclosed_transaction' => $hasUnclosedTransaction,
             'statements' => $stmts,
             'accumulated_duration' => $total_duration,
             'accumulated_duration_str' => $this->getDataFormatter()->formatDuration($total_duration),
