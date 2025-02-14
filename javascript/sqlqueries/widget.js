@@ -138,9 +138,6 @@
                 if (duplicate) {
                     t.append(", " + duplicate + " of which were duplicated");
                 }
-                if (data.show_db) {
-                    t.append(". Consider enabling `optimistic_connect` to avoid an extra query");
-                }
                 if (data.accumulated_duration_str) {
                     this.$status.append($('<span title="Accumulated duration" />').addClass(csscls('duration')).text(data.accumulated_duration_str));
                 }

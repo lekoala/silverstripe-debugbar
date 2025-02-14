@@ -46,6 +46,7 @@ LeKoala\DebugBar\DebugBar:
   # Threshold (seconds) for how long a template can take to render before issuing a warning
   # set 0 to disable
   template_rendering_warning_level: 2.0
+  show_db_warning: true
 SilverStripe\Control\Director:
   rules:
     '__debugbar': 'LeKoala\DebugBar\DebugBarController'

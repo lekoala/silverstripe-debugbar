@@ -44,6 +44,18 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
             }
         }
 
+        if (isset($data['show_db']) && $data['show_db']) {
+            $showDbWarning = DebugBar::config()->get('show_db_warning');
+            $messages = DebugBar::getMessageCollector();
+            if ($messages && $showDbWarning) {
+                $messages->addMessage(
+                    "Consider enabling `optimistic_connect` to avoid an extra query. You can turn this warning off by setting show_db_warning = false",
+                    'warning',
+                    true
+                );
+            }
+        }
+
         if (isset($data['has_unclosed_transaction']) && $data['has_unclosed_transaction']) {
             $messages = DebugBar::getMessageCollector();
             if ($messages) {
