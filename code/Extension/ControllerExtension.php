@@ -36,8 +36,11 @@ class ControllerExtension extends Extension
 
     public function onAfterInit()
     {
-        // Avoid requirements being called to early due to RootURLController
+        // Avoid requirements being called to early due to RootURLController/ModelAsController
         if ($this->owner instanceof \SilverStripe\CMS\Controllers\RootURLController) {
+            return;
+        }
+        if ($this->owner instanceof \SilverStripe\CMS\Controllers\ModelAsController) {
             return;
         }
         DebugBar::includeRequirements();

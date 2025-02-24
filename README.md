@@ -10,6 +10,8 @@ You can install the debug bar with Composer:
 
 ```sh
 composer require --dev lekoala/silverstripe-debugbar
+composer require --dev tractorcow/silverstripe-proxy-db
+composer require --dev doctrine/sql-formatter
 ```
 
 ## Documentation
