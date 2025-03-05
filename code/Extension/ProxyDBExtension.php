@@ -163,6 +163,27 @@ class ProxyDBExtension extends Extension
     }
 
     /**
+     * @param string $str
+     * @return void
+     */
+    public static function addCustomQuery(string $str)
+    {
+        self::$queries[] = array(
+            'short_query' => $str,
+            'select' => null,
+            'query' => $str,
+            'start_time' => 0,
+            'end_time' => 0,
+            'duration' => 0,
+            'memory' => 0,
+            'rows' => null,
+            'success' => true,
+            'database' => null,
+            'source' => null
+        );
+    }
+
+    /**
      * @return string
      */
     protected static function findSource()
