@@ -121,7 +121,7 @@ class ProxyDBExtension extends Extension
             // null on the first query, since it's the select statement itself
             $db = DB::get_conn()->getSelectedDatabase();
 
-            self::$queries[] = array(
+            self::$queries[] = [
                 'short_query' => $shortsql,
                 'select' => $select,
                 'query' => $sql,
@@ -133,7 +133,7 @@ class ProxyDBExtension extends Extension
                 'success' => $handle ? true : false,
                 'database' => $db,
                 'source' => self::$findSource ? self::findSource() : null
-            );
+            ];
 
             return $handle;
         };
@@ -168,7 +168,7 @@ class ProxyDBExtension extends Extension
      */
     public static function addCustomQuery(string $str)
     {
-        self::$queries[] = array(
+        self::$queries[] = [
             'short_query' => $str,
             'select' => null,
             'query' => $str,
@@ -180,7 +180,7 @@ class ProxyDBExtension extends Extension
             'success' => true,
             'database' => null,
             'source' => null
-        );
+        ];
     }
 
     /**
@@ -191,7 +191,7 @@ class ProxyDBExtension extends Extension
         $traces = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS | DEBUG_BACKTRACE_PROVIDE_OBJECT);
 
         // Not relevant to determine source
-        $internalClasses = array(
+        $internalClasses = [
             '',
             get_called_class(),
             // DebugBar
@@ -216,15 +216,15 @@ class ProxyDBExtension extends Extension
             \SilverStripe\ORM\ListDecorator::class,
             // Core
             \SilverStripe\Control\Director::class,
-        );
+        ];
 
-        $viewerClasses = array(
+        $viewerClasses = [
             \SilverStripe\View\SSViewer_DataPresenter::class,
             \SilverStripe\View\SSViewer_Scope::class,
             \SilverStripe\View\SSViewer::class,
             \LeKoala\DebugBar\Proxy\SSViewerProxy::class,
             \SilverStripe\View\ViewableData::class
-        );
+        ];
 
         $sources = [];
         foreach ($traces as $i => $trace) {

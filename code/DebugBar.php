@@ -443,7 +443,7 @@ class DebugBar
      */
     public static function disabledCriteria()
     {
-        $reasons = array();
+        $reasons = [];
         if (!Director::isDev() && !self::allowAllEnvironments()) {
             $reasons[] = 'Not in dev mode';
         }
@@ -507,7 +507,7 @@ class DebugBar
             return false;
         }
         if (isset($_SERVER['REMOTE_ADDR'])) {
-            return !in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1', '::1', '1'));
+            return !in_array($_SERVER['REMOTE_ADDR'], ['127.0.0.1', '::1', '1']);
         }
         return false;
     }
@@ -568,7 +568,7 @@ class DebugBar
         if (!empty($excludedRoutes)) {
             $url = self::getRequestUrl();
             foreach ($excludedRoutes as $excludedRoute) {
-                if (strpos($url, $excludedRoute) === 0) {
+                if (strpos($url, (string) $excludedRoute) === 0) {
                     $isExcluded = true;
                     break;
                 }

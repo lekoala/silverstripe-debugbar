@@ -17,6 +17,6 @@ class LogFormatter implements FormatterInterface
 
     public function formatBatch(array $records)
     {
-        return implode("\n", array_map(array($this, 'format'), $records));
+        return implode("\n", array_map([$this, 'format'], $records));
     }
 }

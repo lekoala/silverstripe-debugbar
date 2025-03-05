@@ -20,10 +20,10 @@ class CacheAfterCallAspect implements AfterCallAspect
         $result = Convert::raw2att($result);
         PartialCacheCollector::addTemplateCache(
             $message,
-            array(
+            [
                 'cache_result' =>
-                    array('result' => $result)
-            )
+                ['result' => $result]
+            ]
         );
     }
 }

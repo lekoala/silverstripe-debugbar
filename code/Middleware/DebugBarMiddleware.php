@@ -127,18 +127,18 @@ class DebugBarMiddleware implements HTTPMiddleware
             // You can use a placeholder if somehow you have a </body> string somewhere else in the body
             // @link https://github.com/lekoala/silverstripe-debugbar/issues/154
             $debugbarPlaceholder = "<!-- debugbar -->";
-            if (strpos($body, $debugbarPlaceholder) !== false) {
+            if (strpos((string) $body, $debugbarPlaceholder) !== false) {
                 $body = str_replace($debugbarPlaceholder, $scriptsToInsert, $body);
             } else {
                 if (Requirements::get_write_js_to_body()) {
                     // Replace the last occurence of </body>
-                    $pos = strrpos($body, '</body>');
+                    $pos = strrpos((string) $body, '</body>');
                     if ($pos !== false) {
                         $body = substr_replace($body, $scriptsToInsert . '</body>', $pos, strlen('</body>'));
                     }
                 } else {
                     // Replace the first occurence of </head>
-                    $pos = strpos($body, '</head>');
+                    $pos = strpos((string) $body, '</head>');
                     if ($pos !== false) {
                         $body = substr_replace($body, $scriptsToInsert . '</head>', $pos, strlen('</head>'));
                     }

@@ -50,7 +50,7 @@ class HeaderCollector extends DataCollector implements Renderable, AssetProvider
         $result = $this->controller->getResponse()->getHeaders();
 
         foreach ($result as $key => &$value) {
-            $value = trim(implode(PHP_EOL, explode('; ', $value)));
+            $value = trim(implode(PHP_EOL, explode('; ', (string) $value)));
             $value = implode(PHP_EOL . ' - ', explode(' ', $value));
         }
 

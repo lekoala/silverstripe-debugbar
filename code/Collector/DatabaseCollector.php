@@ -87,9 +87,9 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
      * @param TimeDataCollector $timeCollector
      * @return array
      */
-    protected function collectData(TimeDataCollector $timeCollector = null)
+    protected function collectData(?TimeDataCollector $timeCollector = null)
     {
-        $stmts = array();
+        $stmts = [];
 
         $total_duration = 0;
         $total_mem = 0;
@@ -121,25 +121,25 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
                 $failed++;
             }
 
-            if (str_starts_with($stmt['short_query'], 'SHOW DATABASES LIKE')) {
+            if (str_starts_with((string) $stmt['short_query'], 'SHOW DATABASES LIKE')) {
                 $showDb = true;
             }
 
-            if (str_contains($stmt['short_query'], 'START TRANSACTION')) {
+            if (str_contains((string) $stmt['short_query'], 'START TRANSACTION')) {
                 $hasUnclosedTransaction = true;
             }
-            if (str_contains($stmt['short_query'], 'END TRANSACTION')) {
+            if (str_contains((string) $stmt['short_query'], 'END TRANSACTION')) {
                 $hasUnclosedTransaction = false;
             }
 
             if ($limit && $i > $limit) {
-                $stmts[] = array(
+                $stmts[] = [
                     'sql' => "Only the first $limit queries are shown"
-                );
+                ];
                 break;
             }
 
-            $stmts[] = array(
+            $stmts[] = [
                 'sql' => $stmt['short_query'],
                 'row_count' => $stmt['rows'],
                 'params' => $stmt['select'] ? $stmt['select'] : null,
@@ -151,7 +151,7 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
                 'database' => $showDb ? $stmt['database'] : null,
                 'source' => $stmt['source'],
                 'warn' => $stmt['duration'] > $warnDurationThreshold
-            );
+            ];
 
             if ($timeCollector !== null) {
                 $timeCollector->addMeasure(
@@ -194,7 +194,7 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
             }
         }
 
-        return array(
+        return [
             'nb_statements' => count($queries),
             'nb_failed_statements' => $failed,
             'show_db' => $showDb,
@@ -204,7 +204,7 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
             'accumulated_duration_str' => $this->getDataFormatter()->formatDuration($total_duration),
             'memory_usage' => $total_mem,
             'memory_usage_str' => $this->getDataFormatter()->formatBytes($total_mem),
-        );
+        ];
     }
 
     /**
@@ -220,18 +220,18 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
      */
     public function getWidgets()
     {
-        return array(
-            "database" => array(
+        return [
+            "database" => [
                 "icon" => "database",
                 "widget" => "PhpDebugBar.Widgets.SQLQueriesWidget",
                 "map" => "db",
                 "default" => "[]"
-            ),
-            "database:badge" => array(
+            ],
+            "database:badge" => [
                 "map" => "db.nb_statements",
                 "default" => 0
-            )
-        );
+            ]
+        ];
     }
 
     /**
@@ -239,11 +239,11 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
      */
     public function getAssets()
     {
-        return array(
+        return [
             'base_path' => '/' . DebugBar::moduleResource('javascript')->getRelativePath(),
             'base_url' => Director::makeRelative(DebugBar::moduleResource('javascript')->getURL()),
             'css' => 'sqlqueries/widget.css',
             'js' => 'sqlqueries/widget.js'
-        );
+        ];
     }
 }

@@ -23,7 +23,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
 
     public function collect()
     {
-        $data = array(
+        $data = [
             'debugcount' => count(self::$debug),
             'debug' => self::$debug,
             'session' => self::getSessionData(),
@@ -36,7 +36,7 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
             'user' => Security::getCurrentUser() ? Security::getCurrentUser()->Title : 'Not logged in',
             'templates' => self::getTemplateData(),
             'middlewares' => self::getMiddlewares(),
-        );
+        ];
         return $data;
     }
 
@@ -50,14 +50,14 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
         $middlewares = Director::singleton()->getMiddlewares();
         if (!$middlewares) {
             return [
-                'list' => array(),
+                'list' => [],
                 'count' => 0,
             ];
         }
-        return array(
+        return [
             'list' => array_keys($middlewares),
             'count' => count($middlewares)
-        );
+        ];
     }
 
     /**
@@ -68,10 +68,10 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
     public static function getTemplateData()
     {
         $templates = SSViewerProxy::getTemplatesUsed();
-        return array(
+        return [
             'templates' => $templates,
             'count' => count($templates)
-        );
+        ];
     }
 
     public static function getRequirementsData()
@@ -216,92 +216,92 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
             }
         }
 
-        $widgets = array(
-            'user' => array(
+        $widgets = [
+            'user' => [
                 'icon' => $userIcon,
                 'tooltip' => $userText,
                 "default" => "",
-            ),
-            "version" => array(
+            ],
+            "version" => [
                 "icon" => "hashtag",
                 "tooltip" => class_exists(LeftAndMain::class) ? LeftAndMain::create()->CMSVersion() : 'unknown',
                 "default" => ""
-            ),
-            "locale" => array(
+            ],
+            "locale" => [
                 "icon" => "globe",
                 "tooltip" => i18n::get_locale(),
                 "default" => "",
-            ),
-            "session" => array(
+            ],
+            "session" => [
                 "icon" => "archive",
                 "widget" => "PhpDebugBar.Widgets.VariableListWidget",
                 "map" => "$name.session",
                 "default" => "{}"
-            ),
-            "cookies" => array(
+            ],
+            "cookies" => [
                 "icon" => "asterisk",
                 "widget" => "PhpDebugBar.Widgets.VariableListWidget",
                 "map" => "$name.cookies",
                 "default" => "{}"
-            ),
-            "parameters" => array(
+            ],
+            "parameters" => [
                 "icon" => "arrow-right",
                 "widget" => "PhpDebugBar.Widgets.VariableListWidget",
                 "map" => "$name.parameters",
                 "default" => "{}"
-            ),
-            "requirements" => array(
+            ],
+            "requirements" => [
                 "icon"    => "file-text-o",
                 "widget"  => "PhpDebugBar.Widgets.VariableListWidget",
                 "map"     => "$name.requirements.list",
                 "default" => "{}"
-            ),
-            "requirements:badge" => array(
+            ],
+            "requirements:badge" => [
                 "map"     => "$name.requirements.count",
                 "default" => 0
-            ),
-            "middlewares" => array(
+            ],
+            "middlewares" => [
                 "icon" => "file-text-o",
                 "widget" => "PhpDebugBar.Widgets.ListWidget",
                 "map" => "$name.middlewares.list",
                 "default" => "{}"
-            ),
-            "middlewares:badge" => array(
+            ],
+            "middlewares:badge" => [
                 "map" => "$name.middlewares.count",
                 "default" => 0
-            ),
-            'templates' => array(
+            ],
+            'templates' => [
                 'icon' => 'file-code-o',
                 'widget' => 'PhpDebugBar.Widgets.ListWidget',
                 'map' => "$name.templates.templates",
                 'default' => '{}'
-            ),
-            'templates:badge' => array(
+            ],
+            'templates:badge' => [
                 'map' => "$name.templates.count",
                 'default' => 0
-            )
-        );
+            ]
+        ];
 
-        if (!empty($this->getConfigData())) {
-            $widgets["SiteConfig"] = array(
+        if (!empty(static::getConfigData())) {
+            $widgets["SiteConfig"] = [
                 "icon" => "sliders",
                 "widget" => "PhpDebugBar.Widgets.VariableListWidget",
                 "map" => "$name.config",
                 "default" => "{}"
-            );
+            ];
         }
 
         if (!empty(self::$debug)) {
-            $widgets["debug"] = array(
+            $widgets["debug"] = [
                 "icon" => "list-alt",
                 "widget" => "PhpDebugBar.Widgets.ListWidget",
                 "map" => "$name.debug",
                 "default" => "[]"
-            );
-            $widgets["debug:badge"] = array(
+            ];
+            $widgets["debug:badge"] = [
                 "map" => "$name.debugcount",
                 "default" => "null"
-            );
+            ];
         }
 
         return $widgets;
@@ -312,11 +312,11 @@ class SilverStripeCollector extends DataCollector implements Renderable, AssetPr
      */
     public function getAssets()
     {
-        return array(
+        return [
             'base_path' => '/' . DebugBar::moduleResource('javascript')->getRelativePath(),
             'base_url' => Director::makeRelative(DebugBar::moduleResource('javascript')->getURL()),
             'css' => [],
             'js' => 'widgets.js',
-        );
+        ];
     }
 }

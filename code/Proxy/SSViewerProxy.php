@@ -17,7 +17,7 @@ class SSViewerProxy extends SSViewer
      *
      * @var array
      */
-    protected static $allTemplates = array();
+    protected static $allTemplates = [];
 
     /**
      * Whether the class has been used, meaning whether the page has been cached

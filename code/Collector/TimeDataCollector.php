@@ -27,7 +27,7 @@ class TimeDataCollector extends BaseTimeDataCollector
         $widgets['time']['indicator'] = 'PhpDebugBar.DebugBar.WarnableRequestTimeIndicator';
         $widgets['time']['warn'] = 'ok';
         // Request duration rather than Request Duration
-        $widgets['time']['tooltip'] = ucfirst(strtolower($widgets['time']['tooltip']));
+        $widgets['time']['tooltip'] = ucfirst(strtolower((string) $widgets['time']['tooltip']));
 
         $warningThreshold = $upperThreshold * $warningRatio;
         if ($this->getRequestDuration() > $upperThreshold) {
