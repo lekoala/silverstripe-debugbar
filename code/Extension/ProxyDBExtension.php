@@ -2,12 +2,12 @@
 
 namespace LeKoala\DebugBar\Extension;
 
-use SqlFormatter;
 use SilverStripe\ORM\DB;
 use LeKoala\DebugBar\DebugBar;
 use SilverStripe\Core\Extension;
 use SilverStripe\Control\Controller;
 use TractorCow\ClassProxy\Generators\ProxyGenerator;
+use LeKoala\DebugBar\DebugBarUtils;
 
 class ProxyDBExtension extends Extension
 {
@@ -64,7 +64,7 @@ class ProxyDBExtension extends Extension
 
             // Show query on screen
             if (DebugBar::getShowQueries()) {
-                $formattedSql = SqlFormatter::format($sql);
+                $formattedSql = DebugBarUtils::formatSql($sql);
                 $rows = $handle->numRecords();
 
                 echo '<pre>The following query took <b>' . round($endTime - $startTime, 4) . '</b>s an returned <b>' . $rows . "</b> row(s) \n";
