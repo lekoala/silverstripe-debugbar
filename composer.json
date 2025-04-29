@@ -18,7 +18,7 @@
     "require": {
         "php": "^8.1",
         "silverstripe/framework": "^5",
-        "maximebf/debugbar": "^1.18|^2"
+        "php-debugbar/php-debugbar": "^2"
     },
     "require-dev": {
         "silverstripe/siteconfig": "^5",
