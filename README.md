@@ -10,8 +10,6 @@ You can install the debug bar with Composer:
 
 ```sh
 composer require --dev lekoala/silverstripe-debugbar
-composer require --dev tractorcow/silverstripe-proxy-db
-composer require --dev doctrine/sql-formatter
 ```
 
 ## Documentation
@@ -78,8 +76,6 @@ of doing a `composer dumpautoload -o` on your project.
 Note : any pending measure will be closed automatically before the `pre_request` measure.
 
 ### Database profiling
-
-Note: this feature is optional and relies on `tractorcow/silverstripe-proxy-db`.
 
 The "Database" tab allows you to view a list of all the database operations that a page request has made, and will group duplicated queries together. This can be useful to identify areas where performance can be improved, such as using `DataObject::get_by_id()` (which caches the result) instead of `DataObject::get()->byID()`.
 
@@ -193,8 +189,7 @@ Any call to `d()` with "sql" in the name of the variable will output a properly 
 d($myDataList->sql());
 ```
 
-For improved display, require `doctrine/sql-formatter`. You can also use `DebugBarUtils::formatSql` in your projects if needed,
-it will pick the best formatter for sql queries.
+You can also use `DebugBarUtils::formatSql` in your projects if needed.
 
 #### Quick logging
 
