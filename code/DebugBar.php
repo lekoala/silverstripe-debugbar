@@ -43,6 +43,7 @@ use LeKoala\DebugBar\Collector\SilverStripeCollector;
 use SilverStripe\Config\Collections\DeltaConfigCollection;
 use SilverStripe\Config\Collections\CachedConfigCollection;
 use LeKoala\DebugBar\Bridge\SymfonyMailer\SymfonyMailerCollector;
+use SilverStripe\Security\Permission;
 
 /**
  * A simple helper
@@ -472,6 +473,9 @@ class DebugBar
         if (self::isExcludedRoute()) {
             $reasons[] = 'Route excluded';
         }
+        if (self::hasRequiredPermissions()) {
+            $reasons[] = 'Not allowed';
+        }
         return $reasons;
     }
 
@@ -534,6 +538,17 @@ class DebugBar
             return true;
         }
         return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public static function hasRequiredPermissions()
+    {
+        if (static::config()->get('user_admin_only')) {
+            return Permission::check('ADMIN');
+        }
+        return true;
     }
 
     /**

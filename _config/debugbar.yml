@@ -47,6 +47,7 @@ LeKoala\DebugBar\DebugBar:
   # set 0 to disable
   template_rendering_warning_level: 2.0
   show_db_warning: true
+  user_admin_only: false
 SilverStripe\Control\Director:
   rules:
     '__debugbar': 'LeKoala\DebugBar\DebugBarController'
