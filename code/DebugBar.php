@@ -473,7 +473,7 @@ class DebugBar
         if (self::isExcludedRoute()) {
             $reasons[] = 'Route excluded';
         }
-        if (self::hasRequiredPermissions()) {
+        if (!self::hasRequiredPermissions()) {
             $reasons[] = 'Not allowed';
         }
         return $reasons;
