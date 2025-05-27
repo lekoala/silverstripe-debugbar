@@ -23,9 +23,9 @@ class ProxyDBExtension extends Extension
     /**
      * Find source toggle (set by config find_source)
      *
-     * @var boolean
+     * @var ?bool
      */
-    protected static $findSource = true;
+    protected static $findSource = null;
 
     /**
      * @param ProxyGenerator $proxy
@@ -33,7 +33,12 @@ class ProxyDBExtension extends Extension
      */
     public function updateProxy(ProxyGenerator &$proxy)
     {
-        self::$findSource = DebugBar::config()->get('find_source');
+        if (DebugBar::getDebugBar() === false) {
+            return;
+        }
+        if (self::$findSource === null) {
+            self::$findSource = DebugBar::config()->get('find_source');
+        }
 
         // In the closure, $this is the proxied database
         $callback = function ($args, $next) {
