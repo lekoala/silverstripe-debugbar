@@ -2,6 +2,9 @@
 
 namespace LeKoala\DebugBar;
 
+use SilverStripe\ORM\DataList;
+use SilverStripe\ORM\DB;
+
 class DebugBarUtils
 {
 
@@ -24,6 +27,16 @@ class DebugBarUtils
             return $formatter->$method($query);
         }
         return $query;
+    }
+
+    public static function formatListQuery(DataList $list, bool $inline = true): string
+    {
+        $parameters = [];
+        $formatted = self::formatSql($list->sql($parameters));
+        if ($inline) {
+            $formatted = DB::inline_parameters($formatted, $parameters);
+        }
+        return $formatted;
     }
 
     public static function isCli(): bool
