@@ -29,12 +29,22 @@ class DebugBarUtils
         return $query;
     }
 
-    public static function formatListQuery(DataList $list, bool $inline = true): string
+    /**
+     * Show the underlying sql query for a list
+     * @param DataList $list
+     * @param bool $inline Inlines paramters
+     * @param bool $noQuotes Remove ANSI Quotes
+     * @return string
+     */
+    public static function formatListQuery(DataList $list, bool $inline = true, bool $noQuotes = false): string
     {
         $parameters = [];
         $formatted = self::formatSql($list->sql($parameters));
         if ($inline) {
             $formatted = DB::inline_parameters($formatted, $parameters);
+        }
+        if ($noQuotes) {
+            $formatted = str_replace('&quot;', '', $formatted);
         }
         return $formatted;
     }
