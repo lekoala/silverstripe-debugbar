@@ -8,6 +8,7 @@ use SilverStripe\Core\Extension;
 use SilverStripe\Control\Controller;
 use TractorCow\ClassProxy\Generators\ProxyGenerator;
 use LeKoala\DebugBar\DebugBarUtils;
+use SilverStripe\Dev\Debug;
 
 class ProxyDBExtension extends Extension
 {
@@ -33,16 +34,12 @@ class ProxyDBExtension extends Extension
      */
     public function updateProxy(ProxyGenerator &$proxy)
     {
-        if (DebugBar::getDebugBar() === false) {
-            return;
-        }
         if (self::$findSource === null) {
             self::$findSource = DebugBar::config()->get('find_source');
         }
 
         // In the closure, $this is the proxied database
         $callback = function ($args, $next) {
-
             // The first argument is always the sql query
             $sql = $args[0];
             $parameters = isset($args[2]) ? $args[2] : [];

@@ -5,6 +5,7 @@ namespace LeKoala\DebugBar\Test\Extension;
 use SilverStripe\Dev\SapphireTest;
 use SilverStripe\ORM\DB;
 use LeKoala\DebugBar\Extension\ProxyDBExtension;
+use LeKoala\DebugBar\DebugBar;
 
 class ProxyDBExtensionTest extends SapphireTest
 {
@@ -17,10 +18,14 @@ class ProxyDBExtensionTest extends SapphireTest
     {
         parent::setUp();
         $this->conn = DB::get_conn();
+        DebugBar::initDebugBar();
     }
 
     public function testQueriesAreCollected()
     {
+        $res = DebugBar::getDebugBar();
+        $this->assertTrue($res !== false);
+        DB::query("SELECT 0");
         $this->assertNotEmpty(ProxyDBExtension::getQueries());
         ProxyDBExtension::resetQueries();
     }
