@@ -31,7 +31,7 @@ class PhpInfoCollectorTest extends SapphireTest
     /**
      * @return array[]
      */
-    public function longPhpVersionProvider()
+    public static function longPhpVersionProvider()
     {
         return [
             ['5.6.13', '5.6.13'],

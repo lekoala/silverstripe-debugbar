@@ -82,7 +82,7 @@ class DebugBarTest extends SapphireTest
     /**
      * @return array[]
      */
-    public function whyDisabledProvider()
+    public static function whyDisabledProvider()
     {
         return array(
             array(

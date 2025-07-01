@@ -3,7 +3,6 @@
 namespace LeKoala\DebugBar\Extension;
 
 use LeKoala\DebugBar\DebugBar;
-use SilverStripe\CMS\Controllers\ContentController;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Extension;
 use LeKoala\DebugBar\Collector\HeaderCollector;

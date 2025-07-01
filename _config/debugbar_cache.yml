@@ -2,20 +2,13 @@
 Name: debugbar_cache
 After:
   - '#corecache'
+  - '#versionedcache'
 Only:
   environment: 'dev'
 ---
 SilverStripe\Core\Injector\Injector:
-  Psr\SimpleCache\CacheInterface.backend:
-    factory: SilverStripe\Core\Cache\CacheFactory
+  SilverStripe\Core\Cache\CacheFactory:
+    class: 'SilverStripe\Versioned\Caching\ProxyCacheFactory'
     constructor:
-      namespace: "cacheblock"
-      defaultLifetime: 600
-  Psr\SimpleCache\CacheInterface.cacheblock: '%$Psr\SimpleCache\CacheInterface.proxied'
-  Psr\SimpleCache\CacheInterface.proxied:
-    class: SilverStripe\Core\Injector\AopProxyService
-    properties:
-      proxied: '%$Psr\SimpleCache\CacheInterface.backend'
-      afterCall:
-        get:
-          - '%$LeKoala\DebugBar\Aspects\CacheAfterCallAspect'
+      args:
+        container: 'LeKoala\DebugBar\Proxy\CacheAdapter'

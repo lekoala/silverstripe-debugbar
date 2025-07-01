@@ -3,7 +3,6 @@
 namespace LeKoala\DebugBar;
 
 use DebugBar\OpenHandler;
-use LeKoala\DebugBar\DebugBar;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 

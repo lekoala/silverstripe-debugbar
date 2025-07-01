@@ -176,7 +176,7 @@ class DatabaseCollector extends DataCollector implements Renderable, AssetProvid
                 header('Content-Disposition: attachment;filename=' . $filename);
                 $fp = fopen('php://output', 'w');
             } else {
-                $tempFolder = TEMP_FOLDER . '/debugbar/db';
+                $tempFolder = \TEMP_PATH . '/debugbar/db';
                 if (!is_dir($tempFolder)) {
                     mkdir($tempFolder, 0755, true);
                 }

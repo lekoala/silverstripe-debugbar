@@ -77,3 +77,9 @@ Only:
 SilverStripe\Admin\LeftAndMain:
   extensions:
     - LeKoala\DebugBar\Extension\LeftAndMainExtension
+---
+After: '#view-config'
+---
+SilverStripe\Core\Injector\Injector:
+  SilverStripe\View\TemplateEngine:
+    class: 'LeKoala\DebugBar\View\TemplateEngine'
