@@ -49,6 +49,9 @@ class ConfigCollectorTest extends SapphireTest
     {
         $manifest = $this->collector->getConfigManifest();
 
+        // Set value in themes config
+        SSViewer::config()->merge('themes', ['one', 'two']);
+
         Config::inst()->get(SSViewer::class, 'themes');
         $result = $manifest->getConfigCalls();
 

@@ -3,6 +3,7 @@
 namespace LeKoala\DebugBar\Proxy;
 
 use LeKoala\DebugBar\DebugBar;
+use SilverStripe\ORM\FieldType\DBHTMLText;
 use SilverStripe\View\SSViewer;
 use SilverStripe\Control\Director;
 
@@ -31,13 +32,13 @@ class SSViewerProxy extends SSViewer
      *
      * {@inheritDoc}
      */
-    public function process($item, $arguments = null, $inheritedScope = null)
+    public function process(mixed $item, array $overlay = []): DBHTMLText
     {
         // If there is no debug bar instance, process as usual
         if (!DebugBar::getDebugBar()) {
-            return parent::process($item, $arguments, $inheritedScope);
+            return parent::process($item, $overlay);
         }
-        $templateName = self::normalizeTemplateName($this->chosen);
+        $templateName = self::normalizeTemplateName($this->getTemplateEngine()->getSelectedTemplatePath());
         self::trackTemplateUsed($templateName);
 
         $startTime = microtime(true);
@@ -50,7 +51,7 @@ class SSViewerProxy extends SSViewer
             $timeData->startMeasure($templateName, $templateName);
         });
 
-        $result = parent::process($item, $arguments, $inheritedScope);
+        $result = parent::process($item, $overlay);
         $endTime = microtime(true);
         $totalTime = sprintf("%.2f", $endTime - $startTime);
 
@@ -67,7 +68,7 @@ class SSViewerProxy extends SSViewer
 
         $templateRenderWarningLevel = DebugBar::config()->get('template_rendering_warning_level');
         if ($templateRenderWarningLevel && $totalTime > $templateRenderWarningLevel) {
-            $sourceFile = $this->getCacheFile($this->chosen);
+            $sourceFile = $this->getCacheFile($this->getTemplateEngine()->getSelectedTemplatePath());
             $messages = DebugBar::getMessageCollector();
             if ($messages) {
                 $messages->addMessage(
@@ -94,7 +95,7 @@ class SSViewerProxy extends SSViewer
     public function getCacheFile($template = null)
     {
         if ($template === null) {
-            $template = $this->chosen;
+            $template = $this->getTemplateEngine()->getSelectedTemplatePath();
         }
         return TEMP_PATH . DIRECTORY_SEPARATOR . '.cache'
             . str_replace(['\\', '/', ':'], '.', Director::makeRelative(realpath($template)));

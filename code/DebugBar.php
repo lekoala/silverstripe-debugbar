@@ -180,7 +180,7 @@ class DebugBar
         $debugbar->addCollector(new SilverStripeCollector);
 
         if (self::config()->get('enable_storage')) {
-            $debugBarTempFolder = TEMP_FOLDER . '/debugbar';
+            $debugBarTempFolder = \TEMP_PATH . '/debugbar';
             $debugbar->setStorage($fileStorage = new FileStorage($debugBarTempFolder));
             if (isset($_GET['flush']) && is_dir($debugBarTempFolder)) {
                 // FileStorage::clear() is implemented with \DirectoryIterator which throws UnexpectedValueException if dir can not be opened
@@ -598,7 +598,7 @@ class DebugBar
      */
     public static function isAdminController()
     {
-        if (Controller::has_curr()) {
+        if (Controller::curr()) {
             return Controller::curr() instanceof LeftAndMain;
         }
         return self::isAdminUrl();
@@ -668,7 +668,7 @@ class DebugBar
             return self::$request;
         }
         // Fall back to trying from the global state
-        if (Controller::has_curr()) {
+        if (Controller::curr()) {
             return Controller::curr()->getRequest();
         }
         return null;

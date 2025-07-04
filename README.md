@@ -12,6 +12,8 @@ You can install the debug bar with Composer:
 composer require --dev lekoala/silverstripe-debugbar
 ```
 
+> Note: This module currently only works with the standard [template engine](https://github.com/silverstripe/silverstripe-template-engine) that renders .ss files.
+
 ## Documentation
 
 * [Introduction](#introduction)
