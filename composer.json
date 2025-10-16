@@ -20,7 +20,7 @@
         "silverstripe/framework": "^6",
         "php-debugbar/php-debugbar": "^2",
         "doctrine/sql-formatter": "^1.5",
-        "tractorcow/silverstripe-proxy-db": "dev-pulls/cms6-support"
+        "tractorcow/silverstripe-proxy-db": "^3.0"
     },
     "require-dev": {
         "silverstripe/siteconfig": "^6",
@@ -28,15 +28,9 @@
         "phpunit/phpunit": "^11.5",
         "squizlabs/php_codesniffer": "^3"
     },
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/silverstripeltd/silverstripe-proxy-db.git"
-        }
-    ],
     "extra": {
         "branch-alias": {
-            "dev-master": "3.x-dev"
+            "dev-master": "4.x-dev"
         },
         "expose": [
             "assets",
