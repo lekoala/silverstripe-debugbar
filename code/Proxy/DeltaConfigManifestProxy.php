@@ -40,14 +40,15 @@ class DeltaConfigManifestProxy extends DeltaConfigCollection implements ProxyCon
 
         // Only track not empty values by default
         if ($result || $this->trackEmpty) {
-            if (!isset($this->configCalls[$class][$name])) {
-                $this->configCalls[$class][$name] = [
+            $key = $name ?? '';
+            if (!isset($this->configCalls[$class][$key])) {
+                $this->configCalls[$class][$key] = [
                     'calls' => 0,
                     'result' => null
                 ];
             }
-            $this->configCalls[$class][$name]['calls']++;
-            $this->configCalls[$class][$name]['result'] = $result;
+            $this->configCalls[$class][$key]['calls']++;
+            $this->configCalls[$class][$key]['result'] = $result;
         }
 
         return $result;

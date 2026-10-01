@@ -237,7 +237,6 @@ class DebugBar
     {
         $refObject = new ReflectionObject($object);
         $refProperty = $refObject->getProperty($property);
-        $refProperty->setAccessible(true);
         return $refProperty->getValue($object);
     }
 
@@ -253,7 +252,6 @@ class DebugBar
     {
         $refObject = new ReflectionObject($object);
         $refProperty = $refObject->getProperty($property);
-        $refProperty->setAccessible(true);
         $refProperty->setValue($object, $newValue);
     }
 
