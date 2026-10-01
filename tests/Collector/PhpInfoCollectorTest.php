@@ -21,7 +21,6 @@ class PhpInfoCollectorTest extends SapphireTest
     {
         $reflection = new ReflectionClass(PhpInfoCollector::class);
         $method = $reflection->getMethod('trimVersion');
-        $method->setAccessible(true);
 
         $collector = new PhpInfoCollector();
         $result = $method->invokeArgs($collector, [$phpVersion]);
